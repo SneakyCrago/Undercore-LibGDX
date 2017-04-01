@@ -16,7 +16,7 @@ public class Wall {
 
 
     private final int TEXTURE_SIZE = 32;
-    private int SPEED = -90;
+    private int SPEED = 0;
     private final int FREE_SPACE = 128;
     public final int BLOCK_SIZE = TEXTURE_SIZE*8 + FREE_SPACE *7;
 
@@ -34,7 +34,7 @@ public class Wall {
 
     public boolean[] isScored;
 
-    public Wall(int START){
+    public Wall(float START){
 
         isScored = new boolean[8];
 
@@ -90,17 +90,17 @@ public class Wall {
             massive[i] = random.nextInt(5) + 1;
             while (massive[i] == massive[i-1]) {
                 massive[i] = random.nextInt(5) + 1;
-                //исключает ситуацию 15
-                if(massive[i] == 5 && massive[i-1] == 1) {
-                    massive[i] = random.nextInt(4) + 1;
-                }
             }
+            //исключает ситуацию 15
+            if(massive[i-1] == 1) {
+                    massive[i] = random.nextInt(3) + 2;
+                }
         }
         return massive;
     }
 
     //initialization
-    public void createRects(int START) {
+    public void createRects(float START) {
         int test = 0;
         endZone = new Rectangle();
         endZone.set(posBlock.x + START, posBlock.y, 2, 288);
@@ -163,7 +163,7 @@ public class Wall {
     }
 
     // block drawing random generator
-    public void drawWallBlock(ShapeRenderer shapeRenderer, int START) {
+    public void drawWallBlock(ShapeRenderer shapeRenderer, float START) {
         for(int init = 0; init < massive.length; init++) {
             if (massive[init] == 1) {
                 drawWallPos1(shapeRenderer,START + TEXTURE_SIZE * init + init * FREE_SPACE);
@@ -182,7 +182,7 @@ public class Wall {
 
     }
     // positions drawing constructor
-    public void drawWallPos1(ShapeRenderer shapeRenderer, int x) {
+    public void drawWallPos1(ShapeRenderer shapeRenderer, float x) {
         //space
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3);
@@ -193,7 +193,7 @@ public class Wall {
 
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE *3, TEXTURE_SIZE-6, 3);
     }
-    public void drawWallPos2(ShapeRenderer shapeRenderer, int x) {
+    public void drawWallPos2(ShapeRenderer shapeRenderer, float x) {
         //space
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3); //top
@@ -212,7 +212,7 @@ public class Wall {
 
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE *4.5f, TEXTURE_SIZE-6, 3);
     }
-    public void drawWallPos3(ShapeRenderer shapeRenderer, int x) {
+    public void drawWallPos3(ShapeRenderer shapeRenderer, float x) {
         //space
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3); //top
@@ -231,7 +231,7 @@ public class Wall {
 
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE * 6, TEXTURE_SIZE-6, 3);
     }
-    public void drawWallPos4(ShapeRenderer shapeRenderer, int x) {
+    public void drawWallPos4(ShapeRenderer shapeRenderer, float x) {
         //space
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3); //top
@@ -250,7 +250,7 @@ public class Wall {
 
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE * 7 + 16, TEXTURE_SIZE-6, 3);
     }
-    public void drawWallPos5(ShapeRenderer shapeRenderer, int x) {
+    public void drawWallPos5(ShapeRenderer shapeRenderer, float x) {
         //space
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.rect(posBlock.x + x + 3, 11-3, TEXTURE_SIZE-6, 3); // bot

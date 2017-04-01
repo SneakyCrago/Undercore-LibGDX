@@ -1,6 +1,7 @@
 package com.sneakycrago.undercore.objects;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.sneakycrago.undercore.Application;
@@ -27,12 +28,19 @@ public class Player {
 
     private Rectangle playerCubeRectangle;
 
+    private Polygon playerPolygon;
+
     public Player(float x, float y) {
         position = new Vector2(x, y);
         velocity = new Vector2(0, 0);
 
         playerCubeRectangle = new Rectangle(x, y, 32, 32);
 
+        playerPolygon = new Polygon(new float[] {
+                0,0,
+                0,32,
+                32,32,
+                32,0});
     }
 
     public void update(float delta) {
@@ -42,15 +50,14 @@ public class Player {
         // x = SPEED * delta = движение по x
         position.add(0, velocity.y);
         // не заходит за белые границы
-        if (position.y < BOT_SIDE) {
-            position.y = BOT_SIDE;
-        }
-        if (position.y > TOP_SIDE) {
-            position.y = TOP_SIDE;
-        }
+        sidesGhost(true);
+
         velocity.scl(1 / delta);
 
         playerCubeRectangle.setPosition(position.x, position.y);
+
+        playerPolygon.setPosition(position.x, position.y);
+
     }
 
     // Прыжок
@@ -83,13 +90,20 @@ public class Player {
         Shield = false;//0
     }
 
+    //DRAW
     public void drawPlayerCube(ShapeRenderer shapeRenderer){
         shapeRenderer.setColor(255/255f,162/255f, 38/255f, 1f);
         shapeRenderer.rect(position.x, position.y, TEXTURE_SIZE,TEXTURE_SIZE);
-    }
 
+        if(Line) {
+            shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+            shapeRenderer.rect(position.x, position.y, TEXTURE_SIZE,TEXTURE_SIZE);
+        }
+    }
     public void drawPlayerLine(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(255/255f,162/255f, 38/255f, 1f);
+        //shapeRenderer.setColor(255/255f,162/255f, 38/255f, 1f);
+        //shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+        shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
         shapeRenderer.rect(0, playerCubeRectangle.getY() + 16 - lineY /2, 96 - 3, lineY);
         shapeRenderer.rect(96 + 32  + 3, playerCubeRectangle.getY() + 16 - lineY /2, 512, lineY);
     }
@@ -101,9 +115,31 @@ public class Player {
             return false;
         }
     }
+    // может ли зайти за белые границы
+    public void sidesGhost(boolean set) {
+        if(set) {
+            if (position.y < BOT_SIDE) {
+                position.y = BOT_SIDE;
+            }
+            if (position.y > TOP_SIDE) {
+                position.y = TOP_SIDE;
+            }
+        } else if(!set) {
+            if (position.y < -32) {
+                position.y = -32;
+            }
+            if (position.y > 310+32) {
+                position.y = 310+32;
+            }
+        }
+    }
 
     public Rectangle getPlayerRectangle() {
         return playerCubeRectangle;
+    }
+
+    public Polygon getPlayerPolygon() {
+        return playerPolygon;
     }
 }
 
