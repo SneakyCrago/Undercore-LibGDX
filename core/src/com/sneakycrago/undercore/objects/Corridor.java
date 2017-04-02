@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 public class Corridor {
     private final int TEXTURE_SIZE = 32;
     private final int HEIGHT = 24;
-    private final int SPEED = 0; //-90
+    private final int SPEED = -90; //-90
     private final int FREE_SPACE = TEXTURE_SIZE*3;
     private final int BLOCX_SIZE = TEXTURE_SIZE*19;
 

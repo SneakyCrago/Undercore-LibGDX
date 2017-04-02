@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.sneakycrago.undercore.Application;
+import com.sneakycrago.undercore.utils.Globals;
 
 /**
  * Created by Sneaky Crago on 25.03.2017.
@@ -22,9 +23,9 @@ public class Player {
 
     private int playerPos;
 
-    private boolean Jump = true;
-    private boolean Line = false;
-    private boolean Shield = false;
+    public boolean Jump = true;
+    public boolean Line = false;
+    public boolean Shield = false;
 
     private Rectangle playerCubeRectangle;
 
@@ -92,18 +93,18 @@ public class Player {
 
     //DRAW
     public void drawPlayerCube(ShapeRenderer shapeRenderer){
-        shapeRenderer.setColor(255/255f,162/255f, 38/255f, 1f);
+        shapeRenderer.setColor(Globals.OrangeColor);
         shapeRenderer.rect(position.x, position.y, TEXTURE_SIZE,TEXTURE_SIZE);
 
         if(Line) {
-            shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+            shapeRenderer.setColor(Globals.LightBlue);
             shapeRenderer.rect(position.x, position.y, TEXTURE_SIZE,TEXTURE_SIZE);
         }
     }
     public void drawPlayerLine(ShapeRenderer shapeRenderer) {
         //shapeRenderer.setColor(255/255f,162/255f, 38/255f, 1f);
         //shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
-        shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+        shapeRenderer.setColor(Globals.LightBlue);
         shapeRenderer.rect(0, playerCubeRectangle.getY() + 16 - lineY /2, 96 - 3, lineY);
         shapeRenderer.rect(96 + 32  + 3, playerCubeRectangle.getY() + 16 - lineY /2, 512, lineY);
     }

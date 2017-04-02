@@ -17,37 +17,44 @@ import java.util.Random;
 
 public class BigArrow {
 
-    private int SPEED = 90 * 6; // 90*6 x6 now
+    //BIG ARROW LOGIC
     public final int INVISIBLE = 512+128*2;
+    public  boolean playEffect = true, playEffect2 = true;
+    public boolean secondStart = false;
+    public Sprite arrow, arrow2;
 
+
+    private int SPEED = 90 * 6; // 90*6 x6 now
     private int FREE_SPACE = 96;
 
     private Texture arrowTexture;
 
-    public Sprite arrow, arrow2;
-
-    public Vector2 posArrow, posArrow2;
+    private Vector2 posArrow, posArrow2;
     private Vector2 velocity, velocity2;
 
-    public  boolean playEffect = true, playEffect2 = true;
-
-    float timer = TimeUtils.nanoTime();
-    float time = 0;
-
-    float timer2 = TimeUtils.nanoTime();
-    float time2 = 0;
-
     private Rectangle line, line2;
+    private Polygon arrowPolygon, arrowPolygon2;
 
     private Random random = new Random();
     private int randomHeight, randomHeight2;
     private int randomValue, randomValue2;
 
-    public int amountOfArrows;
+    // Effect variables
+    private float alpha = 1;
+    private float start =0.1f * alpha;
+    private float alphaMax = 0;
+    private float startMax =0.1f * alpha;
 
-    public boolean secondStart = false;
+    private float alpha2 = 1;
+    private float start2 =0.1f * alpha;
+    private float alphaMax2 = 0;
+    private float startMax2 =0.1f * alpha;
 
-    private Polygon arrowPolygon, arrowPolygon2;
+    private float timer = TimeUtils.nanoTime();
+    private float time = 0;
+
+    private float timer2 = TimeUtils.nanoTime();
+    private float time2 = 0;
 
     public BigArrow() {
         posArrow = new Vector2(-256,11);
@@ -151,7 +158,6 @@ public class BigArrow {
         //create randomHeight2
     }
 
-
     public void update(float delta) {
         //movement
         velocity.add(0, 0);
@@ -173,7 +179,6 @@ public class BigArrow {
         //line.setX(arrow.getX() + 48-512);
         arrowPolygon.setPosition(arrow.getX(),arrow.getY());
     }
-
     public void update2(float delta) {
         //movement
         velocity2.add(0, 0);
@@ -196,11 +201,11 @@ public class BigArrow {
         //line.setX(arrow.getX() + 48-512);
     }
 
-    public void moveArrow() {
+    private void moveArrow() {
         arrow.setAlpha(1);
         arrow.setPosition(posArrow.x -128*2, randomHeight);
     }
-    public void moveArrow2() {
+    private void moveArrow2() {
         arrow2.setAlpha(1);
         arrow2.setPosition(posArrow2.x - 128*2, randomHeight2);
     }
@@ -209,7 +214,6 @@ public class BigArrow {
         arrow.draw(batch);
         arrow2.draw(batch);
     }
-
     public void drawArrowLine(ShapeRenderer shapeRenderer) {
         shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, 1f);
         if(arrow.getX() <= INVISIBLE) {
@@ -221,7 +225,6 @@ public class BigArrow {
         }
 
     }
-
     public void drawArrow2Line(ShapeRenderer shapeRenderer) {
         shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, 1f);
         if(arrow2.getX() <= INVISIBLE) {
@@ -232,11 +235,6 @@ public class BigArrow {
             line2.set(512,0,0,0);
         }
     }
-
-    public float alpha = 1;
-    float start =0.1f * alpha;
-    public float alphaMax = 0;
-    float startMax =0.1f * alpha;
 
     public void arrowEffect(float delta) {
         if(playEffect) {
@@ -266,12 +264,6 @@ public class BigArrow {
         }
 
     }
-
-    public float alpha2 = 1;
-    float start2 =0.1f * alpha;
-    public float alphaMax2 = 0;
-    float startMax2 =0.1f * alpha;
-
     public void arrowEffect2(float delta) {
         if(playEffect2) {
             if ((alphaMax2 + startMax2) < 1) {
@@ -294,43 +286,9 @@ public class BigArrow {
                 //System.out.println(alpha2);
             } else if((time2 / 1000000000) >= 0.995) {
                 playEffect2 = false;
-                //System.out.println(playEffect);
             }
         }
 
-    }
-
-    public float alphaTest = 1;
-    float startTest =0.1f * alpha;
-
-    // test methods
-    public void setAlphaZero(ShapeRenderer shapeRenderer,float delta) {
-        if ((alphaTest - startTest) > 0) {
-            time += (TimeUtils.nanoTime() - timer);
-            timer = TimeUtils.nanoTime();
-
-            alphaTest -= startTest;
-            startTest = delta / 0.55f;
-            shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, alphaTest);
-            //System.out.println(time / 1000000000);
-            //System.out.println(alpha);
-        } else {
-            arrow.setAlpha(alpha);
-        }
-    }
-    public void setAlphaMax(float delta) {
-        if ((alphaMax + startMax) < 1) {
-            time += (TimeUtils.nanoTime() - timer);
-            timer = TimeUtils.nanoTime();
-
-            alphaMax += startMax;
-            startMax = delta / 0.55f;
-            arrow.setAlpha(alphaMax);
-            //System.out.println(time / 1000000000);
-            //System.out.println(alpha);
-        } else {
-            arrow.setAlpha(alpha);
-        }
     }
 
     public Rectangle getLineRectangle() {

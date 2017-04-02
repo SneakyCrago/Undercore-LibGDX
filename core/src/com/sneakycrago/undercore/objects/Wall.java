@@ -16,7 +16,7 @@ public class Wall {
 
 
     private final int TEXTURE_SIZE = 32;
-    private int SPEED = 0;
+    public int SPEED = -90; //-90
     private final int FREE_SPACE = 128;
     public final int BLOCK_SIZE = TEXTURE_SIZE*8 + FREE_SPACE *7;
 
@@ -79,7 +79,6 @@ public class Wall {
         }
 
         moveRects(START);
-
     }
 
     //create massive for position
