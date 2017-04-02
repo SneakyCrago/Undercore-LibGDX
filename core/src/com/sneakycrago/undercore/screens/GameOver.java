@@ -27,7 +27,7 @@ public class GameOver implements Screen {
         this.game = game;
         camera = game.camera;
 
-        background = new Texture("test/game_over.png");
+        background = new Texture("textures/game_over_background.png");
 
     }
 

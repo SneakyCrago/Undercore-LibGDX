@@ -15,7 +15,7 @@ public class Corridor {
     private final int HEIGHT = 24;
     private final int SPEED = -90; //-90
     private final int FREE_SPACE = TEXTURE_SIZE*3;
-    private final int BLOCX_SIZE = TEXTURE_SIZE*19;
+    private final int BLOCK_SIZE = TEXTURE_SIZE*19;
 
     private Vector2 posBlock;
     private Vector2 velocity;
@@ -24,6 +24,7 @@ public class Corridor {
     private Rectangle[] topRightRects;
     private Rectangle[] bottomRets;
 
+    private Rectangle endZone;
     public Corridor(float x) {
         posBlock = new Vector2(0,11);
         velocity = new Vector2();
@@ -47,6 +48,7 @@ public class Corridor {
 
         //update positions(for rectangles)
         moveRects(x);
+        endZone.setX(posBlock.x + x + BLOCK_SIZE);
     }
     //RECTS
     //create rectangles
@@ -54,6 +56,9 @@ public class Corridor {
         createTopLeftRects(x);
         createTopRightRects(x);
         createBottomRects(x);
+
+        endZone = new Rectangle(x + BLOCK_SIZE, posBlock.y, 1, 288);
+
     }
 
     //move rects block
@@ -75,7 +80,7 @@ public class Corridor {
         for(int i =1; i<7; i++){
             topRightRects[i].setX(posBlock.x + x +TEXTURE_SIZE*(8+3) + TEXTURE_SIZE*i - 3);
         }
-        topRightRects[7].setX(posBlock.x + x + BLOCX_SIZE-32 - 3);
+        topRightRects[7].setX(posBlock.x + x + BLOCK_SIZE-32 - 3);
     }
     public void moveBottomRects(float x) {
         bottomRets[0].setX(posBlock.x + x+ 32*2);
@@ -110,7 +115,7 @@ public class Corridor {
                     TEXTURE_SIZE, HEIGHT +HEIGHT*i);
         }
         topRightRects[7] = new Rectangle();
-        topRightRects[7].set(posBlock.x + x + BLOCX_SIZE-TEXTURE_SIZE - 3,posBlock.y+ FREE_SPACE,
+        topRightRects[7].set(posBlock.x + x + BLOCK_SIZE-TEXTURE_SIZE - 3,posBlock.y+ FREE_SPACE,
                 TEXTURE_SIZE + 3, TEXTURE_SIZE*6);
     }
     public void createBottomRects(float x) {
@@ -209,6 +214,10 @@ public class Corridor {
     }
     public Rectangle[] getBottomRets() {
         return bottomRets;
+    }
+
+    public Rectangle getEndZone() {
+        return endZone;
     }
 }
 

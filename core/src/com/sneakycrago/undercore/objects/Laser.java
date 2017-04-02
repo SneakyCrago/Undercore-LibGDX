@@ -20,7 +20,7 @@ import java.util.Random;
 
 public class Laser {
 
-    public final int SPEED = 0; // -90
+    public final int SPEED = -90; // -90
 
     private final int FREE_SPACE = 64;
 
@@ -42,6 +42,10 @@ public class Laser {
     private Rectangle[] OrangeLaserRect;
     private Rectangle[] BlueLaserRect;
 
+    private Rectangle endZone;
+
+    private int BLOCK_ZONE;
+
     int x; // test Start
     public Laser(float START) {
 
@@ -53,6 +57,7 @@ public class Laser {
         random = new Random();
         massive = new int[random.nextInt(3)+3];
         random();
+        BLOCK_ZONE = (massive.length-1)*FREE_SPACE + massive.length * 32;
         size = new int[massive.length];
         for(int i = 0; i< massive.length; i++) {
             size[i] = 0;
@@ -84,7 +89,6 @@ public class Laser {
         createRects();
     }
 
-
     // movement
     public void update(float delta) {
         //movement
@@ -105,7 +109,14 @@ public class Laser {
         moveRects();
     }
 
+    public void random() {
+        for(int i = 0; i < massive.length; i++){
+            massive[i] = random.nextInt(2) + 1;
+        }
+    }
+
     public void createRects() {
+        endZone = new Rectangle(posBlock.x + x + BLOCK_ZONE,posBlock.y, 1, 288);
         for(int init = 0; init < massive.length; init++) {
             TopWall[init] = new Rectangle();
             TopWall[init].set(posBlock.x + x + init*FREE_SPACE +init*Globals.TEXTURE_SIZE,
@@ -131,8 +142,8 @@ public class Laser {
             }
         }
     }
-
     public void moveRects(){
+        endZone.setX(posBlock.x + x + BLOCK_ZONE);
         for(int init = 0; init < massive.length; init++) {
             TopWall[init].setX(posBlock.x + x + init*FREE_SPACE +init*Globals.TEXTURE_SIZE);
             DownWall[init].setX(posBlock.x + x + init*FREE_SPACE +init*Globals.TEXTURE_SIZE);
@@ -145,11 +156,6 @@ public class Laser {
         }
     }
 
-    public void random() {
-        for(int i = 0; i < massive.length; i++){
-            massive[i] = random.nextInt(2) + 1;
-        }
-    }
     public void drawLaserBlock(ShapeRenderer shapeRenderer, float delta){
         for(int init = 0; init < massive.length; init++){
             if(massive[init] == 1){
@@ -189,7 +195,6 @@ public class Laser {
                 3, Globals.TEXTURE_SIZE * 2); // right
 
     }
-
     // DRAW LASER LINE отрисовывает сам лазер
     public void drawLaserLine(ShapeRenderer shapeRenderer, float delta) {
         for(int i = 0; i < massive.length; i++){
@@ -225,5 +230,9 @@ public class Laser {
     }
     public Rectangle[] getBlueLaserRect() {
         return BlueLaserRect;
+    }
+
+    public Rectangle getEndZone() {
+        return endZone;
     }
 }

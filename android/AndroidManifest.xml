@@ -2,18 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sneakycrago.undercore"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="0.2" >
 
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="25" />
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="19" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Undercore"
         android:theme="@style/GdxTheme" >
         <activity
             android:name="com.sneakycrago.undercore.AndroidLauncher"
-            android:label="@string/app_name" 
+            android:label="Undercore"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize">
             <intent-filter>
