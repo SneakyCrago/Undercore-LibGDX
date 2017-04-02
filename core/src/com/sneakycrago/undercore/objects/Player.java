@@ -27,6 +27,9 @@ public class Player {
     public boolean Line = false;
     public boolean Shield = false;
 
+    public boolean Alive = true;
+    public boolean Death = false;
+
     private Rectangle playerCubeRectangle;
 
     private Polygon playerPolygon;

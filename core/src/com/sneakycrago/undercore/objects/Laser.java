@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.sneakycrago.undercore.utils.Globals;
+import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
 
@@ -87,6 +88,12 @@ public class Laser {
                     posBlock.y + Globals.FREE_SPACE * 2);
         }
         createRects();
+
+        isScored = new boolean[massive.length];
+
+        for(int i = 0; i < isScored.length; i++) {
+            isScored[i] = false;
+        }
     }
 
     // movement
@@ -107,11 +114,24 @@ public class Laser {
         }
 
         moveRects();
+
+        checkScore();
     }
 
     public void random() {
         for(int i = 0; i < massive.length; i++){
             massive[i] = random.nextInt(2) + 1;
+        }
+    }
+
+    //SCORE
+    private boolean isScored[];
+    public void checkScore() {
+        for(int i = 0; i < TopWall.length; i++) {
+            if(TopWall[i].getX() <= 96+16 && !isScored[i]){
+                isScored[i] = true;
+                Score.addGameScore(1);
+            }
         }
     }
 

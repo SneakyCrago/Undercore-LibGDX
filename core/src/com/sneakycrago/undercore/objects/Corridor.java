@@ -1,10 +1,12 @@
 package com.sneakycrago.undercore.objects;
 
 import com.badlogic.gdx.Net;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.sneakycrago.undercore.utils.Score;
 
 /**
  * Created by Sneaky Crago on 26.03.2017.
@@ -49,7 +51,23 @@ public class Corridor {
         //update positions(for rectangles)
         moveRects(x);
         endZone.setX(posBlock.x + x + BLOCK_SIZE);
+
+        checkScore();
     }
+    //SCORE
+    boolean halfScore = false;
+    boolean secondHalfScore = false;
+    public void checkScore() {
+        if(bottomRets[7].getX() <= 96+16 && !halfScore) {
+            halfScore = true;
+            Score.addGameScore(3);
+        }
+        if(topRightRects[7].getX() <= 96+16 && !secondHalfScore) {
+            secondHalfScore = true;
+            Score.addGameScore(3);
+        }
+    }
+
     //RECTS
     //create rectangles
     public void createRects(float x){

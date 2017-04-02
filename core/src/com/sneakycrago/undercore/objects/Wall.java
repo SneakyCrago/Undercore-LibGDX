@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.sneakycrago.undercore.screens.GameScreen;
+import com.sneakycrago.undercore.utils.Score;
 
 import java.awt.Desktop;
 import java.util.Random;
@@ -79,6 +81,9 @@ public class Wall {
         }
 
         moveRects(START);
+
+        //SCORE
+        checkScore();
     }
 
     //create massive for position
@@ -96,6 +101,15 @@ public class Wall {
                 }
         }
         return massive;
+    }
+    //add SCORE
+    public void checkScore() {
+        for (int i = 0; i < massiveRect.length; i++){
+            if(massiveRect[i].getX() <= 96+16 && !isScored[i]) {
+                isScored[i] = true;
+                Score.addGameScore(1);
+            }
+        }
     }
 
     //initialization
@@ -138,6 +152,7 @@ public class Wall {
             }
         }
     }
+
     // move every frame
     public void moveRects(float START){
         endZone.setX(posBlock.x +START);
@@ -145,18 +160,23 @@ public class Wall {
             if(massive[i] == 1) {
                 massiveRect[i].setPosition(posBlock.x +START + TEXTURE_SIZE * i + i * FREE_SPACE,posBlock.y + TEXTURE_SIZE*3);
                 massiveRect2[i].setX(posBlock.x +START + TEXTURE_SIZE * i + i * FREE_SPACE);
+
             } else if(massive[i] == 2){
                 massiveRect[i].setX(posBlock.x +START + TEXTURE_SIZE * i + i * FREE_SPACE);
                 massiveRect2[i].setX(posBlock.x +START + TEXTURE_SIZE * i + i * FREE_SPACE);
+
             }else if(massive[i] == 3){
                 massiveRect[i].setX(posBlock.x +START + TEXTURE_SIZE * i + i * FREE_SPACE);
                 massiveRect2[i].setX(posBlock.x +START + TEXTURE_SIZE * i + i * FREE_SPACE);
+
             }else if(massive[i] == 4){
                 massiveRect[i].setX(posBlock.x +START + TEXTURE_SIZE * i + i * FREE_SPACE);
                 massiveRect2[i].setX(posBlock.x +START + TEXTURE_SIZE * i + i * FREE_SPACE);
+
             }else if(massive[i] == 5){
                 massiveRect[i].setX(posBlock.x +START + TEXTURE_SIZE * i + i * FREE_SPACE);
                 massiveRect2[i].setX(posBlock.x +START + TEXTURE_SIZE * i + i * FREE_SPACE);
+
             }
         }
     }

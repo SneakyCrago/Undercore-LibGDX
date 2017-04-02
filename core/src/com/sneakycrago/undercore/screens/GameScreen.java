@@ -17,6 +17,7 @@ import com.sneakycrago.undercore.objects.Player;
 import com.sneakycrago.undercore.objects.SmallArrow;
 import com.sneakycrago.undercore.objects.Wall;
 import com.sneakycrago.undercore.objects.WhiteSides;
+import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
 
@@ -53,14 +54,15 @@ public class GameScreen implements Screen {
     int nextZoneRandom;
 
     // for platform switch
-    private boolean android = true;
-    private boolean desktop = false;
+    private boolean android = false;
+    private boolean desktop = true;
 
     public GameScreen(Application game) {
         System.out.println("START GAME");
         this.game = game;
         this.camera = game.camera;
     }
+
 
     @Override
     public void show() {
@@ -93,7 +95,7 @@ public class GameScreen implements Screen {
         } else {
             System.out.println("NEXT ZONE: LASERS");
         }
-        game.setScore(0);
+        Score.setGameScore(0);
     }
 
     @Override
@@ -108,7 +110,7 @@ public class GameScreen implements Screen {
         if(laserZoneStart) {
          laser.drawLaserGun(game.batch);
         }
-        game.font.draw(game.batch, ""+ game.getScore(), 0, 288);
+        game.font.draw(game.batch, ""+ Score.getGameScore(),0 , 288);
         game.batch.end();
 
         // BIG ARROW behind(backwards) from player
@@ -171,7 +173,7 @@ public class GameScreen implements Screen {
         zoneCreator();
 
         //COLLISION CHECK
-        collisionCheck();
+        //collisionCheck();
 
         //collisionDebug();
         /*
@@ -390,5 +392,4 @@ public class GameScreen implements Screen {
             }
         }
     }
-
 }

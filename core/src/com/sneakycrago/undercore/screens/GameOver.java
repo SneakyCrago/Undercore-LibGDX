@@ -10,7 +10,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.sneakycrago.undercore.Application;
+import com.sneakycrago.undercore.utils.Score;
 
 /**
  * Created by Sneaky Crago on 25.03.2017.
@@ -22,6 +24,9 @@ public class GameOver implements Screen {
     private OrthographicCamera camera;
 
     private static Texture background;
+
+    private float timer = TimeUtils.nanoTime();
+    private float time = 0;
 
     public GameOver(Application game) {
         this.game = game;
@@ -41,15 +46,23 @@ public class GameOver implements Screen {
         Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        time += (TimeUtils.nanoTime() - timer);
+        timer = TimeUtils.nanoTime();
+
+        Score.makeBestScore();
+
         game.batch.begin();
         game.batch.draw(background,0,0);
-        game.font.draw(game.batch,"Your score: "+ game.getScore(), 205, 165);
+        game.font.draw(game.batch,"Best score: "+ Score.getBestScore(), 180, 195);
+        game.font.draw(game.batch,"Your score: "+ Score.getGameScore(), 180, 160);
         game.batch.end();
 
-        if(Gdx.input.justTouched() || Gdx.input.isKeyPressed(Input.Keys.Z)) {
-            game.setScreen(new GameScreen(game));
+        if((time / 1000000000) >= 2) {
+            if (Gdx.input.justTouched() || Gdx.input.isKeyPressed(Input.Keys.Z)) {
+                game.setScreen(new GameScreen(game));
+                time = 0;
+            }
         }
-
     }
 
     @Override

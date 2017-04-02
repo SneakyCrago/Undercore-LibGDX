@@ -1,11 +1,13 @@
 package com.sneakycrago.undercore;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.sneakycrago.undercore.screens.GameOver;
 import com.sneakycrago.undercore.screens.GameScreen;
@@ -43,7 +45,8 @@ public class Application extends Game {
 		shapeRenderer.setProjectionMatrix(camera.combined);
 
 		assetManager = new AssetManager();
-		font = new BitmapFont();
+
+		initFont();
 
 		gameScreen = new GameScreen(this);
 		gameOver = new GameOver(this);
@@ -62,18 +65,12 @@ public class Application extends Game {
 		gameScreen.dispose();
 		gameOver.dispose();
 	}
+	private void initFont(){
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/font.ttf"));
+		FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
-	//узнать счет
-	public int getScore() {
-		return score;
-	}
-	// установить счет(для рестарта)
-	public void setScore(int score) {
-		this.score = score;
-	}
-
-	// прибавить к счету заданное число
-	public void addScore(int increment) {
-		score += increment;
+		params.size = 24;
+		params.color = Color.WHITE;
+		font = generator.generateFont(params);
 	}
 }

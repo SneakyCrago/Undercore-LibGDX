@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
 
@@ -178,7 +179,18 @@ public class BigArrow {
         }
         //line.setX(arrow.getX() + 48-512);
         arrowPolygon.setPosition(arrow.getX(),arrow.getY());
+
+        checkScore();
     }
+
+    boolean isScored = false;
+    public void checkScore() {
+        if(arrow2.getX() >= 512 && !isScored){
+            isScored = true;
+            Score.addGameScore(1);
+        }
+    }
+
     public void update2(float delta) {
         //movement
         velocity2.add(0, 0);
