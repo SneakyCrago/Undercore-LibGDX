@@ -81,11 +81,11 @@ public class Laser {
 
         for(int i = 0; i < massive.length; i++) {
             laser[i] = new Sprite(laserTexture);
-            laser[i].setPosition(posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE, posBlock.y + 32 * 2);
+            laser[i].setPosition(posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE, posBlock.y + 32);
 
             flipLaser[i] = new Sprite(flipLaserTexture);
             flipLaser[i].setPosition(posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE,
-                    posBlock.y + Globals.FREE_SPACE * 2);
+                    posBlock.y + Globals.FREE_SPACE * 2 + 32);
         }
         createRects();
 
@@ -140,15 +140,15 @@ public class Laser {
         for(int init = 0; init < massive.length; init++) {
             TopWall[init] = new Rectangle();
             TopWall[init].set(posBlock.x + x + init*FREE_SPACE +init*Globals.TEXTURE_SIZE,
-                    posBlock.y + Globals.FREE_SPACE*2, 32, 96);
+                    posBlock.y + Globals.FREE_SPACE*2 + Globals.TEXTURE_SIZE, 32, 64);
             DownWall[init] = new Rectangle();
             DownWall[init].set(posBlock.x + x + init*FREE_SPACE +init*Globals.TEXTURE_SIZE,
-                    posBlock.y, 32, 96);
+                    posBlock.y, 32, 64);
             //Orange
             if(massive[init] == 1) {
                 OrangeLaserRect[init] = new Rectangle();
                 OrangeLaserRect[init].set(posBlock.x + x + init*FREE_SPACE +init*Globals.TEXTURE_SIZE +2,
-                        posBlock.y + Globals.FREE_SPACE, 32 -4 , 96);
+                        posBlock.y + 64, 32 -4 , 160);
 
                 BlueLaserRect[init] = new Rectangle();
             }
@@ -158,7 +158,7 @@ public class Laser {
 
                 BlueLaserRect[init] = new Rectangle();
                 BlueLaserRect[init].set(posBlock.x + x + init*FREE_SPACE +init*Globals.TEXTURE_SIZE + 2,
-                        posBlock.y + Globals.FREE_SPACE, 32 -4, 96);
+                        posBlock.y + 64, 32 -4, 160);
             }
         }
     }
@@ -207,33 +207,35 @@ public class Laser {
 
         shapeRenderer.setColor(Globals.SidesColor);
         //bot block
-        shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, Globals.TEXTURE_SIZE * 2);  //left
-        shapeRenderer.rect(posBlock.x + x + Globals.TEXTURE_SIZE - 3, posBlock.y, 3, Globals.TEXTURE_SIZE * 2); // right
+        shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, Globals.TEXTURE_SIZE);  //left
+        shapeRenderer.rect(posBlock.x + x + Globals.TEXTURE_SIZE - 3, posBlock.y, 3, Globals.TEXTURE_SIZE); // right
         //top
-        shapeRenderer.rect(posBlock.x + x, posBlock.y + Globals.TEXTURE_SIZE * 7, 3, Globals.TEXTURE_SIZE * 2);  //left
-        shapeRenderer.rect(posBlock.x + x + Globals.TEXTURE_SIZE - 3, posBlock.y + Globals.TEXTURE_SIZE * 7,
-                3, Globals.TEXTURE_SIZE * 2); // right
+        shapeRenderer.rect(posBlock.x + x, posBlock.y + Globals.TEXTURE_SIZE * 8, 3, Globals.TEXTURE_SIZE );  //left
+        shapeRenderer.rect(posBlock.x + x + Globals.TEXTURE_SIZE - 3, posBlock.y + Globals.TEXTURE_SIZE * 8,
+                3, Globals.TEXTURE_SIZE ); // right
 
     }
+    private int laserHeight = 160;
+    private int laserSpeed = 540 + 540; //90*6=540
     // DRAW LASER LINE отрисовывает сам лазер
     public void drawLaserLine(ShapeRenderer shapeRenderer, float delta) {
         for(int i = 0; i < massive.length; i++){
-            if(massive[i] == 1 && size[i] <= 96 &&  posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= 128 + 32 * 4) {
+            if(massive[i] == 1 && size[i] <= laserHeight &&  posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= 128 + 32 * 4) {
                 shapeRenderer.setColor(Globals.OrangeColor);
                 shapeRenderer.rect(2 + posBlock.x + x + i * FREE_SPACE + i * Globals.TEXTURE_SIZE,
-                        posBlock.y + Globals.TEXTURE_SIZE * 3, Globals.TEXTURE_SIZE - 4, size[i]);
-                size[i] += (90 * 6) * delta;
-                if(size[i] >= 96) {
-                    size[i] = 96;
+                        posBlock.y + Globals.TEXTURE_SIZE * 2, Globals.TEXTURE_SIZE - 4, size[i]);
+                size[i] += laserSpeed * delta;
+                if(size[i] >= laserHeight) {
+                    size[i] = laserHeight;
                 }
             }
-            if(massive[i] == 2 && size[i] >= -96 &&  posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= 128 + 32 * 4) {
+            if(massive[i] == 2 && size[i] >= -laserHeight &&  posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= 128 + 32 * 4) {
                 shapeRenderer.setColor(Globals.LightBlue);
                 shapeRenderer.rect(2 + posBlock.x + x + i * FREE_SPACE + i * Globals.TEXTURE_SIZE,
-                        posBlock.y + Globals.TEXTURE_SIZE * 3 + Globals.FREE_SPACE, Globals.TEXTURE_SIZE - 4, size[i]);
-                size[i] -= (90 * 6) * delta;
-                if(size[i] <= -96) {
-                    size[i] = -96;
+                        posBlock.y + Globals.TEXTURE_SIZE * 4 + Globals.FREE_SPACE, Globals.TEXTURE_SIZE - 4, size[i]);
+                size[i] -= laserSpeed * delta;
+                if(size[i] <= -laserHeight) {
+                    size[i] = -laserHeight;
                 }
             }
         }
