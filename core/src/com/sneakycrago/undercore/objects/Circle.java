@@ -29,6 +29,7 @@ public class Circle {
     private Rectangle topRect[],botRect[];
     private Rectangle middleRect[];
 
+    private Rectangle startZone;
     private Rectangle endZone;
 
     private Vector2 posCircle;
@@ -194,6 +195,7 @@ public class Circle {
         createMiddle();
         createTopBot();
 
+        startZone = new Rectangle(posCircle.x + x, posCircle.y, 1,288);
         endZone = new Rectangle();
         endZone.set(posCircle.x+ x + BLOCK_SIZE,posCircle.y, 1, 288);
     }
@@ -274,6 +276,7 @@ public class Circle {
         moveMiddle();
         moveTopBot();
 
+        startZone.setX(posCircle.x +x);
         endZone.setX(posCircle.x +x+ BLOCK_SIZE);
     }
     private void moveMiddle() {
@@ -380,6 +383,9 @@ public class Circle {
         return middleRect;
     }
 
+    public Rectangle getStartZone() {
+        return startZone;
+    }
     public Rectangle getEndZone() {
         return endZone;
     }

@@ -44,8 +44,9 @@ public class Laser {
     private Rectangle[] BlueLaserRect;
 
     private Rectangle endZone;
+    private Rectangle startZone;
 
-    private int BLOCK_ZONE;
+    public int BLOCK_ZONE;
 
     int x; // test Start
     public Laser(float START) {
@@ -137,6 +138,7 @@ public class Laser {
     }
 
     public void createRects() {
+        startZone = new Rectangle(posBlock.x +x, posBlock.y, 1,288);
         endZone = new Rectangle(posBlock.x + x + BLOCK_ZONE,posBlock.y, 1, 288);
         for(int init = 0; init < massive.length; init++) {
             TopWall[init] = new Rectangle();
@@ -165,6 +167,7 @@ public class Laser {
     }
     public void moveRects(){
         endZone.setX(posBlock.x + x + BLOCK_ZONE);
+        startZone.setX(posBlock.x + x);
         for(int init = 0; init < massive.length; init++) {
             TopWall[init].setX(posBlock.x + x + init*FREE_SPACE +init*Globals.TEXTURE_SIZE);
             DownWall[init].setX(posBlock.x + x + init*FREE_SPACE +init*Globals.TEXTURE_SIZE);
@@ -258,6 +261,9 @@ public class Laser {
         return BlueLaserRect;
     }
 
+    public Rectangle getStartZone() {
+        return startZone;
+    }
     public Rectangle getEndZone() {
         return endZone;
     }
