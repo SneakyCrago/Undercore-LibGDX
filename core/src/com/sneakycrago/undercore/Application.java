@@ -15,7 +15,7 @@ import com.sneakycrago.undercore.screens.GameScreen;
 public class Application extends Game {
 
 	public static final String TITLE = "Undercore";
-	public static final float VERSION = 0.2f;
+	public static final float VERSION = 0.3f;
 	public static final int V_WIDTH = 512;
 	public static final int V_HEIGHT = 310;
 

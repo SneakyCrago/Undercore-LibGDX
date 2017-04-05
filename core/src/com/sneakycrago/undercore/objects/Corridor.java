@@ -17,7 +17,7 @@ public class Corridor {
     private final int HEIGHT = 24;
     private final int SPEED = -90; //-90
     private final int FREE_SPACE = TEXTURE_SIZE*3;
-    private final int BLOCK_SIZE = TEXTURE_SIZE*19;
+    public final int BLOCK_SIZE = TEXTURE_SIZE*19;
 
     private Vector2 posBlock;
     private Vector2 velocity;
@@ -52,21 +52,21 @@ public class Corridor {
         moveRects(x);
         endZone.setX(posBlock.x + x + BLOCK_SIZE);
 
-        //checkScore();
+        checkScore();
     }
     //SCORE
     boolean halfScore = false;
     boolean secondHalfScore = false;
-    /*public void checkScore() {
+    public void checkScore() {
         if(bottomRets[7].getX() <= 96+16 && !halfScore) {
             halfScore = true;
             Score.addGameScore(3);
         }
-        if(topRightRects[7].getX() <= 96+16 && !secondHalfScore) {
+        if(topRightRects[6].getX() <= 96+16 && !secondHalfScore) {
             secondHalfScore = true;
             Score.addGameScore(3);
         }
-    } */
+    }
 
     //RECTS
     //create rectangles

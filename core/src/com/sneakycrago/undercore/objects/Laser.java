@@ -68,10 +68,11 @@ public class Laser {
         OrangeLaserRect = new Rectangle[massive.length];
         BlueLaserRect = new Rectangle[massive.length];
 
-        System.out.print("Amount: " + massive.length +" Lasers: ");
+        System.out.print("Lasers: ");
         for(int i =0; i < massive.length; i++) {
             System.out.print(+massive[i] + " ");
         }
+        System.out.println();
         laserTexture = new Texture("textures/laser.png");
         flipLaserTexture = new TextureRegion(laserTexture,0,0,32,32);
         flipLaserTexture.flip(false, true);
@@ -128,7 +129,7 @@ public class Laser {
     private boolean isScored[];
     public void checkScore() {
         for(int i = 0; i < TopWall.length; i++) {
-            if(TopWall[i].getX() <= 96+16 && !isScored[i]){
+            if(TopWall[i].getX() +16 <= 96+16 && !isScored[i]){
                 isScored[i] = true;
                 Score.addGameScore(1);
             }
@@ -217,10 +218,12 @@ public class Laser {
     }
     private int laserHeight = 160;
     private int laserSpeed = 540 + 540; //90*6=540
+    private int laserFieldOfView = 128 + 32 * 5; // 128 + 32 * 4
     // DRAW LASER LINE отрисовывает сам лазер
     public void drawLaserLine(ShapeRenderer shapeRenderer, float delta) {
         for(int i = 0; i < massive.length; i++){
-            if(massive[i] == 1 && size[i] <= laserHeight &&  posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= 128 + 32 * 4) {
+            if(massive[i] == 1 && size[i] <= laserHeight
+                    && posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= laserFieldOfView) {
                 shapeRenderer.setColor(Globals.OrangeColor);
                 shapeRenderer.rect(2 + posBlock.x + x + i * FREE_SPACE + i * Globals.TEXTURE_SIZE,
                         posBlock.y + Globals.TEXTURE_SIZE * 2, Globals.TEXTURE_SIZE - 4, size[i]);
@@ -229,7 +232,8 @@ public class Laser {
                     size[i] = laserHeight;
                 }
             }
-            if(massive[i] == 2 && size[i] >= -laserHeight &&  posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= 128 + 32 * 4) {
+            if(massive[i] == 2 && size[i] >= -laserHeight
+                    && posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= laserFieldOfView) {
                 shapeRenderer.setColor(Globals.LightBlue);
                 shapeRenderer.rect(2 + posBlock.x + x + i * FREE_SPACE + i * Globals.TEXTURE_SIZE,
                         posBlock.y + Globals.TEXTURE_SIZE * 4 + Globals.FREE_SPACE, Globals.TEXTURE_SIZE - 4, size[i]);

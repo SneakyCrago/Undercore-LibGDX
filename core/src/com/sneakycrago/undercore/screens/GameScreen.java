@@ -6,11 +6,11 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.objects.BigArrow;
+import com.sneakycrago.undercore.objects.Circle;
 import com.sneakycrago.undercore.objects.Corridor;
 import com.sneakycrago.undercore.objects.Laser;
 import com.sneakycrago.undercore.objects.Player;
@@ -38,18 +38,22 @@ public class GameScreen implements Screen {
     private SmallArrow smallArrow;
     private BigArrow bigArrow;
     private Laser laser;
+    private Circle circle;
 
     private final int start_wall = 512;
-    private int start_laser = 512;
+    private int start_laser = 512; //512
+    private final int SPAWN = 512;
     int start_corridor;
 
     private Random random;
 
     //BIG ARROW LOGIC
     private int amountOfBigArrows;
-    private int bigArrowsCount = 1;
+    private int bigArrowsCount = 0;
+    private boolean startZoneStart = true;
     private boolean bigArrowBlockStart = false;
     private boolean laserZoneStart = false;
+    private boolean circlesStart = false;
 
     int nextZoneRandom;
 
@@ -58,6 +62,7 @@ public class GameScreen implements Screen {
     private boolean desktop = true;
 
     public GameScreen(Application game) {
+        System.out.println();
         System.out.println("START GAME");
         this.game = game;
         this.camera = game.camera;
@@ -79,21 +84,31 @@ public class GameScreen implements Screen {
         start_corridor = start_wall + wall.getBLOCK_SIZE() + 256;
         corridor = new Corridor(start_corridor);
 
+        //Lasers
         laser = new Laser(start_laser);
+        // Circles
+        circle = new Circle(SPAWN); //SPAWN
+
         //Arrows
         //BIG ARROW LOGIC
         bigArrow = new BigArrow();
 
         amountOfBigArrows = random.nextInt(3) + 3;
 
-        System.out.println("amount of big arrows: " + amountOfBigArrows);
+        System.out.println("Big Arrows: " + amountOfBigArrows);
 
         /////////////////
-        nextZoneRandom = random.nextInt(2)+1;
+        nextZoneRandom = random.nextInt(3)+1;
         if(nextZoneRandom ==1) {
             System.out.println("NEXT ZONE: BIG ARROWS");
-        } else {
+        } else if(nextZoneRandom ==2) {
             System.out.println("NEXT ZONE: LASERS");
+            laser = new Laser(start_corridor + corridor.BLOCK_SIZE + 256);
+            laserZoneStart = true;
+        } else if(nextZoneRandom ==3){
+            System.out.println("NEXT ZONE: CIRCLES");
+            circle = new Circle(start_corridor + corridor.BLOCK_SIZE + 256);
+            circlesStart = true;
         }
         Score.setGameScore(0);
     }
@@ -107,10 +122,18 @@ public class GameScreen implements Screen {
 
         // SPRITES
         game.batch.begin();
+        if(circlesStart) {
+            circle.drawCircles(game.batch);
+        }
+
         if(laserZoneStart) {
          laser.drawLaserGun(game.batch);
         }
-        game.font.draw(game.batch, ""+ Score.getGameScore(),0 , 288);
+
+        game.font.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
+
+        game.font.draw(game.batch, "Zone:"+ startZoneCount,0, 11 + 288 - 24);
+
         game.batch.end();
 
         // BIG ARROW behind(backwards) from player
@@ -143,7 +166,7 @@ public class GameScreen implements Screen {
         // DRAW ELEMENTS
         // StartBlock
         wall.drawWallBlock(game.shapeRenderer, start_wall); //draw walls
-        corridor.drawCorridor(game.shapeRenderer,start_corridor);
+        corridor.drawCorridor(game.shapeRenderer, start_corridor);
 
 
         //LaserBlock
@@ -172,28 +195,27 @@ public class GameScreen implements Screen {
 
         zoneCreator();
 
-        //COLLISION CHECK
+        //COLLISION
         //collisionCheck();
 
         //collisionDebug();
-        /*
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        game.shapeRenderer.setColor(0f,0f,1f,1f);
-        game.shapeRenderer.rect(corridor.getEndZone().getX(), corridor.getEndZone().getY(),
-                corridor.getEndZone().getWidth(), corridor.getEndZone().getHeight());
 
-        game.shapeRenderer.rect(laser.getEndZone().getX(), laser.getEndZone().getY(),
-                laser.getEndZone().getWidth(), laser.getEndZone().getHeight());
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+
         game.shapeRenderer.end();
-        */
+
     }
 
     public void update(float delta) {
         player.update(delta);
         wall.update(delta, start_wall);
         corridor.update(delta, start_corridor);
+
         if(laserZoneStart) {
             laser.update(delta);
+        }
+        if(circlesStart) {
+            circle.update(delta);
         }
     }
 
@@ -221,51 +243,124 @@ public class GameScreen implements Screen {
     public void dispose() {
 
     }
-    boolean overlaped = false;
+
+    private int startZoneCount = 6;
+    private boolean randomZone = true;
+
+    private int zoneCreate;
+    private boolean laserZoneOverlaped = false;
+    private boolean circleZoneOverlaped = false;
+
     public void zoneCreator(){
+        System.out.println("randomZone:" + randomZone);
+        // START BLOCK
         if(nextZoneRandom == 1) {
             if (player.getPlayerRectangle().overlaps(corridor.getEndZone())) {
                 bigArrowBlockStart = true;
-                System.out.println("Corridor finished");
             }
         } else if (nextZoneRandom == 2) {
             if (player.getPlayerRectangle().overlaps(corridor.getEndZone())) {
                 laserZoneStart = true;
-                System.out.println("Corridor finished");
+            }
+        } else if(nextZoneRandom == 3) {
+            if (player.getPlayerRectangle().overlaps(corridor.getEndZone())) {
+                circlesStart = true;
             }
         }
+
+        /*if(startZoneCount == 8) {
+            startZoneCount = 0;
+            wall = new Wall(512);
+            corridor = new Corridor(start_corridor);
+
+            nextZoneRandom = random.nextInt(3)+1;
+        } */
+
+        // BIG ARROW
         if(bigArrowEnd) {
-            laser = new Laser(512+128);
-            laserZoneStart = true;
             bigArrowBlockStart = false;
             bigArrowEnd = false;
 
-            overlaped = false;
+            circleZoneOverlaped = false;
+
+            zoneCreate = random.nextInt(2) + 1;
+            System.out.println("Zone: " + zoneCreate);
+            if (zoneCreate == 1) {
+                laser = new Laser(512 + 128);
+                laserZoneStart = true;
+
+                laserZoneOverlaped = false;
+            } else if (zoneCreate == 2) {
+                circle = new Circle(512 + 128);
+                circlesStart = true;
+            }
         }
-        if(player.getPlayerRectangle().overlaps(laser.getEndZone()) && !overlaped) {
-            overlaped = true;
-            bigArrowBlockStart = true;
-            bigArrow = new BigArrow();
-            amountOfBigArrows = random.nextInt(3) + 3;
-            bigArrowsCount = 0;
-            //laserZoneStart = false;
-            System.out.println("bigArrowStart" + bigArrowBlockStart);
-            System.out.println("bigArrowEnd" + bigArrowEnd);
+        // LASER
+        if(player.getPlayerRectangle().overlaps(laser.getEndZone()) && !laserZoneOverlaped) {
+            circleZoneOverlaped = false;
+            laserZoneOverlaped = true;
+
+            zoneCreate = random.nextInt(2) + 1;
+            System.out.println("Zone: " + zoneCreate);
+            if (zoneCreate == 1) {
+                bigArrowBlockStart = true;
+                bigArrow = new BigArrow();
+                amountOfBigArrows = random.nextInt(3) + 3;
+                bigArrowsCount = 0;
+                //laserZoneStart = false;
+            } else if (zoneCreate == 2) {
+                circle = new Circle(512 + 128);
+                circlesStart = true;
+            }
         }
+        //CIRCLE
+        if(player.getPlayerRectangle().overlaps(circle.getEndZone()) && !circleZoneOverlaped){
+            circleZoneOverlaped = true;
+            laserZoneOverlaped = false;
+            zoneCreate = random.nextInt(2) + 1;
+            System.out.println("Zone: " + zoneCreate);
+            if (zoneCreate == 1) {
+                bigArrowBlockStart = true;
+                bigArrow = new BigArrow();
+                amountOfBigArrows = random.nextInt(3) + 3;
+                bigArrowsCount = 0;
+
+            } else if (zoneCreate == 2) {
+                laser = new Laser(512 + 128);
+                laserZoneStart = true;
+
+                bigArrowBlockStart = false;
+                bigArrowEnd = false;
+                laserZoneOverlaped = false;
+            }
+        }
+        //nextZoneRandom = random.nextInt(3)+1;
     }
     // COLLISION DEBUG
     public void collisionDebug(){
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         game.shapeRenderer.setColor(0f,0f,1f,1f);
 
-        //endzone walls
+        //WALLS endZone
         game.shapeRenderer.rect(wall.getZoneRect().getX(),wall.getZoneRect().getY(), wall.getZoneRect().getWidth(),
                 wall.getZoneRect().getHeight());
-        if(player.getPlayerRectangle().overlaps(wall.getZoneRect())) {
-            System.out.println("EndZone");
+        //CORRIDOR
+        for(int i=0; i< corridor.getBottomRets().length; i++) {
+            game.shapeRenderer.rect(corridor.getBottomRets()[i].getX(),corridor.getBottomRets()[i].getY(),
+                    corridor.getBottomRets()[i].getWidth(), corridor.getBottomRets()[i].getHeight());
+        }
+        for(int i =0; i < corridor.getTopLeftRects().length; i++){
+            game.shapeRenderer.rect(corridor.getTopRightRects()[i].getX(),corridor.getTopRightRects()[i].getY(),
+                    corridor.getTopRightRects()[i].getWidth(),corridor.getTopRightRects()[i].getHeight());
+            game.shapeRenderer.rect(corridor.getTopLeftRects()[i].getX(),corridor.getTopLeftRects()[i].getY(),
+                    corridor.getTopLeftRects()[i].getWidth(),corridor.getTopLeftRects()[i].getHeight());
         }
 
-        //polygons
+        //CORRIDOR endZone
+        game.shapeRenderer.rect(corridor.getEndZone().getX(), corridor.getEndZone().getY(),
+               corridor.getEndZone().getWidth(), corridor.getEndZone().getHeight());
+
+        //POLYGONS
         game.shapeRenderer.polygon(player.getPlayerPolygon().getTransformedVertices());
         game.shapeRenderer.polygon(bigArrow.getArrowPolygon().getTransformedVertices());
         game.shapeRenderer.polygon(bigArrow.getArrowPolygon2().getTransformedVertices());
@@ -285,7 +380,33 @@ public class GameScreen implements Screen {
             game.shapeRenderer.rect(laser.getBlueLaserRect()[i].getX(), laser.getBlueLaserRect()[i].getY(),
                     laser.getBlueLaserRect()[i].getWidth(),laser.getBlueLaserRect()[i].getHeight());
         }
+
+        //CIRCLES
+        if(circlesStart) {
+            game.shapeRenderer.setColor(0f, 0f, 1f, 1f);
+            for (int i = 0; i < circle.getMiddleRect().length; i++) {
+                game.shapeRenderer.rect(circle.getMiddleRect()[i].getX(), circle.getMiddleRect()[i].getY(),
+                        circle.getMiddleRect()[i].getWidth(), circle.getMiddleRect()[i].getHeight());
+            }
+            for (int i = 0; i < circle.getTopRect().length; i++) {
+                game.shapeRenderer.rect(circle.getTopRect()[i].getX(), circle.getTopRect()[i].getY(),
+                        circle.getTopRect()[i].getWidth(), circle.getTopRect()[i].getHeight());
+                game.shapeRenderer.rect(circle.getBotRect()[i].getX(), circle.getBotRect()[i].getY(),
+                        circle.getBotRect()[i].getWidth(), circle.getBotRect()[i].getHeight());
+            }
+        game.shapeRenderer.setColor(1f,0f,0f,1f);
+        game.shapeRenderer.rect(circle.getEndZone().getX(),circle.getEndZone().getY(),
+                circle.getEndZone().getWidth(),circle.getEndZone().getHeight());
+        }
+
         game.shapeRenderer.end();
+
+        // LASER
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        game.shapeRenderer.rect(laser.getEndZone().getX(), laser.getEndZone().getY(),
+                laser.getEndZone().getWidth(), laser.getEndZone().getHeight());
+        game.shapeRenderer.end();
+
     }
 
     public void collisionCheck(){
@@ -334,6 +455,21 @@ public class GameScreen implements Screen {
                 System.out.println("Collision: Blue LASER");
             }
         }
+
+        //Circles
+        for(int i=0; i < circle.getMiddleRect().length; i++) {
+            if(player.getPlayerRectangle().overlaps(circle.getMiddleRect()[i])) {
+                game.setScreen(game.gameOver);
+                System.out.println("Collision: Middle CIRCLE");
+            }
+        }
+        for(int i =0; i< circle.getTopRect().length;i++){
+            if(player.getPlayerRectangle().overlaps(circle.getTopRect()[i]) ||
+                    player.getPlayerRectangle().overlaps(circle.getBotRect()[i])){
+                game.setScreen(game.gameOver);
+                System.out.println("Collision: Bot or Top CIRCLE");
+            }
+        }
     }
 
     boolean bigArrowEnd = false;
@@ -372,7 +508,7 @@ public class GameScreen implements Screen {
             } else if(bigArrowsCount == amountOfBigArrows){
                 bigArrowEnd = true;
             }
-
+            /*
             //BIG ARROW check collision
             if(player.getPlayerRectangle().overlaps(bigArrow.getLineRectangle())) { // between line
                 game.setScreen(game.gameOver);
@@ -390,6 +526,7 @@ public class GameScreen implements Screen {
                 game.setScreen(game.gameOver);
                 System.out.println("Collision: BIG ARROW Polygon2");
             }
+            */
         }
     }
 }

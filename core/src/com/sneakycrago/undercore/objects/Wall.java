@@ -41,13 +41,13 @@ public class Wall {
         isScored = new boolean[8];
 
         for(int i = 0; i < isScored.length; i++) {
-            isScored[i] = false;
+            //isScored[i] = false;
         }
 
         random = new Random();
         rand();
 
-        System.out.print("Massive: ");
+        System.out.print("Wall: ");
         for(int i = 0; i < 7; i++) {
             System.out.print(massive[i] + " ");
         }

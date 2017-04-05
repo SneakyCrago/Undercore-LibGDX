@@ -25,8 +25,8 @@ public class GameOver implements Screen {
 
     private static Texture background;
 
-    private float timer = TimeUtils.nanoTime();
-    private float time = 0;
+    private float timer;
+    private float time;
 
     public GameOver(Application game) {
         this.game = game;
@@ -34,6 +34,8 @@ public class GameOver implements Screen {
 
         background = new Texture("textures/game_over_background.png");
 
+        time = 0;
+        timer = TimeUtils.nanoTime();
     }
 
     @Override
