@@ -181,7 +181,7 @@ public class Circle {
         }
     }
 
-    //RECTS
+    //RECTS each 4 rects = 1 Circle
     private void createRects(){
         for(int i=0; i< topRect.length; i++) {
             topRect[i] = new Rectangle();
@@ -216,7 +216,6 @@ public class Circle {
 
         if(!isFive) {
             i=2;
-
             create1(middleRect[8], posCircle.x + x + i *(SPRITE_SIZE*2)+64+SPRITE_SIZE+i*(FREE_SPACE * 2), middleHeight);
             create2(middleRect[9], posCircle.x + x + i *(SPRITE_SIZE*2)+64+SPRITE_SIZE+i*(FREE_SPACE * 2), middleHeight);
             create3(middleRect[10], posCircle.x + x + i *(SPRITE_SIZE*2)+64+SPRITE_SIZE+i*(FREE_SPACE * 2), middleHeight);

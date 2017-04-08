@@ -50,6 +50,7 @@ public class GameScreen implements Screen {
     //BIG ARROW LOGIC
     private int amountOfBigArrows;
     private int bigArrowsCount = 0;
+
     private boolean startZoneStart = true;
     private boolean bigArrowBlockStart = false;
     private boolean laserZoneStart = false;
@@ -132,8 +133,6 @@ public class GameScreen implements Screen {
 
         game.font.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
 
-        game.font.draw(game.batch, "Zone:"+ startZoneCount,0, 11 + 288 - 24);
-
         game.batch.end();
 
         // BIG ARROW behind(backwards) from player
@@ -196,7 +195,7 @@ public class GameScreen implements Screen {
         zoneCreator();
 
         //COLLISION
-        //collisionCheck();
+        collisionCheck();
 
         //collisionDebug();
 
@@ -247,9 +246,6 @@ public class GameScreen implements Screen {
 
     }
 
-    private int startZoneCount = 6;
-    private boolean randomZone = true;
-
     private int zoneCreate;
     private boolean laserZoneOverlaped = false;
     private boolean circleZoneOverlaped = false;
@@ -269,22 +265,10 @@ public class GameScreen implements Screen {
                 circlesStart = true;
             }
         }
-        /*if(startZoneCount == 8) {
-            startZoneCount = 0;
-            wall = new Wall(512);
-            corridor = new Corridor(start_corridor);
 
-            nextZoneRandom = random.nextInt(3)+1;
-        } */
-        // BIG ARROW
-        createBigArrowZone();
-        // LASER
-        createLaserZone();
-        //CIRCLE
-        createCircleZone();
-
-
-        //nextZoneRandom = random.nextInt(3)+1;
+        createBigArrowZone(); // BIG ARROW
+        createLaserZone(); // LASER
+        createCircleZone(); //CIRCLE
     }
     public void createBigArrowZone(){
         if(bigArrowEnd) {
@@ -334,7 +318,6 @@ public class GameScreen implements Screen {
             laserZoneOverlaped = false;
             zoneCreate = random.nextInt(2) + 1;
             System.out.println("Zone: " + zoneCreate);
-
             if (zoneCreate == 2) {
                 laser = new Laser(circle.BLOCK_SIZE +128 + 256);
                 laserZoneStart = true;
@@ -345,6 +328,7 @@ public class GameScreen implements Screen {
             }
 
         }
+
         if(player.getPlayerRectangle().overlaps(circle.getEndZone()) ){
             if (zoneCreate == 1) {
                 bigArrowBlockStart = true;
@@ -463,6 +447,25 @@ public class GameScreen implements Screen {
                 System.out.println("Collision: Corridor Bottom");
             }
         }
+        if(bigArrowBlockStart) {
+            //BIG ARROW check collision
+            if (player.getPlayerRectangle().overlaps(bigArrow.getLineRectangle())) { // between line
+                game.setScreen(game.gameOver);
+                System.out.println("Collision: BIG ARROW Line");
+            }
+            if (player.getPlayerRectangle().overlaps(bigArrow.getLine2Rectangle())) {
+                game.setScreen(game.gameOver);
+                System.out.println("Collision: BIG ARROW Line2");
+            }
+            if (Intersector.overlapConvexPolygons(player.getPlayerPolygon(), bigArrow.getArrowPolygon())) {
+                game.setScreen(game.gameOver);
+                System.out.println("Collision: BIG ARROW Polygon");
+            }
+            if (Intersector.overlapConvexPolygons(player.getPlayerPolygon(), bigArrow.getArrowPolygon2())) {
+                game.setScreen(game.gameOver);
+                System.out.println("Collision: BIG ARROW Polygon2");
+            }
+        }
         //LaserCollision
         for(int i =0; i < laser.getTopWall().length; i++) {
             if (player.getPlayerRectangle().overlaps(laser.getTopWall()[i]) ||
@@ -534,25 +537,6 @@ public class GameScreen implements Screen {
             } else if(bigArrowsCount == amountOfBigArrows){
                 bigArrowEnd = true;
             }
-            /*
-            //BIG ARROW check collision
-            if(player.getPlayerRectangle().overlaps(bigArrow.getLineRectangle())) { // between line
-                game.setScreen(game.gameOver);
-                System.out.println("Collision: BIG ARROW Line");
-            }
-            if(player.getPlayerRectangle().overlaps(bigArrow.getLine2Rectangle())) {
-                game.setScreen(game.gameOver);
-                System.out.println("Collision: BIG ARROW Line2");
-            }
-            if(Intersector.overlapConvexPolygons(player.getPlayerPolygon(), bigArrow.getArrowPolygon())) {
-                game.setScreen(game.gameOver);
-                System.out.println("Collision: BIG ARROW Polygon");
-            }
-            if(Intersector.overlapConvexPolygons(player.getPlayerPolygon(), bigArrow.getArrowPolygon2())){
-                game.setScreen(game.gameOver);
-                System.out.println("Collision: BIG ARROW Polygon2");
-            }
-            */
         }
     }
 }
