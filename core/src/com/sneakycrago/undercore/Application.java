@@ -5,17 +5,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.sneakycrago.undercore.screens.GameOver;
 import com.sneakycrago.undercore.screens.GameScreen;
+import com.sneakycrago.undercore.screens.InfoScreen;
+import com.sneakycrago.undercore.screens.MainMenu;
 
 public class Application extends Game {
 
 	public static final String TITLE = "Undercore";
-	public static final float VERSION = 0.3f;
+	public static final float VERSION = 0.5f;
 	public static final int V_WIDTH = 512;
 	public static final int V_HEIGHT = 310;
 
@@ -24,10 +27,12 @@ public class Application extends Game {
 	public ShapeRenderer shapeRenderer;
 
 	public AssetManager assetManager;
-	public BitmapFont font;
+	public BitmapFont font, font30,font30white, font10;
 
 	public GameScreen gameScreen;
 	public GameOver gameOver;
+	public MainMenu mainMenu;
+	public InfoScreen infoScreen;
 
 	public int score;
 
@@ -46,12 +51,15 @@ public class Application extends Game {
 
 		assetManager = new AssetManager();
 
-		initFont();
+		initFonts();
 
+		mainMenu = new MainMenu(this);
 		gameScreen = new GameScreen(this);
 		gameOver = new GameOver(this);
+		infoScreen = new InfoScreen(this);
 
-		setScreen(gameScreen);
+		//setScreen(gameScreen);
+		setScreen(mainMenu);
 	}
 	
 	@Override
@@ -65,12 +73,35 @@ public class Application extends Game {
 		gameScreen.dispose();
 		gameOver.dispose();
 	}
-	private void initFont(){
+	private void initFonts(){
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/font.ttf"));
 		FreeTypeFontGenerator.FreeTypeFontParameter params = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
 		params.size = 24;
 		params.color = Color.WHITE;
+		params.minFilter = Texture.TextureFilter.Linear;
+		params.magFilter = Texture.TextureFilter.Linear;
 		font = generator.generateFont(params);
+
+		FreeTypeFontGenerator.FreeTypeFontParameter params30 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		params30.size = 30;
+		params30.color = Color.GRAY;
+		params30.minFilter = Texture.TextureFilter.Linear;
+		params30.magFilter = Texture.TextureFilter.Linear;
+		font30 = generator.generateFont(params30);
+
+		FreeTypeFontGenerator.FreeTypeFontParameter params30white = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		params30white.size = 30;
+		params30white.color = Color.WHITE;
+		params30white.minFilter = Texture.TextureFilter.Linear;
+		params30white.magFilter = Texture.TextureFilter.Linear;
+		font30white = generator.generateFont(params30white);
+
+		FreeTypeFontGenerator.FreeTypeFontParameter params10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		params10.size = 10;
+		params10.color = Color.GRAY;
+		params10.minFilter = Texture.TextureFilter.Linear;
+		params10.magFilter = Texture.TextureFilter.Linear;
+		font10 = generator.generateFont(params10);
 	}
 }

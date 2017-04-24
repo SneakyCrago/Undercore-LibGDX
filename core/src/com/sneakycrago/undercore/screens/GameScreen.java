@@ -3,7 +3,6 @@ package com.sneakycrago.undercore.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -64,7 +63,7 @@ public class GameScreen implements Screen {
 
     public GameScreen(Application game) {
         System.out.println();
-        System.out.println("START GAME");
+        System.out.println("GameScreen");
         this.game = game;
         this.camera = game.camera;
     }
@@ -72,34 +71,23 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-
         random = new Random();
 
+        //create objects
         whiteSides = new WhiteSides();
         player = new Player(96, 139);
-
-        //create objects
-        //START BLOCK
-        wall = new Wall(start_wall);
-
+        wall = new Wall(start_wall); //START BLOCK
         start_corridor = start_wall + wall.getBLOCK_SIZE() + 256;
         corridor = new Corridor(start_corridor);
-
-        //Lasers
-        laser = new Laser(start_laser);
-        // Circles
-        circle = new Circle(SPAWN); //SPAWN
-
-        //Arrows
-        //BIG ARROW LOGIC
+        laser = new Laser(start_laser); //Lasers
+        circle = new Circle(SPAWN); // Circles //SPAWN
+        smallArrow = new SmallArrow(256); //Arrows
         bigArrow = new BigArrow();
 
         amountOfBigArrows = random.nextInt(3) + 3;
-
         System.out.println("Big Arrows: " + amountOfBigArrows);
-
-        /////////////////
-        nextZoneRandom = random.nextInt(3)+1;
+        // зона после стартового блока
+        nextZoneRandom = random.nextInt(3)+1; // создаем зону после стартового блока
         if(nextZoneRandom ==1) {
             System.out.println("NEXT ZONE: BIG ARROWS");
         } else if(nextZoneRandom ==2) {
@@ -111,6 +99,7 @@ public class GameScreen implements Screen {
             circle = new Circle(start_corridor + corridor.BLOCK_SIZE + 256);
             circlesStart = true;
         }
+        //Обнуляем счет
         Score.setGameScore(0);
     }
 
@@ -121,17 +110,17 @@ public class GameScreen implements Screen {
 
         update(delta);
 
-        // SPRITES
+        // SPRITES and Text
         game.batch.begin();
+        game.font.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
+        game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 0, 288-24);
+
         if(circlesStart) {
             circle.drawCircles(game.batch);
         }
-
         if(laserZoneStart) {
          laser.drawLaserGun(game.batch);
         }
-
-        game.font.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
 
         game.batch.end();
 
@@ -157,21 +146,20 @@ public class GameScreen implements Screen {
                player.onClick();
             }
         }
+
+        // Shape objects
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        //WHITE SIDES & PLAYER
+
         whiteSides.drawWhiteSides(game.shapeRenderer); //draw WhiteSides
         player.drawPlayerCube(game.shapeRenderer); //draw PlayerCube
-
         // DRAW ELEMENTS
-        // StartBlock
         wall.drawWallBlock(game.shapeRenderer, start_wall); //draw walls
         corridor.drawCorridor(game.shapeRenderer, start_corridor);
-
-
-        //LaserBlock
+        //smallArrow.drawArrow(game.shapeRenderer);
         if(laserZoneStart) {
             laser.drawLaserBlock(game.shapeRenderer, delta);
         }
+
         // DRAW LINE(Input.DoubleTap)
         if(desktop) {
             // onLine Player Position
@@ -190,22 +178,14 @@ public class GameScreen implements Screen {
                 player.onRelease();
             }
         }
+
         game.shapeRenderer.end();
 
         zoneCreator();
 
         //COLLISION
         collisionCheck();
-
         //collisionDebug();
-
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-        game.shapeRenderer.setColor(0f,0f,1f,1f);
-
-
-        game.shapeRenderer.end();
-
     }
 
     public void update(float delta) {
@@ -339,7 +319,7 @@ public class GameScreen implements Screen {
         }
     }
 
-    // COLLISION DEBUG
+    // COLLISION
     public void collisionDebug(){
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         game.shapeRenderer.setColor(0f,0f,1f,1f);
@@ -418,7 +398,6 @@ public class GameScreen implements Screen {
         game.shapeRenderer.end();
 
     }
-
     public void collisionCheck(){
         //WALL
         for(int i = 0; i < wall.getMassiveRect().length; i++) {
