@@ -19,6 +19,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.sneakycrago.undercore.Application;
+import com.sneakycrago.undercore.utils.Currency;
 import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
 import com.sun.org.apache.xalan.internal.xsltc.dom.DocumentCache;
@@ -91,6 +92,11 @@ public class GameOver implements Screen {
         exitPressed.setPosition(exitX, bntY);
 
         touch = new Vector3();
+
+        Currency.addMoneyToCurrency();
+        Score.makeBestScore();
+        game.preferences.putInteger("bestScore", Score.bestScore);
+        game.preferences.flush();
     }
 
     @Override
@@ -104,8 +110,6 @@ public class GameOver implements Screen {
         time += (TimeUtils.nanoTime() - timer);
         timer = TimeUtils.nanoTime();
 
-        Score.makeBestScore();
-
         game.batch.begin();
         start.draw(game.batch);
         menu.draw(game.batch);
@@ -115,6 +119,7 @@ public class GameOver implements Screen {
         game.font30.draw(game.batch,"Game over", 512/2 - 24*3, 270);
         game.font.draw(game.batch,"Best score: "+ Score.getBestScore(), 512/2 - 24*3, 195 + 20);
         game.font.draw(game.batch,"Your score: "+ Score.getGameScore(), 512/2 - 24*3, 160 + 20);
+        game.font.draw(game.batch,"Money: "+ Currency.Money, 512/2 - 24*3, 160-35 + 20);
 
         if(checkPlayButton() && Gdx.input.isTouched()){
             startPressed.draw(game.batch);

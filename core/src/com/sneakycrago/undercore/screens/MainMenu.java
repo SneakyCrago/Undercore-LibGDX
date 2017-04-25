@@ -1,6 +1,7 @@
 package com.sneakycrago.undercore.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,6 +15,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.sneakycrago.undercore.Application;
+import com.sneakycrago.undercore.utils.Currency;
+import com.sneakycrago.undercore.utils.Score;
 
 import java.awt.Shape;
 
@@ -70,11 +73,11 @@ public class MainMenu implements Screen {
         mapSkinReleased = false;
         infoReleased = false;
         drawInProgress = false;
+
+        Currency.resetMoney();
     }
 
     int btnFree = 50;
-
-
 
     @Override
     public void render(float delta) {
@@ -159,6 +162,8 @@ public class MainMenu implements Screen {
         if(drawInProgress) {
             font.draw(game.batch, "In progress", 512 / 2, 310/2 + 12);
         }
+        game.font30.draw(game.batch, "Currency: " + Currency.currency, 190, 260);
+        game.font30.draw(game.batch, "Score: " + Score.bestScore, 190, 260-30);
         // SMALL INFO PANEL
         game.font10.draw(game.batch, "ver. " + Application.VERSION, 10, 15);
         game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 80, 15);

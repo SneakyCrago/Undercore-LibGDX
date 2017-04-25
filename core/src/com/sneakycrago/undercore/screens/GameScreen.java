@@ -16,6 +16,7 @@ import com.sneakycrago.undercore.objects.Player;
 import com.sneakycrago.undercore.objects.SmallArrow;
 import com.sneakycrago.undercore.objects.Wall;
 import com.sneakycrago.undercore.objects.WhiteSides;
+import com.sneakycrago.undercore.utils.Currency;
 import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
@@ -49,6 +50,7 @@ public class GameScreen implements Screen {
     //BIG ARROW LOGIC
     private int amountOfBigArrows;
     private int bigArrowsCount = 0;
+    private int blocksNumber;
 
     private boolean startZoneStart = true;
     private boolean bigArrowBlockStart = false;
@@ -101,6 +103,8 @@ public class GameScreen implements Screen {
         }
         //Обнуляем счет
         Score.setGameScore(0);
+        blocksNumber = 10000;
+        Currency.resetMoney();
     }
 
     @Override
@@ -114,6 +118,8 @@ public class GameScreen implements Screen {
         game.batch.begin();
         game.font.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
         game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 0, 288-24);
+        game.font10.draw(game.batch, "blocks:" + blocksNumber, 0, 288-24-12);
+        game.font10.draw(game.batch, "money:" + Currency.Money, 0, 288-24-12*2);
 
         if(circlesStart) {
             circle.drawCircles(game.batch);
@@ -179,13 +185,21 @@ public class GameScreen implements Screen {
             }
         }
 
+
+        //game.shapeRenderer.line(0,310/2,player.getPlayerRectangle().x +16, player.getPlayerRectangle().y +16);
+
+
         game.shapeRenderer.end();
 
         zoneCreator();
 
         //COLLISION
-        collisionCheck();
+        //collisionCheck();
         //collisionDebug();
+
+        if(Gdx.input.isKeyPressed(Input.Keys.Q)){
+            collisionCheck();
+        }
     }
 
     public void update(float delta) {
@@ -230,7 +244,13 @@ public class GameScreen implements Screen {
     private boolean laserZoneOverlaped = false;
     private boolean circleZoneOverlaped = false;
 
+    private boolean startEndCheck = false, laserEndCheck = false, circleEndCheck = false;
+
     public void zoneCreator(){
+        if (player.getPlayerRectangle().overlaps(corridor.getEndZone()) && !startEndCheck) {
+            countMoney();
+            startEndCheck = true;
+        }
         // START BLOCK
         if(nextZoneRandom == 1) {
             if (player.getPlayerRectangle().overlaps(corridor.getEndZone())) {
@@ -257,6 +277,12 @@ public class GameScreen implements Screen {
 
             circleZoneOverlaped = false;
 
+            laserEndCheck = false;
+            circleEndCheck= false;
+            startEndCheck = false;
+
+            countMoney();
+
             zoneCreate = random.nextInt(2) + 1;
             System.out.println("Zone: " + zoneCreate);
             if (zoneCreate == 1) {
@@ -272,6 +298,9 @@ public class GameScreen implements Screen {
     }
     public void createLaserZone(){
         if(player.getPlayerRectangle().overlaps(laser.getStartZone())&& !laserZoneOverlaped){
+            circleEndCheck = false;
+            startEndCheck = false;
+
             circleZoneOverlaped = false;
             laserZoneOverlaped = true;
             zoneCreate = random.nextInt(2) + 1;
@@ -285,15 +314,25 @@ public class GameScreen implements Screen {
         if(player.getPlayerRectangle().overlaps(laser.getEndZone())) {
             if (zoneCreate == 1) {
                 bigArrowBlockStart = true;
+
                 bigArrow = new BigArrow();
                 amountOfBigArrows = random.nextInt(3) + 3;
                 bigArrowsCount = 0;
                 //laserZoneStart = false;
+
             }
+        }
+        // Money
+        if(player.getPlayerRectangle().overlaps(laser.getEndZone()) && !laserEndCheck){
+            countMoney();
+            laserEndCheck = true;
         }
     }
     public void createCircleZone(){
         if(player.getPlayerRectangle().overlaps(circle.getStartZone()) && !circleZoneOverlaped) {
+            laserEndCheck = false;
+            startEndCheck = false;
+
             circleZoneOverlaped = true;
             laserZoneOverlaped = false;
             zoneCreate = random.nextInt(2) + 1;
@@ -309,7 +348,7 @@ public class GameScreen implements Screen {
 
         }
 
-        if(player.getPlayerRectangle().overlaps(circle.getEndZone()) ){
+        if(player.getPlayerRectangle().overlaps(circle.getEndZone())){
             if (zoneCreate == 1) {
                 bigArrowBlockStart = true;
                 bigArrow = new BigArrow();
@@ -317,6 +356,18 @@ public class GameScreen implements Screen {
                 bigArrowsCount = 0;
             }
         }
+        if(player.getPlayerRectangle().overlaps(circle.getEndZone()) &&!circleEndCheck){
+            countMoney();
+            circleEndCheck = true;
+        }
+    }
+
+    public void countMoney(){
+        blocksNumber +=1;
+        Currency.countCurency(blocksNumber);
+        //Currency.addMoneyToCurrency();
+        System.out.println("Money: " + Currency.Money);
+        System.out.println("Currency: " + Currency.currency);
     }
 
     // COLLISION
@@ -426,8 +477,8 @@ public class GameScreen implements Screen {
                 System.out.println("Collision: Corridor Bottom");
             }
         }
+        //BIG ARROW check collision
         if(bigArrowBlockStart) {
-            //BIG ARROW check collision
             if (player.getPlayerRectangle().overlaps(bigArrow.getLineRectangle())) { // between line
                 game.setScreen(game.gameOver);
                 System.out.println("Collision: BIG ARROW Line");

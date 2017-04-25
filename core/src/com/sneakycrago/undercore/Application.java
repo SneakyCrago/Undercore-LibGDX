@@ -2,6 +2,7 @@ package com.sneakycrago.undercore;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -14,6 +15,7 @@ import com.sneakycrago.undercore.screens.GameOver;
 import com.sneakycrago.undercore.screens.GameScreen;
 import com.sneakycrago.undercore.screens.InfoScreen;
 import com.sneakycrago.undercore.screens.MainMenu;
+import com.sneakycrago.undercore.utils.Score;
 
 public class Application extends Game {
 
@@ -34,10 +36,17 @@ public class Application extends Game {
 	public MainMenu mainMenu;
 	public InfoScreen infoScreen;
 
-	public int score;
+	public Preferences preferences;
+	boolean loadPrefs = true;
 
-	//public Color gameOrange = new Color(255/255f,162/255f, 38/255f, 1f);
-	//public Color gameBlue = new Color(22/255f,238/255f,247/255f,1f);
+	protected Preferences getPrefs() {
+		if(preferences==null){
+			preferences = Gdx.app.getPreferences("saves");
+		}
+		return preferences;
+	}
+
+	//public static Preferences prefs = Gdx.app.getPreferences("My Preferences");
 
 	@Override
 	public void create () {
@@ -58,6 +67,14 @@ public class Application extends Game {
 		gameOver = new GameOver(this);
 		infoScreen = new InfoScreen(this);
 
+		getPrefs();
+
+		if(loadPrefs){
+			if(preferences.contains("bestScore")){
+				System.out.println("checked preferences");
+				Score.bestScore = preferences.getInteger("bestScore");
+			}
+		}
 		//setScreen(gameScreen);
 		setScreen(mainMenu);
 	}
