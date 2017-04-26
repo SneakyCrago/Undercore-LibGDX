@@ -15,6 +15,7 @@ import com.sneakycrago.undercore.screens.GameOver;
 import com.sneakycrago.undercore.screens.GameScreen;
 import com.sneakycrago.undercore.screens.InfoScreen;
 import com.sneakycrago.undercore.screens.MainMenu;
+import com.sneakycrago.undercore.utils.Currency;
 import com.sneakycrago.undercore.utils.Score;
 
 public class Application extends Game {
@@ -37,16 +38,7 @@ public class Application extends Game {
 	public InfoScreen infoScreen;
 
 	public Preferences preferences;
-	boolean loadPrefs = true;
-
-	protected Preferences getPrefs() {
-		if(preferences==null){
-			preferences = Gdx.app.getPreferences("saves");
-		}
-		return preferences;
-	}
-
-	//public static Preferences prefs = Gdx.app.getPreferences("My Preferences");
+	boolean loadPrefs = true; // загружать ли ресурсы
 
 	@Override
 	public void create () {
@@ -73,6 +65,7 @@ public class Application extends Game {
 			if(preferences.contains("bestScore")){
 				System.out.println("checked preferences");
 				Score.bestScore = preferences.getInteger("bestScore");
+				Currency.currency = preferences.getInteger("currency");
 			}
 		}
 		//setScreen(gameScreen);
@@ -120,5 +113,11 @@ public class Application extends Game {
 		params10.minFilter = Texture.TextureFilter.Linear;
 		params10.magFilter = Texture.TextureFilter.Linear;
 		font10 = generator.generateFont(params10);
+	}
+	protected Preferences getPrefs() {
+		if(preferences==null){
+			preferences = Gdx.app.getPreferences("saves");
+		}
+		return preferences;
 	}
 }

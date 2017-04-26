@@ -47,9 +47,6 @@ public class GameOver implements Screen {
     private boolean menuReleased = false;
     private boolean exitReleased = false;
 
-    private float timer;
-    private float time;
-
     public GameOver(Application game) {
         this.game = game;
         this.camera = game.camera;
@@ -60,9 +57,6 @@ public class GameOver implements Screen {
 
     @Override
     public void show() {
-        time = 0;
-        timer = TimeUtils.nanoTime();
-
         start = new Sprite(buttons.findRegion("start"));
         start.setSize(btnRadiusPlay*2,btnRadiusPlay*2);
         start.setPosition(512/2 -btnRadiusPlay, 50);
@@ -93,9 +87,12 @@ public class GameOver implements Screen {
 
         touch = new Vector3();
 
+        //Money
         Currency.addMoneyToCurrency();
         Score.makeBestScore();
         game.preferences.putInteger("bestScore", Score.bestScore);
+        game.preferences.flush();
+        game.preferences.putInteger("currency", Currency.currency);
         game.preferences.flush();
     }
 
@@ -107,19 +104,16 @@ public class GameOver implements Screen {
         touch = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touch);
 
-        time += (TimeUtils.nanoTime() - timer);
-        timer = TimeUtils.nanoTime();
-
         game.batch.begin();
         start.draw(game.batch);
         menu.draw(game.batch);
         exit.draw(game.batch);
         game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 80, 15);
 
-        game.font30.draw(game.batch,"Game over", 512/2 - 24*3, 270);
-        game.font.draw(game.batch,"Best score: "+ Score.getBestScore(), 512/2 - 24*3, 195 + 20);
-        game.font.draw(game.batch,"Your score: "+ Score.getGameScore(), 512/2 - 24*3, 160 + 20);
-        game.font.draw(game.batch,"Money: "+ Currency.Money, 512/2 - 24*3, 160-35 + 20);
+        game.font30.draw(game.batch,"Game over", 512/2 - 24*3, 270+15);
+        game.font.draw(game.batch,"Best score: "+ Score.getBestScore(), 512/2 - 24*3, 195 + 45);
+        game.font.draw(game.batch,"Your score: "+ Score.getGameScore(), 512/2 - 24*3, 160 + 45);
+        game.font.draw(game.batch,"Money: "+ Currency.Money, 512/2 - 24*3, 160-35 + 45);
 
         if(checkPlayButton() && Gdx.input.isTouched()){
             startPressed.draw(game.batch);
@@ -148,22 +142,6 @@ public class GameOver implements Screen {
 
 
         game.batch.end();
-
-
-        /*//debug
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        game.shapeRenderer.setColor(Color.BLUE);
-        game.shapeRenderer.circle(startBtn.x, startBtn.y, startBtn.radius);
-        game.shapeRenderer.circle(exitBtn.x, exitBtn.y, exitBtn.radius);
-        game.shapeRenderer.circle(menuBtn.x, menuBtn.y, menuBtn.radius);
-        game.shapeRenderer.end();
-        */
-        /*if((time / 1000000000) >= 1.5f) {
-            if (Gdx.input.justTouched() || Gdx.input.isKeyPressed(Input.Keys.Z)) {
-                game.setScreen(new GameScreen(game));
-                time = 0;
-            }
-        }*/
     }
 
     public boolean checkPlayButton(){
@@ -265,6 +243,6 @@ public class GameOver implements Screen {
 
     @Override
     public void dispose() {
-
+        buttons.dispose();
     }
 }

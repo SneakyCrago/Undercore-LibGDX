@@ -103,7 +103,7 @@ public class GameScreen implements Screen {
         }
         //Обнуляем счет
         Score.setGameScore(0);
-        blocksNumber = 10000;
+        blocksNumber = 0;
         Currency.resetMoney();
     }
 
@@ -117,9 +117,7 @@ public class GameScreen implements Screen {
         // SPRITES and Text
         game.batch.begin();
         game.font.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
-        game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 0, 288-24);
-        game.font10.draw(game.batch, "blocks:" + blocksNumber, 0, 288-24-12);
-        game.font10.draw(game.batch, "money:" + Currency.Money, 0, 288-24-12*2);
+
 
         if(circlesStart) {
             circle.drawCircles(game.batch);
@@ -145,6 +143,9 @@ public class GameScreen implements Screen {
             }
             if (Gdx.input.isKeyJustPressed(Input.Keys.Z)) {
                 player.onClick();
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.Q)){
+                collisionCheck();
             }
         }
         if(android) {
@@ -191,15 +192,18 @@ public class GameScreen implements Screen {
 
         game.shapeRenderer.end();
 
+        //game info
+        game.batch.begin();
+        game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 0, 288-24);
+        game.font10.draw(game.batch, "blocks:" + blocksNumber, 0, 288-24-12);
+        game.font10.draw(game.batch, "money:" + Currency.Money, 0, 288-24-12*2);
+        game.batch.end();
+
         zoneCreator();
 
         //COLLISION
-        //collisionCheck();
+        collisionCheck();
         //collisionDebug();
-
-        if(Gdx.input.isKeyPressed(Input.Keys.Q)){
-            collisionCheck();
-        }
     }
 
     public void update(float delta) {

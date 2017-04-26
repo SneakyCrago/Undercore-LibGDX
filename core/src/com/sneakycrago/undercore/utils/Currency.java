@@ -20,13 +20,9 @@ public class Currency {
     public static void countCurency(int numberOfBlocks){
 
         randomNumber = random.nextInt(101);
-
         chance = X * numberOfBlocks;
-
         Money += Math.floor(chance/100);
-
         fraction = chance - Math.floor(chance/100)*100;
-
 
         if(randomNumber <= fraction){
             Money++;

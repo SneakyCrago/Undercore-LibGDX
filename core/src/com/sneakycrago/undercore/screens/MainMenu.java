@@ -74,6 +74,7 @@ public class MainMenu implements Screen {
         infoReleased = false;
         drawInProgress = false;
 
+        //Money
         Currency.resetMoney();
     }
 
@@ -158,12 +159,14 @@ public class MainMenu implements Screen {
             fontWhite.draw(game.batch, "Info", 94 - 34, 280 - btnFree * 3);
         }
 
-
         if(drawInProgress) {
             font.draw(game.batch, "In progress", 512 / 2, 310/2 + 12);
         }
-        game.font30.draw(game.batch, "Currency: " + Currency.currency, 190, 260);
-        game.font30.draw(game.batch, "Score: " + Score.bestScore, 190, 260-30);
+
+        // Money and Score
+        game.font30.draw(game.batch, "Money: " + Currency.currency, 210, 310-5-30);
+        game.font30.draw(game.batch, "Score: " + Score.bestScore, 210, 310-35*2);
+
         // SMALL INFO PANEL
         game.font10.draw(game.batch, "ver. " + Application.VERSION, 10, 15);
         game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 80, 15);
