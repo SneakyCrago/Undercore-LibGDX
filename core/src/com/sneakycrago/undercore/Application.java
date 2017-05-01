@@ -21,7 +21,7 @@ import com.sneakycrago.undercore.utils.Score;
 public class Application extends Game {
 
 	public static final String TITLE = "Undercore";
-	public static final float VERSION = 0.5f;
+	public static final float VERSION = 0.55f;
 	public static final int V_WIDTH = 512;
 	public static final int V_HEIGHT = 310;
 

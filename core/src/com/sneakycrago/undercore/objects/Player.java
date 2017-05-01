@@ -1,5 +1,9 @@
 package com.sneakycrago.undercore.objects;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
@@ -34,6 +38,11 @@ public class Player {
 
     private Polygon playerPolygon;
 
+    private TextureAtlas animationAtlas;
+    private Animation animation;
+    private float elapsedTime = 0f;
+
+
     public Player(float x, float y) {
         position = new Vector2(x, y);
         velocity = new Vector2(0, 0);
@@ -45,6 +54,11 @@ public class Player {
                 0,32,
                 32,32,
                 32,0});
+
+        animationAtlas = new TextureAtlas(Gdx.files.internal("textures/animation/playerAnim.atlas"),
+                Gdx.files.internal("textures/animation"));
+
+        animation = new Animation(1f/18f, animationAtlas.getRegions()); // 1f/18f
     }
 
     public void update(float delta) {
@@ -100,16 +114,21 @@ public class Player {
         shapeRenderer.rect(position.x, position.y, TEXTURE_SIZE,TEXTURE_SIZE);
 
         if(Line) {
-            shapeRenderer.setColor(Globals.LightBlue);
+            shapeRenderer.setColor(Globals.LightBlueColor);
             shapeRenderer.rect(position.x, position.y, TEXTURE_SIZE,TEXTURE_SIZE);
         }
     }
     public void drawPlayerLine(ShapeRenderer shapeRenderer) {
-        //shapeRenderer.setColor(255/255f,162/255f, 38/255f, 1f);
-        //shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
-        shapeRenderer.setColor(Globals.LightBlue);
+        shapeRenderer.setColor(Globals.LightBlueColor);
         shapeRenderer.rect(0, playerCubeRectangle.getY() + 16 - lineY /2, 96 - 3, lineY);
         shapeRenderer.rect(96 + 32  + 3, playerCubeRectangle.getY() + 16 - lineY /2, 512, lineY);
+    }
+
+    public void drawPlayerAnimation(SpriteBatch sb){
+        elapsedTime += Gdx.graphics.getDeltaTime();
+        if(Jump) {
+            sb.draw(animation.getKeyFrame(elapsedTime, true), playerCubeRectangle.getX() - 32-2, playerCubeRectangle.getY());
+        }
     }
 
     public boolean sidesCollision() {

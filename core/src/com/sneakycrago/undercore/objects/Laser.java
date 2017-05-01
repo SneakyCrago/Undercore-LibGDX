@@ -237,7 +237,7 @@ public class Laser {
             }
             if(massive[i] == 2 && size[i] >= -laserHeight
                     && posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= laserFieldOfView) {
-                shapeRenderer.setColor(Globals.LightBlue);
+                shapeRenderer.setColor(Globals.LightBlueColor);
                 shapeRenderer.rect(2 + posBlock.x + x + i * FREE_SPACE + i * Globals.TEXTURE_SIZE,
                         posBlock.y + Globals.TEXTURE_SIZE * 4 + Globals.FREE_SPACE, Globals.TEXTURE_SIZE - 4, size[i]);
                 size[i] -= laserSpeed * delta;
