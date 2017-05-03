@@ -248,6 +248,11 @@ public class Laser {
         }
     }
 
+    public void dispose() {
+        laserTexture.dispose();
+        System.out.println("Laser dispose");
+    }
+
     public Rectangle[] getTopWall() {
         return TopWall;
     }

@@ -1,7 +1,9 @@
 package com.sneakycrago.undercore.objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -38,10 +40,9 @@ public class Player {
 
     private Polygon playerPolygon;
 
-    private TextureAtlas animationAtlas;
-    private Animation animation;
-    private float elapsedTime = 0f;
-
+    private float elapsedTime = 0f, currentFrame;
+    private Sprite spriteAnim;
+    private Texture texture;
 
     public Player(float x, float y) {
         position = new Vector2(x, y);
@@ -55,10 +56,11 @@ public class Player {
                 32,32,
                 32,0});
 
-        animationAtlas = new TextureAtlas(Gdx.files.internal("textures/animation/playerAnim.atlas"),
-                Gdx.files.internal("textures/animation"));
+        texture = new Texture(Gdx.files.internal("textures/animation/playerAnim.png"));
 
-        animation = new Animation(1f/18f, animationAtlas.getRegions()); // 1f/18f
+        spriteAnim = new Sprite(texture);
+        spriteAnim.setSize(32,32);
+        spriteAnim.setPosition(position.x - 32, position.y);
     }
 
     public void update(float delta) {
@@ -75,6 +77,10 @@ public class Player {
         playerCubeRectangle.setPosition(position.x, position.y);
 
         playerPolygon.setPosition(position.x, position.y);
+
+        spriteAnim.setPosition(position.x - 32, position.y);
+
+        currentFrame += 22*delta;
 
     }
 
@@ -126,10 +132,15 @@ public class Player {
 
     public void drawPlayerAnimation(SpriteBatch sb){
         elapsedTime += Gdx.graphics.getDeltaTime();
+        if(currentFrame >8){
+            currentFrame = 0;
+        }
+            spriteAnim.setRegion(32 * (int)currentFrame,0, 32,32);
         if(Jump) {
-            sb.draw(animation.getKeyFrame(elapsedTime, true), playerCubeRectangle.getX() - 32-2, playerCubeRectangle.getY());
+            spriteAnim.draw(sb);
         }
     }
+
 
     public boolean sidesCollision() {
         if(position.y <= 11 || position.y >= 267) {

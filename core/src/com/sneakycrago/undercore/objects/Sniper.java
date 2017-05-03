@@ -131,7 +131,7 @@ public class Sniper {
             shapeRenderer.rectLine(posBlock.x + 16, posBlock.y + y + 16, 96 + 16, playerY, 2);
         }
         if(posBlock.x < -96 && posBlock.x > -192) {
-            shapeRenderer.setColor(Globals.OrangeColor);
+            shapeRenderer.setColor(1f,0f,0f,1f);
             shapeRenderer.rectLine(posBlock.x + 16, posBlock.y + y + 16, 96 + 16, playerY, 4);
         }
     }
@@ -161,6 +161,10 @@ public class Sniper {
             bullet.setRotation(grad);
             isRotated1 = true;
         }
+    }
+
+    public void dispose(){
+        texture.dispose();
     }
 
     private void moveCollision() {

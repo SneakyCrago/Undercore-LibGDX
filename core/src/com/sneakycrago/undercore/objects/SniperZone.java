@@ -26,7 +26,7 @@ public class SniperZone {
 
     private int secondAmount;
 
-    private int SPACE =256;
+    private int SPACE =384;
 
     private Rectangle startZone, endZone;
 
@@ -171,6 +171,16 @@ public class SniperZone {
                 }
             }
         }
+    }
+
+    public void dispose(){
+        for(int i=0; i <amountOfWave; i++) {
+            sniper[i].dispose();
+        }
+        for (int i=0; i< secondAmount; i++) {
+            sniper2[i].dispose();
+        }
+        System.out.println("Sniper dispose");
     }
 
     public Rectangle getStartZone() {

@@ -69,6 +69,8 @@ public class GameScreen implements Screen {
     private boolean android = false;
     private boolean desktop = true;
 
+    private boolean circleCreated = false, laserCreated = false, sniperCreated = false;
+
 
     public GameScreen(Application game) {
         System.out.println();
@@ -108,14 +110,19 @@ public class GameScreen implements Screen {
             System.out.println("NEXT ZONE: LASERS");
             laser = new Laser(start_corridor + corridor.BLOCK_SIZE + 256);
             laserZoneStart = true;
+
+            laserCreated = true;
         } else if(nextZoneRandom ==3){
             System.out.println("NEXT ZONE: CIRCLES");
             circle = new Circle(start_corridor + corridor.BLOCK_SIZE + 256);
             circlesStart = true;
+            circleCreated = true;
         } else if(nextZoneRandom ==4){
             System.out.println("NEXT ZONE: SNIPERS");
             sniperZone = new SniperZone(start_corridor + corridor.BLOCK_SIZE + 256);
             snipersStart = true;
+
+            sniperCreated = true;
         }
 
         //Обнуляем счет
@@ -227,7 +234,7 @@ public class GameScreen implements Screen {
         zoneCreator();
 
         //COLLISION
-        collisionCheck();
+        //collisionCheck();
         //collisionDebug();
 
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -275,7 +282,15 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        if(circleCreated) {
+            circle.dispose();
+        }
+        if(laserCreated) {
+            laser.dispose();
+        }
+        if(sniperCreated) {
+            sniperZone.dispose();
+        }
     }
 
     private int zoneCreate;
@@ -319,15 +334,19 @@ public class GameScreen implements Screen {
                 laser = new Laser(512 + 64);
                 laserZoneStart = true;
 
+                laserCreated = true;
+
                 laserZoneOverlaped = false;
             } else if (zoneCreate == 2) {
                 circle = new Circle(512 + 64);
                 circlesStart = true;
+                circleCreated = true;
 
                 circleZoneOverlaped = false;
             } else if(zoneCreate == 3) {
                 sniperZone = new SniperZone(512 + 64);
                 snipersStart = true;
+                sniperCreated = true;
 
                 snipersZoneOverlaped = false;
             }
@@ -347,10 +366,12 @@ public class GameScreen implements Screen {
             if(zoneCreate == 2) {
                 circle = new Circle(laser.BLOCK_ZONE +128 + 256);
                 circlesStart = true;
+                circleCreated = true;
             }
             if(zoneCreate == 3) {
                 sniperZone = new SniperZone(laser.BLOCK_ZONE + 128+256);
                 snipersStart = true;
+                sniperCreated = true;
 
                 snipersZoneOverlaped = false;
 
@@ -385,6 +406,7 @@ public class GameScreen implements Screen {
             if (zoneCreate == 2) {
                 laser = new Laser(circle.BLOCK_SIZE +128 + 256);
                 laserZoneStart = true;
+                laserCreated = true;
 
                 bigArrowBlockStart = false;
                 bigArrowEnd = false;
@@ -393,6 +415,7 @@ public class GameScreen implements Screen {
             if(zoneCreate == 3) {
                 sniperZone = new SniperZone(circle.BLOCK_SIZE + 128+256);
                 snipersStart = true;
+                sniperCreated = true;
 
                 bigArrowBlockStart = false;
                 bigArrowEnd = false;
@@ -427,6 +450,7 @@ public class GameScreen implements Screen {
             if (zoneCreate == 2) {
                 laser = new Laser(sniperZone.BLOCK_SIZE + 128 + 256);
                 laserZoneStart = true;
+                laserCreated = true;
 
                 bigArrowBlockStart = false;
                 bigArrowEnd = false;
@@ -435,6 +459,7 @@ public class GameScreen implements Screen {
             if(zoneCreate == 3) {
                 circle = new Circle(sniperZone.BLOCK_SIZE + 128 + 256);
                 circlesStart = true;
+                circleCreated = true;
 
                 bigArrowBlockStart = false;
                 bigArrowEnd = false;

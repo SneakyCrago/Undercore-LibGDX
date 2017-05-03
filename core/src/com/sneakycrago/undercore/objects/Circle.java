@@ -372,6 +372,11 @@ public class Circle {
         }
     }
 
+    public void dispose() {
+        circleTexture.dispose();
+        System.out.println("Circle dispose");
+    }
+
     public Rectangle[] getTopRect() {
         return topRect;
     }
