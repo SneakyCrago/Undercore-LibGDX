@@ -25,7 +25,7 @@ public class BigArrow {
     public Sprite arrow, arrow2;
 
 
-    private int SPEED = 90 * 6; // 90*6 x6 now
+    public int SPEED = 90 * 6; // 90*6 x6 now
     private int FREE_SPACE = 96;
 
     private Texture arrowTexture;
@@ -257,8 +257,6 @@ public class BigArrow {
                 alphaMax += startMax;
                 startMax = delta / 0.55f;
                 arrow.setAlpha(alphaMax);
-                //System.out.println(time / 1000000000);
-                //System.out.println(alpha);
             } else if ((alpha - start) > 0) {
                 secondStart = true;
                 time += (TimeUtils.nanoTime() - timer);
@@ -267,11 +265,9 @@ public class BigArrow {
                 alpha -= start;
                 start = delta / 0.55f;
                 arrow.setAlpha(alpha);
-                //System.out.println(time / 1000000000);
-                //System.out.println(alpha);
+
             } else if((time / 1000000000) >= 0.995) {
                 playEffect = false;
-                //System.out.println(playEffect);
             }
         }
 
@@ -285,8 +281,6 @@ public class BigArrow {
                 alphaMax2 += startMax2;
                 startMax2 = delta / 0.55f;
                 arrow2.setAlpha(alphaMax2);
-                //System.out.println(time2 / 1000000000);
-                //System.out.println(alpha2);
             } else if ((alpha2 - start2) > 0) {
                 time2 += (TimeUtils.nanoTime() - timer2);
                 timer2 = TimeUtils.nanoTime();
@@ -294,8 +288,6 @@ public class BigArrow {
                 alpha2 -= start2;
                 start2 = delta / 0.55f;
                 arrow2.setAlpha(alpha2);
-                //System.out.println(time2 / 1000000000);
-                //System.out.println(alpha2);
             } else if((time2 / 1000000000) >= 0.995) {
                 playEffect2 = false;
             }

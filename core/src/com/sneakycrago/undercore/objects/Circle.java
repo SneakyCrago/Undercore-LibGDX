@@ -16,7 +16,7 @@ import java.util.Random;
 
 public class Circle {
 
-    private final int SPEED = -90;
+    public int SPEED = -90;
     private int FREE_SPACE = 64;
     private int SPRITE_SIZE = 90;
     public int BLOCK_SIZE;
@@ -72,8 +72,6 @@ public class Circle {
         for(int i=0; i< isScoredMid.length; i++){
             isScoredMid[i]=false;
         }
-
-        System.out.println("Circles: " + massive.length);
 
     }
 

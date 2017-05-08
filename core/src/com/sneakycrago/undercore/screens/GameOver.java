@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.utils.Currency;
@@ -24,6 +25,8 @@ import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
 import com.sun.org.apache.xalan.internal.xsltc.dom.DocumentCache;
 import com.sun.org.apache.xalan.internal.xsltc.runtime.Parameter;
+
+import java.util.Random;
 
 /**
  * Created by Sneaky Crago on 25.03.2017.
@@ -43,13 +46,23 @@ public class GameOver implements Screen {
     private Circle startBtn, menuBtn, exitBtn;
     private Vector3 touch;
 
+    private Random random;
+
+    private int frase;
+    private String death;
+
     private boolean playReleased = false;
     private boolean menuReleased = false;
     private boolean exitReleased = false;
 
+    private boolean newFrase = true;
+
     public GameOver(Application game) {
         this.game = game;
         this.camera = game.camera;
+
+        random = new Random();
+
 
         buttons = new TextureAtlas(Gdx.files.internal("textures/buttons/buttons.atlas"),
                 Gdx.files.internal("textures/buttons"));
@@ -87,6 +100,40 @@ public class GameOver implements Screen {
 
         touch = new Vector3();
 
+        if(newFrase) {
+            frase = random.nextInt(13) + 1;
+            switch (frase) {
+                case 1:death = "Game Over";
+                    break;
+                case 2:death = "Failed...";
+                    break;
+                case 3:death = "Dead End";
+                    break;
+                case 4:death = "HA-HA";
+                    break;
+                case 5:death = "R.I.P.";
+                    break;
+                case 6:death = "REKT";
+                    break;
+                case 7:death = "You got so far";
+                    break;
+                case 8:death = "Next time";
+                    break;
+                case 9:death = "What? Already?!";
+                    break;
+                case 10:death = "Good Luck";
+                    break;
+                case 11:death = "Bye.";
+                    break;
+                case 12:death = "Tears won't help";
+                    break;
+                case 13:death = "Son, I am disappointed";
+                    break;
+            }
+            System.out.println("Death FRASE: " + frase);
+            newFrase = false;
+        }
+
         //Money
         Currency.addMoneyToCurrency();
         Score.makeBestScore();
@@ -110,7 +157,7 @@ public class GameOver implements Screen {
         exit.draw(game.batch);
         game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 80, 15);
 
-        game.font30.draw(game.batch,"Game over", 512/2 - 24*3, 270+15);
+        game.font30.draw(game.batch, death, 512/2 - 24*3, 270+15);
         game.font.draw(game.batch,"Best score: "+ Score.getBestScore(), 512/2 - 24*3, 195 + 45);
         game.font.draw(game.batch,"Your score: "+ Score.getGameScore(), 512/2 - 24*3, 160 + 45);
         game.font.draw(game.batch,"Money: "+ Currency.Money, 512/2 - 24*3, 160-35 + 45);
@@ -121,6 +168,8 @@ public class GameOver implements Screen {
         } else if(checkPlayButton() && playReleased){
             game.setScreen(new GameScreen(game));
             playReleased = false;
+
+            newFrase = true;
         }
 
         if(checkMenuButton() && Gdx.input.isTouched()){
@@ -129,6 +178,8 @@ public class GameOver implements Screen {
         } else if(checkMenuButton() && menuReleased) {
             game.setScreen(game.mainMenu);
             menuReleased = false;
+
+            newFrase = true;
         }
 
 
@@ -138,7 +189,9 @@ public class GameOver implements Screen {
         } else if(checkExitButton() && exitReleased){
             Gdx.app.exit();
             exitReleased = false;
-            }
+
+            newFrase = true;
+        }
 
 
         game.batch.end();

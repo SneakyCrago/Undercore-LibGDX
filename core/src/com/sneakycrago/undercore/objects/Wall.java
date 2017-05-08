@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.sneakycrago.undercore.screens.GameScreen;
+import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
 
 import java.awt.Desktop;
@@ -47,11 +48,6 @@ public class Wall {
         random = new Random();
         rand();
 
-        System.out.print("Wall: ");
-        for(int i = 0; i < 7; i++) {
-            System.out.print(massive[i] + " ");
-        }
-        System.out.println(massive[7]);
 
         posBlock = new Vector2(0, 11);
         velocity = new Vector2();
@@ -206,7 +202,7 @@ public class Wall {
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3);
         //block
-        shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+        shapeRenderer.setColor(Globals.SidesColor);
         shapeRenderer.rect(posBlock.x + x, posBlock.y + TEXTURE_SIZE *3, 3, TEXTURE_SIZE * 6);  //left
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y + TEXTURE_SIZE *3, 3, TEXTURE_SIZE * 6); // right
 

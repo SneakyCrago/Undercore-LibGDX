@@ -21,7 +21,7 @@ import java.util.Random;
 
 public class Laser {
 
-    public final int SPEED = -90; // -90
+    public int SPEED = -90; // -90
 
     private final int FREE_SPACE = 64;
 
@@ -69,11 +69,6 @@ public class Laser {
         OrangeLaserRect = new Rectangle[massive.length];
         BlueLaserRect = new Rectangle[massive.length];
 
-        System.out.print("Lasers: ");
-        for(int i =0; i < massive.length; i++) {
-            System.out.print(+massive[i] + " ");
-        }
-        System.out.println();
         laserTexture = new Texture("textures/laser.png");
         flipLaserTexture = new TextureRegion(laserTexture,0,0,32,32);
         flipLaserTexture.flip(false, true);

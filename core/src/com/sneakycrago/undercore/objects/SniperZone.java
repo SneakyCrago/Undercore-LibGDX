@@ -53,10 +53,8 @@ public class SniperZone {
                     randomHeight2 = random.nextInt(7);
                 }
                 secondAmount += 1;
-                System.out.println();
             }
 
-            System.out.println("SNIPERS:" + randomHeight + " " + randomHeight2);
 
             sniper[i] = new Sniper(x + SPACE*i, 8 + randomHeight*32 + randomHeight*8);
 

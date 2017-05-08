@@ -116,16 +116,16 @@ public class Player {
 
     //DRAW
     public void drawPlayerCube(ShapeRenderer shapeRenderer){
-        shapeRenderer.setColor(Globals.OrangeColor);
+        switchCubeColor(shapeRenderer);
         shapeRenderer.rect(position.x, position.y, TEXTURE_SIZE,TEXTURE_SIZE);
 
         if(Line) {
-            shapeRenderer.setColor(Globals.LightBlueColor);
+            switchLineCubeColor(shapeRenderer);
             shapeRenderer.rect(position.x, position.y, TEXTURE_SIZE,TEXTURE_SIZE);
         }
     }
     public void drawPlayerLine(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(Globals.LightBlueColor);
+        switchLineColor(shapeRenderer);
         shapeRenderer.rect(0, playerCubeRectangle.getY() + 16 - lineY /2, 96 - 3, lineY);
         shapeRenderer.rect(96 + 32  + 3, playerCubeRectangle.getY() + 16 - lineY /2, 512, lineY);
     }
@@ -135,9 +135,35 @@ public class Player {
         if(currentFrame >8){
             currentFrame = 0;
         }
-            spriteAnim.setRegion(32 * (int)currentFrame,0, 32,32);
-        if(Jump) {
-            spriteAnim.draw(sb);
+        if(Application.gameSkin == 0) {
+            spriteAnim.setRegion(32 * (int) currentFrame, 0, 32, 32);
+            if (Jump) {
+                spriteAnim.draw(sb);
+            }
+        } else if(Application.gameSkin == 1){
+
+        }
+    }
+
+    private void switchCubeColor(ShapeRenderer shapeRenderer){
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Globals.OrangeColor);
+        } else if(Application.gameSkin == 1){
+            shapeRenderer.setColor(Globals.Sides1Color);
+        }
+    }
+    private void switchLineCubeColor(ShapeRenderer shapeRenderer){
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Globals.LightBlueColor);
+        } else if(Application.gameSkin == 1){
+            shapeRenderer.setColor(Globals.Line1Color);
+        }
+    }
+    private void switchLineColor(ShapeRenderer shapeRenderer){
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Globals.LightBlueColor);
+        } else if(Application.gameSkin == 1){
+            shapeRenderer.setColor(Globals.Line1Color);
         }
     }
 
