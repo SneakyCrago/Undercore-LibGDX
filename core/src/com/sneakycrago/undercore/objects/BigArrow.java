@@ -1,13 +1,17 @@
 package com.sneakycrago.undercore.objects;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.sneakycrago.undercore.Application;
+import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
@@ -28,6 +32,7 @@ public class BigArrow {
     public int SPEED = 90 * 6; // 90*6 x6 now
     private int FREE_SPACE = 96;
 
+    private TextureAtlas arrowAtlas;
     private Texture arrowTexture;
 
     private Vector2 posArrow, posArrow2;
@@ -67,14 +72,23 @@ public class BigArrow {
         random();
         secondArrowRandom();
 
-        arrowTexture = new Texture("textures/big_arrow.png");
+        arrowAtlas = new TextureAtlas(Gdx.files.internal("textures/big_arrow.atlas"),Gdx.files.internal("textures/"));
 
-        arrow = new Sprite(arrowTexture);
+        switch(Application.gameSkin) {
+            case 0: arrow = new Sprite(arrowAtlas.findRegion("big_arrow"));
+                arrow2 = new Sprite(arrowAtlas.findRegion("big_arrow"));
+                break;
+            case 1: arrow = new Sprite(arrowAtlas.findRegion("big_arrow1"));
+                arrow2 = new Sprite(arrowAtlas.findRegion("big_arrow1"));
+                break;
+        }
+
+
         arrow.setAlpha(0);
         arrow.setSize(102, 96 );
         arrow.setPosition(512 - 128, randomHeight);
 
-        arrow2 = new Sprite(arrowTexture);
+
         arrow2.setAlpha(0);
         arrow2.setSize(102, 96);
         arrow2.setPosition(512 - 128, randomHeight2);
@@ -227,7 +241,11 @@ public class BigArrow {
         arrow2.draw(batch);
     }
     public void drawArrowLine(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, 1f);
+        switch(Application.gameSkin) {
+            case 0: shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, 1f);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Line1Color);
+        }
         if(arrow.getX() <= INVISIBLE) {
             //shapeRenderer.rect(0, arrow.getY(), arrow.getX() + 48, 96);
             shapeRenderer.rect(line.x,line.y,line.width,line.height);
@@ -238,7 +256,11 @@ public class BigArrow {
 
     }
     public void drawArrow2Line(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, 1f);
+        switch(Application.gameSkin) {
+            case 0: shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, 1f);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Line1Color);
+        }
         if(arrow2.getX() <= INVISIBLE) {
             //shapeRenderer.rect(0, arrow.getY(), arrow.getX() + 48, 96);
             shapeRenderer.rect(line2.x,line2.y,line2.width,line2.height);

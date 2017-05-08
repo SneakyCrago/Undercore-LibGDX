@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.sneakycrago.undercore.Application;
+import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
 
 /**
@@ -27,7 +29,13 @@ public class Corridor {
     private Rectangle[] bottomRets;
 
     private Rectangle endZone;
-    public Corridor(float x) {
+
+    private int x;
+
+    public Corridor(float START) {
+
+        x =(int) START;
+
         posBlock = new Vector2(0,11);
         velocity = new Vector2();
 
@@ -37,7 +45,7 @@ public class Corridor {
 
         createRects(x);
     }
-    public void update(float delta, float x){
+    public void update(float delta){
         //movement
         velocity.add(0, 0);
         velocity.scl(delta);
@@ -70,7 +78,7 @@ public class Corridor {
 
     //RECTS
     //create rectangles
-    public void createRects(float x){
+    private void createRects(float x){
         createTopLeftRects(x);
         createTopRightRects(x);
         createBottomRects(x);
@@ -80,27 +88,27 @@ public class Corridor {
     }
 
     //move rects block
-    public void moveRects(float x) {
+    private void moveRects(float x) {
         moveTopLeftRects(x);
         moveTopRightRects(x);
         moveBottomRects(x);
     }
 
     //move rect elements
-    public void moveTopLeftRects(float x) {
+    private void moveTopLeftRects(float x) {
         topLeftRects[0].setX(posBlock.x +x);
         for(int i = 1; i<topLeftRects.length; i++) {
             topLeftRects[i].setX(posBlock.x +x+ TEXTURE_SIZE*i);
         }
     }
-    public void moveTopRightRects(float x) {
+    private void moveTopRightRects(float x) {
         topRightRects[0].setX(posBlock.x +32+ x + 32*8+ 32*3 -3);
         for(int i =1; i<6; i++){
             topRightRects[i].setX(posBlock.x +32 + x +TEXTURE_SIZE*(8+3) + TEXTURE_SIZE*i - 3);
         }
         topRightRects[6].setX(posBlock.x + x + BLOCK_SIZE-32 - 3);
     }
-    public void moveBottomRects(float x) {
+    private void moveBottomRects(float x) {
         bottomRets[0].setX(posBlock.x + x+ 32*2);
 
         for(int i = 1; i < 7; i++) {
@@ -115,7 +123,7 @@ public class Corridor {
     }
 
     //create elements
-    public void createTopLeftRects(float x) {
+    private void createTopLeftRects(float x) {
         topLeftRects[0] = new Rectangle();
         topLeftRects[0].set(posBlock.x + x, posBlock.y +24+ FREE_SPACE, 32, TEXTURE_SIZE*6 - 24);
         for(int i = 1; i < topLeftRects.length; i++) {
@@ -124,7 +132,7 @@ public class Corridor {
                     TEXTURE_SIZE, TEXTURE_SIZE*6 -HEIGHT*i - 24);
         }
     }
-    public void createTopRightRects(float x) {
+    private void createTopRightRects(float x) {
         topRightRects[0] = new Rectangle();
         topRightRects[0].set(posBlock.x + x + TEXTURE_SIZE*(8+3) -3 + 32, posBlock.y+ FREE_SPACE + HEIGHT*7, TEXTURE_SIZE, HEIGHT);
         for(int i = 1; i < 6; i++) {
@@ -136,7 +144,7 @@ public class Corridor {
         topRightRects[6].set(posBlock.x + x + BLOCK_SIZE-TEXTURE_SIZE - 3,posBlock.y+ FREE_SPACE + 24,
                 TEXTURE_SIZE + 3, TEXTURE_SIZE*6 -24);
     }
-    public void createBottomRects(float x) {
+    private void createBottomRects(float x) {
         bottomRets[0] = new Rectangle();
         bottomRets[0].set(posBlock.x + x+ 32*2, posBlock.y, TEXTURE_SIZE,HEIGHT+ 3);
         for(int i = 1; i < 7; i++) {
@@ -153,19 +161,31 @@ public class Corridor {
 
     //DRAW
     //draw block
-    public void drawCorridor(ShapeRenderer shapeRenderer, float x) {
+    public void drawCorridor(ShapeRenderer shapeRenderer) {
         drawDown(shapeRenderer, x);
         drawTopLeft(shapeRenderer, x);
         drawTopRight(shapeRenderer, x);
     }
 
     //draw block elements
-    public void drawDown(ShapeRenderer shapeRenderer, float x) {
+    private void drawDown(ShapeRenderer shapeRenderer, float x) {
         //down corridor
-        shapeRenderer.setColor(Color.BLACK);
+        switch (Application.gameSkin){
+            case 0: shapeRenderer.setColor(Color.BLACK);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Inner1Color);
+        }
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE* 2 + 3, 11-3, (TEXTURE_SIZE * 15)-6, 3); // bot
 
-        shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+        for(int i =0; i < bottomRets.length; i++){
+            shapeRenderer.rect(bottomRets[i].getX(), bottomRets[i].getY(), bottomRets[i].getWidth(), bottomRets[i].getHeight() -3);
+        }
+
+        switch(Application.gameSkin){
+            case 0: shapeRenderer.setColor(Globals.SidesColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Sides1Color);
+        }
         //1
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE* 2,posBlock.y,3,HEIGHT);
         shapeRenderer.rect(posBlock.x+ x + TEXTURE_SIZE*2,posBlock.y + HEIGHT, TEXTURE_SIZE,3);
@@ -190,11 +210,23 @@ public class Corridor {
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE* (17) -3, posBlock.y,
                 3, 24);
     }
-    public void drawTopLeft(ShapeRenderer shapeRenderer, float x) {
-        shapeRenderer.setColor(Color.BLACK);
+    private void drawTopLeft(ShapeRenderer shapeRenderer, float x) {
+        switch (Application.gameSkin){
+            case 0: shapeRenderer.setColor(Color.BLACK);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Inner1Color);
+        }
         shapeRenderer.rect(posBlock.x + x+ 3, 310 -11, (TEXTURE_SIZE * 7)-6, 3);
 
-        shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+        for(int i =0; i < topLeftRects.length; i++){
+            shapeRenderer.rect(topLeftRects[i].getX(), topLeftRects[i].getY(), topLeftRects[i].getWidth(), topLeftRects[i].getHeight());
+        }
+
+        switch(Application.gameSkin){
+            case 0: shapeRenderer.setColor(Globals.SidesColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Sides1Color);
+        }
 
         shapeRenderer.rect(posBlock.x + x,posBlock.y +FREE_SPACE + 24,3, TEXTURE_SIZE*5 + 8);
 
@@ -206,11 +238,23 @@ public class Corridor {
                     TEXTURE_SIZE, 3);
         }
     }
-    public void drawTopRight(ShapeRenderer shapeRenderer, float x){
-        shapeRenderer.setColor(Color.BLACK);
+    private void drawTopRight(ShapeRenderer shapeRenderer, float x){
+        switch (Application.gameSkin){
+            case 0: shapeRenderer.setColor(Color.BLACK);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Inner1Color);
+        }
         shapeRenderer.rect(posBlock.x + x+ TEXTURE_SIZE * (8+3) + 32, 310-11, TEXTURE_SIZE*7 - 3,3);
 
-        shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+        for(int i =0; i < topRightRects.length; i++){
+            shapeRenderer.rect(topRightRects[i].getX(), topRightRects[i].getY(), topRightRects[i].getWidth(), topRightRects[i].getHeight());
+        }
+
+        switch(Application.gameSkin){
+            case 0: shapeRenderer.setColor(Globals.SidesColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Sides1Color);
+        }
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE *19 -3,posBlock.y + FREE_SPACE + 24,3, TEXTURE_SIZE*5 + 8);
 
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE* 18 -3, posBlock.y+ FREE_SPACE +24,3,24);

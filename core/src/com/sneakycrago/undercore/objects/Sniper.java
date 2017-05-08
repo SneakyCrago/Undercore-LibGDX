@@ -1,12 +1,14 @@
 package com.sneakycrago.undercore.objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Circle;
+import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
 
@@ -16,7 +18,7 @@ import com.sneakycrago.undercore.utils.Score;
 
 public class Sniper {
 
-    private final int SPEED = -90;
+    private final int SPEED = -90; // -90
 
     private int x;
     private int y;
@@ -48,7 +50,7 @@ public class Sniper {
         y = Y;
         startY = Y;
 
-        texture = new Texture(Gdx.files.internal("textures/sniper.png"));
+        texture = new Texture(Gdx.files.internal("textures/animation/sniper.png"));
 
         posBlock = new Vector2(x,11);
         velocity = new Vector2();
@@ -117,7 +119,20 @@ public class Sniper {
         drawLine(shapeRenderer, playerY);
     }
     private void drawSniperStation(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(Globals.SidesColor);
+
+        switch(Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Color.BLACK);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Inner1Color);
+        }
+
+        shapeRenderer.rect(posBlock.x + 3, posBlock.y + y + 3, 32-6, 32-6);
+
+        switch(Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Globals.SidesColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Sides1Color);
+        }
         shapeRenderer.rect(posBlock.x, posBlock.y + y, line, 32);
         shapeRenderer.rect(posBlock.x +line, posBlock.y + y, 32-line, line);
         shapeRenderer.rect(posBlock.x + 32-line, posBlock.y + y + line, line, 32-line);

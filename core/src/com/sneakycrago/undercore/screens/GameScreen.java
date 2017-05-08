@@ -102,8 +102,7 @@ public class GameScreen implements Screen {
         amountOfBigArrows = random.nextInt(3) + 3;
         System.out.println("Big Arrows: " + amountOfBigArrows);
         // зона после стартового блока
-        //nextZoneRandom = random.nextInt(5)+1; // создаем зону после стартового блока
-        nextZoneRandom = 5;
+        nextZoneRandom = random.nextInt(5)+1; // создаем зону после стартового блока
         if(nextZoneRandom ==1) {
             System.out.println("NEXT ZONE: BIG ARROWS");
         } else if(nextZoneRandom ==2) {
@@ -139,15 +138,6 @@ public class GameScreen implements Screen {
         Currency.resetMoney();
 
         //test
-        /*
-        wall.SPEED = 0;
-        corridor.SPEED = 0;
-        laser.SPEED = 0;
-        circle.SPEED = 0;
-        bigArrow.SPEED = 0;
-        smallArrowZone = new SmallArrowZone(SPAWN);
-        smallArrowStart = true;
-        */
 
     }
 
@@ -162,9 +152,9 @@ public class GameScreen implements Screen {
 
         update(delta);
 
-        // SPRITES and Text
+        // SPRITES
         game.batch.begin();
-        game.font.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
+
 
         if(circlesStart) {
             circle.drawCircles(game.batch);
@@ -207,8 +197,8 @@ public class GameScreen implements Screen {
         whiteSides.drawWhiteSides(game.shapeRenderer); //draw WhiteSides
         player.drawPlayerCube(game.shapeRenderer); //draw PlayerCube
         // DRAW ELEMENTS
-        wall.drawWallBlock(game.shapeRenderer, start_wall); //draw walls
-        corridor.drawCorridor(game.shapeRenderer, start_corridor);
+        wall.drawWallBlock(game.shapeRenderer); //draw walls
+        corridor.drawCorridor(game.shapeRenderer);
         if(smallArrowStart) {
             smallArrowZone.drawArrowZone(game.shapeRenderer);
         }
@@ -251,6 +241,8 @@ public class GameScreen implements Screen {
         }
         player.drawPlayerAnimation(game.batch);
 
+        game.font.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
+
         game.batch.end();
 
         zoneCreator();
@@ -262,8 +254,8 @@ public class GameScreen implements Screen {
 
     public void update(float delta) {
         player.update(delta);
-        wall.update(delta, start_wall);
-        corridor.update(delta, start_corridor);
+        wall.update(delta);
+        corridor.update(delta);
 
         if(laserZoneStart) {
             laser.update(delta);
@@ -351,8 +343,7 @@ public class GameScreen implements Screen {
 
             countMoney();
 
-            //zoneCreate = random.nextInt(4) + 1;
-            zoneCreate = 4;
+            zoneCreate = random.nextInt(4) + 1;
             System.out.println("Zone: " + zoneCreate);
             if (zoneCreate == 1) {
                 laser = new Laser(512 + 64);
@@ -395,8 +386,7 @@ public class GameScreen implements Screen {
             laserZoneOverlaped = true;
 
 
-            //zoneCreate = random.nextInt(4) + 1;
-            zoneCreate = 4;
+            zoneCreate = random.nextInt(4) + 1;
 
             if(zoneCreate == 2) {
                 circle = new Circle(laser.BLOCK_ZONE +128 + 256);
@@ -446,8 +436,7 @@ public class GameScreen implements Screen {
             smallArrowZoneOverlaped = false;
             circleZoneOverlaped = true;
 
-            //zoneCreate = random.nextInt(4) + 1;
-            zoneCreate = 4;
+            zoneCreate = random.nextInt(4) + 1;
 
             if (zoneCreate == 2) {
                 laser = new Laser(circle.BLOCK_SIZE +128 + 256);
@@ -501,8 +490,7 @@ public class GameScreen implements Screen {
 
             snipersZoneOverlaped = true;
 
-            //zoneCreate = random.nextInt(4) + 1;
-            zoneCreate = 4;
+            zoneCreate = random.nextInt(4) + 1;
 
             if (zoneCreate == 2) {
                 laser = new Laser(sniperZone.BLOCK_SIZE + 128 + 256);

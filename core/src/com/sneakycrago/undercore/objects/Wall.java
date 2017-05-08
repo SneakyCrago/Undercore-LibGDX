@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.screens.GameScreen;
 import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
@@ -37,7 +38,11 @@ public class Wall {
 
     public boolean[] isScored;
 
+    int x;
+
     public Wall(float START){
+
+        x =(int) START;
 
         isScored = new boolean[8];
 
@@ -55,12 +60,12 @@ public class Wall {
         massiveRect = new Rectangle[8];
         massiveRect2 = new Rectangle[8];
 
-        createRects(START);
+        createRects(x);
     }
 
 
     // movement
-    public void update(float delta, float START) {
+    public void update(float delta) {
         //movement
         velocity.add(0, 0);
         velocity.scl(delta);
@@ -76,7 +81,7 @@ public class Wall {
             massiveRect[i].setPosition(posBlock.x,posBlock.y);
         }
 
-        moveRects(START);
+        moveRects(x);
 
         //SCORE
         checkScore();
@@ -178,18 +183,18 @@ public class Wall {
     }
 
     // block drawing random generator
-    public void drawWallBlock(ShapeRenderer shapeRenderer, float START) {
+    public void drawWallBlock(ShapeRenderer shapeRenderer) {
         for(int init = 0; init < massive.length; init++) {
             if (massive[init] == 1) {
-                drawWallPos1(shapeRenderer,START + TEXTURE_SIZE * init + init * FREE_SPACE);
+                drawWallPos1(shapeRenderer,x + TEXTURE_SIZE * init + init * FREE_SPACE);
             } else if (massive[init] == 2) {
-                drawWallPos2(shapeRenderer,START + TEXTURE_SIZE * init + init * FREE_SPACE);
+                drawWallPos2(shapeRenderer,x + TEXTURE_SIZE * init + init * FREE_SPACE);
             } else if (massive[init] == 3) {
-                drawWallPos3(shapeRenderer,START + TEXTURE_SIZE * init + init * FREE_SPACE);
+                drawWallPos3(shapeRenderer,x + TEXTURE_SIZE * init + init * FREE_SPACE);
             } else if (massive[init] == 4) {
-                drawWallPos4(shapeRenderer,START + TEXTURE_SIZE * init + init * FREE_SPACE);
+                drawWallPos4(shapeRenderer,x + TEXTURE_SIZE * init + init * FREE_SPACE);
             } else if (massive[init] == 5) {
-                drawWallPos5(shapeRenderer,START + TEXTURE_SIZE * init + init * FREE_SPACE);
+                drawWallPos5(shapeRenderer,x + TEXTURE_SIZE * init + init * FREE_SPACE);
 
             }
 
@@ -199,22 +204,59 @@ public class Wall {
     // positions drawing constructor
     public void drawWallPos1(ShapeRenderer shapeRenderer, float x) {
         //space
+        if(Application.gameSkin == 0) {
         shapeRenderer.setColor(Color.BLACK);
+        } else if(Application.gameSkin == 1){
+            shapeRenderer.setColor(Globals.Inner1Color);
+        }
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3);
+
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Color.BLACK);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Inner1Color);
+                break;
+        }
+        shapeRenderer.rect(posBlock.x + x+ 3, posBlock.y + TEXTURE_SIZE * 3 + 3, TEXTURE_SIZE - 6, TEXTURE_SIZE * 6);
         //block
-        shapeRenderer.setColor(Globals.SidesColor);
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Globals.SidesColor);
+        } else if(Application.gameSkin == 1) {
+            shapeRenderer.setColor(Globals.Sides1Color);
+        }
         shapeRenderer.rect(posBlock.x + x, posBlock.y + TEXTURE_SIZE *3, 3, TEXTURE_SIZE * 6);  //left
-        shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y + TEXTURE_SIZE *3, 3, TEXTURE_SIZE * 6); // right
+        shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y + TEXTURE_SIZE *3, 3, 3+TEXTURE_SIZE * 6); // right
 
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE *3, TEXTURE_SIZE-6, 3);
+
+
     }
     public void drawWallPos2(ShapeRenderer shapeRenderer, float x) {
         //space
-        shapeRenderer.setColor(Color.BLACK);
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Color.BLACK);
+        } else if(Application.gameSkin == 1){
+            shapeRenderer.setColor(Globals.Inner1Color);
+        }
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3); //top
         shapeRenderer.rect(posBlock.x + x + 3, 11-3, TEXTURE_SIZE-6, 3); // bot
 
-        shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+        //INNER
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Color.BLACK);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Inner1Color);
+                break;
+        }
+
+        shapeRenderer.rect(posBlock.x + x + 3, posBlock.y, TEXTURE_SIZE - 6, TEXTURE_SIZE * 1.5f -3);
+        shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE *4.5f +3, TEXTURE_SIZE - 6, TEXTURE_SIZE * 4.5f -3);
+
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Globals.SidesColor);
+        } else if(Application.gameSkin == 1) {
+            shapeRenderer.setColor(Globals.Sides1Color);
+        }
         //bot block
         shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, 48);  //left
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y, 3, 48); // right
@@ -229,11 +271,30 @@ public class Wall {
     }
     public void drawWallPos3(ShapeRenderer shapeRenderer, float x) {
         //space
-        shapeRenderer.setColor(Color.BLACK);
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Color.BLACK);
+        } else if(Application.gameSkin == 1){
+            shapeRenderer.setColor(Globals.Inner1Color);
+        }
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3); //top
         shapeRenderer.rect(posBlock.x + x + 3, 11-3, TEXTURE_SIZE-6, 3); // bot
 
-        shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+        //INNER
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Color.BLACK);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Inner1Color);
+                break;
+        }
+
+        shapeRenderer.rect(posBlock.x + x +3, posBlock.y, TEXTURE_SIZE -6, TEXTURE_SIZE *3 -3);
+        shapeRenderer.rect(posBlock.x + x +3, posBlock.y + TEXTURE_SIZE*6 + 3, TEXTURE_SIZE -6, TEXTURE_SIZE *3 -3);
+
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Globals.SidesColor);
+        } else if(Application.gameSkin == 1) {
+            shapeRenderer.setColor(Globals.Sides1Color);
+        }
         //bot block
         shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, TEXTURE_SIZE * 3);  //left
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y, 3, TEXTURE_SIZE * 3); // right
@@ -248,11 +309,30 @@ public class Wall {
     }
     public void drawWallPos4(ShapeRenderer shapeRenderer, float x) {
         //space
-        shapeRenderer.setColor(Color.BLACK);
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Color.BLACK);
+        } else if(Application.gameSkin == 1){
+            shapeRenderer.setColor(Globals.Inner1Color);
+        }
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3); //top
         shapeRenderer.rect(posBlock.x + x + 3, 11-3, TEXTURE_SIZE-6, 3); // bot
 
-        shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+        //INNER
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Color.BLACK);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Inner1Color);
+                break;
+        }
+
+        shapeRenderer.rect(posBlock.x + x + 3, posBlock.y, TEXTURE_SIZE - 6, TEXTURE_SIZE * 4.5f -3);
+        shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE *7.5f +3, TEXTURE_SIZE - 6, TEXTURE_SIZE * 1.5f -3);
+
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Globals.SidesColor);
+        } else if(Application.gameSkin == 1) {
+            shapeRenderer.setColor(Globals.Sides1Color);
+        }
         //bot block
         shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, TEXTURE_SIZE * 3 + 48);  //left
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y, 3, TEXTURE_SIZE * 3 + 48); // right
@@ -267,10 +347,28 @@ public class Wall {
     }
     public void drawWallPos5(ShapeRenderer shapeRenderer, float x) {
         //space
-        shapeRenderer.setColor(Color.BLACK);
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Color.BLACK);
+        } else if(Application.gameSkin == 1){
+            shapeRenderer.setColor(Globals.Inner1Color);
+        }
         shapeRenderer.rect(posBlock.x + x + 3, 11-3, TEXTURE_SIZE-6, 3); // bot
 
-        shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+        //INNER
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Color.BLACK);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Inner1Color);
+                break;
+        }
+
+        shapeRenderer.rect(posBlock.x + x + 3, posBlock.y, TEXTURE_SIZE - 6, TEXTURE_SIZE * 6f -3);
+
+        if(Application.gameSkin == 0) {
+            shapeRenderer.setColor(Globals.SidesColor);
+        } else if(Application.gameSkin == 1) {
+            shapeRenderer.setColor(Globals.Sides1Color);
+        }
 
         shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, TEXTURE_SIZE * 6);  //left
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y, 3, TEXTURE_SIZE * 6); // right

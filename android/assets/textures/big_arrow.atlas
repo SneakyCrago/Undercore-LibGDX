@@ -1,0 +1,41 @@
+
+big_arrow.png
+size: 1024,256
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+big_arrow
+  rotate: false
+  xy: 0, 0
+  size: 204, 192
+  orig: 204, 192
+  offset: 0, 0
+  index: -1
+big_arrow1
+  rotate: false
+  xy: 204, 0
+  size: 204, 192
+  orig: 204, 192
+  offset: 0, 0
+  index: -1
+big_arrow2
+  rotate: false
+  xy: 408, 0
+  size: 204, 192
+  orig: 204, 192
+  offset: 0, 0
+  index: -1
+big_arrow3
+  rotate: false
+  xy: 612, 0
+  size: 204, 192
+  orig: 204, 192
+  offset: 0, 0
+  index: -1
+big_arrow4
+  rotate: false
+  xy: 816, 0
+  size: 204, 192
+  orig: 204, 192
+  offset: 0, 0
+  index: -1

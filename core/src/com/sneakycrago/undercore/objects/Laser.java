@@ -6,10 +6,12 @@ import com.badlogic.gdx.graphics.Colors;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
 
@@ -28,8 +30,9 @@ public class Laser {
     private Vector2 velocity;
     private Vector2 posBlock;
 
-    private Texture laserTexture;
-    private TextureRegion flipLaserTexture;
+    private TextureRegion laserTexture, flipLaserTexture;
+
+    private TextureAtlas laserAtlas;
     private Sprite[] laser, flipLaser;
 
     private int[] massive;
@@ -69,8 +72,16 @@ public class Laser {
         OrangeLaserRect = new Rectangle[massive.length];
         BlueLaserRect = new Rectangle[massive.length];
 
-        laserTexture = new Texture("textures/laser.png");
-        flipLaserTexture = new TextureRegion(laserTexture,0,0,32,32);
+        laserAtlas = new TextureAtlas(Gdx.files.internal("textures/laser.atlas"), Gdx.files.internal("textures/"));
+
+        switch(Application.gameSkin){
+            case 0: laserTexture = new TextureRegion(laserAtlas.findRegion("laser"));
+                flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser"));
+                break;
+            case 1: laserTexture = new TextureRegion(laserAtlas.findRegion("laser1"));
+                flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser1"));
+        }
+
         flipLaserTexture.flip(false, true);
 
         laser = new Sprite[massive.length];
@@ -200,11 +211,22 @@ public class Laser {
     // отрисовывает стену с пушкой
     public void drawLaserShell(ShapeRenderer shapeRenderer, int x) {
         //space
-        shapeRenderer.setColor(Color.BLACK);
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Color.BLACK);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Inner1Color);
+        }
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, Globals.TEXTURE_SIZE-6, 3); //top
         shapeRenderer.rect(posBlock.x + x + 3, 11-3, Globals.TEXTURE_SIZE-6, 3); // bot
 
-        shapeRenderer.setColor(Globals.SidesColor);
+        shapeRenderer.rect(posBlock.x + x + 3, posBlock.y, Globals.TEXTURE_SIZE-6, 32);
+        shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + 32*8, Globals.TEXTURE_SIZE-6, 32);
+
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Globals.SidesColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Sides1Color);
+        }
         //bot block
         shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, Globals.TEXTURE_SIZE);  //left
         shapeRenderer.rect(posBlock.x + x + Globals.TEXTURE_SIZE - 3, posBlock.y, 3, Globals.TEXTURE_SIZE); // right
@@ -222,7 +244,12 @@ public class Laser {
         for(int i = 0; i < massive.length; i++){
             if(massive[i] == 1 && size[i] <= laserHeight
                     && posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= laserFieldOfView) {
-                shapeRenderer.setColor(Globals.OrangeColor);
+                switch (Application.gameSkin){
+                    case 0: shapeRenderer.setColor(Globals.OrangeColor);
+                        break;
+                    case 1: shapeRenderer.setColor(Globals.Sides1Color);
+                }
+
                 shapeRenderer.rect(2 + posBlock.x + x + i * FREE_SPACE + i * Globals.TEXTURE_SIZE,
                         posBlock.y + Globals.TEXTURE_SIZE * 2, Globals.TEXTURE_SIZE - 4, size[i]);
                 size[i] += laserSpeed * delta;
@@ -232,7 +259,12 @@ public class Laser {
             }
             if(massive[i] == 2 && size[i] >= -laserHeight
                     && posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= laserFieldOfView) {
-                shapeRenderer.setColor(Globals.LightBlueColor);
+
+                switch (Application.gameSkin) {
+                    case 0:  shapeRenderer.setColor(Globals.LightBlueColor);
+                        break;
+                    case 1: shapeRenderer.setColor(Globals.Line1Color);
+                }
                 shapeRenderer.rect(2 + posBlock.x + x + i * FREE_SPACE + i * Globals.TEXTURE_SIZE,
                         posBlock.y + Globals.TEXTURE_SIZE * 4 + Globals.FREE_SPACE, Globals.TEXTURE_SIZE - 4, size[i]);
                 size[i] -= laserSpeed * delta;
@@ -244,7 +276,7 @@ public class Laser {
     }
 
     public void dispose() {
-        laserTexture.dispose();
+        laserAtlas.dispose();
         System.out.println("Laser dispose");
     }
 

@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.sneakycrago.undercore.Application;
+import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
@@ -117,7 +119,12 @@ public class SmallArrow {
     }
 
     public void drawArrow(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(22/255f,238/255f,247/255f,1f);
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Globals.SidesColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Sides1Color);
+                break;
+        }
         if(wave ==1) {
             for (int i = 0; i < amountOfArrows; i++) {
                 shapeRenderer.rect(upWave[i].getX(), upWave[i].getY(), upWave[i].getWidth(), upWave[i].getHeight());

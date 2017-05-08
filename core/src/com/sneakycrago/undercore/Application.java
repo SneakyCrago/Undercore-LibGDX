@@ -40,7 +40,7 @@ public class Application extends Game {
 	public Preferences preferences;
 	boolean loadPrefs = true; // загружать ли ресурсы
 
-	public static int gameSkin = 0;
+	public static int gameSkin = 1; // 0 - standard
 	public static int playerSkin = 0;
 
 	@Override
