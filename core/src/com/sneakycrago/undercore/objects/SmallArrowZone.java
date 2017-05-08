@@ -20,6 +20,7 @@ public class SmallArrowZone {
 
     private int massive[],length[], randomHelper;
     private int upHelper[], downHelper[], randHelper[];
+    private int value;
     public int BLOCK_SIZE;
 
     private int lenghtBig = 312, randomLenght = 48;
@@ -81,12 +82,45 @@ public class SmallArrowZone {
         } else {
             massive = new int[5];
         }
-
+        /*
         System.out.print("SMALL ARROW: ");
         massive[0] = random.nextInt(3) +1; // (3)+1
         System.out.print(massive[0] + " ");
         for(int i =1; i< massive.length; i++){
             massive[i] = random.nextInt(3) + 1;
+
+            if(massive[i] == 1 || massive[i] == 2) {
+                while (massive[i] == massive[i - 1]) {
+                    massive[i] = random.nextInt(3) + 1;
+                }
+            }
+            System.out.print(massive[i] + " ");
+        }
+        System.out.println();
+        */
+        System.out.print("SMALL ARROW: ");
+
+        value = random.nextInt(2) +1;
+        massive[0] = random.nextInt(3) +1; // (3)+1
+        if(massive[0] != 3 && value ==1){
+            massive[0] = value;
+            value = 2;
+        } else if (massive[0] != 3 && value ==2){
+            massive[0] = value;
+            value = 1;
+        }
+
+        System.out.print(massive[0] + " ");
+        for(int i =1; i< massive.length; i++){
+            massive[i] = random.nextInt(3) + 1;
+
+            if(massive[i] != 3 && value ==1){
+                massive[i] = value;
+                value =2;
+            } else if(massive[i] != 3 && value == 2){
+                massive[i] = value;
+                value = 1;
+            }
 
             if(massive[i] == 1 || massive[i] == 2) {
                 while (massive[i] == massive[i - 1]) {

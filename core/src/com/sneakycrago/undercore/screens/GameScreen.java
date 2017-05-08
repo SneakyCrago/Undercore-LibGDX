@@ -132,18 +132,22 @@ public class GameScreen implements Screen {
             smallArrowCreated = true;
         }
 
+
         //Обнуляем счет
         Score.setGameScore(0);
         blocksNumber = 0;
         Currency.resetMoney();
 
         //test
-        //wall.SPEED = 0;
-        //corridor.SPEED = 0;
-        //laser.SPEED = 0;
-        //circle.SPEED = 0;
-        //bigArrow.SPEED = 0;
-
+        /*
+        wall.SPEED = 0;
+        corridor.SPEED = 0;
+        laser.SPEED = 0;
+        circle.SPEED = 0;
+        bigArrow.SPEED = 0;
+        smallArrowZone = new SmallArrowZone(SPAWN);
+        smallArrowStart = true;
+        */
 
     }
 
@@ -252,14 +256,8 @@ public class GameScreen implements Screen {
         zoneCreator();
 
         //COLLISION
-        //collisionCheck();
+        collisionCheck();
         //collisionDebug();
-
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        game.shapeRenderer.setColor(Color.BLUE);
-        //game.shapeRenderer.rect(sniper.getStationRect().getX(), sniper.getStationRect().getY(),
-        //        sniper.getStationRect().getWidth(),sniper.getStationRect().getHeight());
-        game.shapeRenderer.end();
     }
 
     public void update(float delta) {
