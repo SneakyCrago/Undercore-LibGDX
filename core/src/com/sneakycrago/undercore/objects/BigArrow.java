@@ -1,6 +1,7 @@
 package com.sneakycrago.undercore.objects;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -252,11 +253,7 @@ public class BigArrow {
         arrow2.draw(batch);
     }
     public void drawArrowLine(ShapeRenderer shapeRenderer) {
-        switch(Application.gameSkin) {
-            case 0: shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, 1f);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Line1Color);
-        }
+        setColor(shapeRenderer);
         if(arrow.getX() <= INVISIBLE) {
             //shapeRenderer.rect(0, arrow.getY(), arrow.getX() + 48, 96);
             shapeRenderer.rect(line.x,line.y,line.width,line.height);
@@ -267,17 +264,28 @@ public class BigArrow {
 
     }
     public void drawArrow2Line(ShapeRenderer shapeRenderer) {
-        switch(Application.gameSkin) {
-            case 0: shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, 1f);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Line1Color);
-        }
+        setColor(shapeRenderer);
         if(arrow2.getX() <= INVISIBLE) {
             //shapeRenderer.rect(0, arrow.getY(), arrow.getX() + 48, 96);
             shapeRenderer.rect(line2.x,line2.y,line2.width,line2.height);
         }
         if (arrow2.getX() > INVISIBLE) {
             line2.set(512,0,0,0);
+        }
+    }
+
+    private void setColor(ShapeRenderer shapeRenderer){
+        switch(Application.gameSkin) {
+            case 0: shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, 1f);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Line1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Line2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Line3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Line4Color);
+                break;
         }
     }
 

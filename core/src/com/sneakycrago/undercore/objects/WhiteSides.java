@@ -21,19 +21,29 @@ public class WhiteSides {
             case 1: shapeRenderer.setColor(Globals.Sides1Color);
                 break;
             case 2: shapeRenderer.setColor(Globals.Sides2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Sides3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Sides4Color);
+                break;
         }
             shapeRenderer.rect(0, 11 - lineY, 512, lineY);
             shapeRenderer.rect(0, 310 - 11, 512, lineY);
 
         switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Color.BLACK);
+                break;
             case 1: shapeRenderer.setColor(Globals.Inner1Color);
-                shapeRenderer.rect(0,0, 512, 11-lineY);
-                shapeRenderer.rect(0, 310 - 11 + lineY, 512, 11-lineY);
                 break;
             case 2: shapeRenderer.setColor(Globals.Inner2Color);
-                shapeRenderer.rect(0,0, 512, 11-lineY);
-                shapeRenderer.rect(0, 310 - 11 + lineY, 512, 11-lineY);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Inner3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Inner4Color);
                 break;
         }
+
+        shapeRenderer.rect(0,0, 512, 11-lineY);
+        shapeRenderer.rect(0, 310 - 11 + lineY, 512, 11-lineY);
     }
 }

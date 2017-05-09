@@ -90,6 +90,8 @@ public class GameScreen implements Screen {
     public void show() {
         random = new Random();
 
+        Application.gameSkin = random.nextInt(5);
+
         //create objects
         whiteSides = new WhiteSides();
         player = new Player(96, 139);
@@ -124,7 +126,7 @@ public class GameScreen implements Screen {
 
 
         //test
-        Application.gameSkin = random.nextInt(2);
+
     }
 
     @Override
@@ -140,6 +142,10 @@ public class GameScreen implements Screen {
             case 1: Gdx.gl.glClearColor(175/255f,209/255f,234/255f, 1f);
                 break;
             case 2: Gdx.gl.glClearColor(26/255f, 50/255f, 15/255f, 1f);
+                break;
+            case 3: Gdx.gl.glClearColor(2255/255f, 255/255f, 255/255f, 1f);
+                break;
+            case 4: Gdx.gl.glClearColor(252/255f, 214/255f, 225/255f, 1f);
                 break;
         }
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -552,7 +558,7 @@ public class GameScreen implements Screen {
             snipersStart = false;
             smallArrowStart = false;
             */
-                blockCounter += 1;
+            blockCounter += 1;
             if(blockCounter != 8) {
                 zoneCreate = random.nextInt(4) + 1;
 

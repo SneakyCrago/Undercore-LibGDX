@@ -168,25 +168,47 @@ public class Corridor {
         drawTopRight(shapeRenderer, x);
     }
 
-    //draw block elements
-    private void drawDown(ShapeRenderer shapeRenderer, float x) {
-        //down corridor
+    //colors switch
+    private void switchInner(ShapeRenderer shapeRenderer){
         switch (Application.gameSkin){
             case 0: shapeRenderer.setColor(Color.BLACK);
                 break;
             case 1: shapeRenderer.setColor(Globals.Inner1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Inner2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Inner3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Inner4Color);
+                break;
         }
+    }
+    private void switchSides(ShapeRenderer shapeRenderer){
+        switch(Application.gameSkin){
+            case 0: shapeRenderer.setColor(Globals.SidesColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Sides1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Sides2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Sides3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Sides4Color);
+                break;
+        }
+    }
+
+    //draw block elements
+    private void drawDown(ShapeRenderer shapeRenderer, float x) {
+        //down corridor
+        switchInner(shapeRenderer);
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE* 2 + 3, 11-3, (TEXTURE_SIZE * 15)-6, 3); // bot
 
         for(int i =0; i < bottomRets.length; i++){
             shapeRenderer.rect(bottomRets[i].getX(), bottomRets[i].getY(), bottomRets[i].getWidth(), bottomRets[i].getHeight() -3);
         }
 
-        switch(Application.gameSkin){
-            case 0: shapeRenderer.setColor(Globals.SidesColor);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Sides1Color);
-        }
+        switchSides(shapeRenderer);
         //1
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE* 2,posBlock.y,3,HEIGHT);
         shapeRenderer.rect(posBlock.x+ x + TEXTURE_SIZE*2,posBlock.y + HEIGHT, TEXTURE_SIZE,3);
@@ -212,22 +234,14 @@ public class Corridor {
                 3, 24);
     }
     private void drawTopLeft(ShapeRenderer shapeRenderer, float x) {
-        switch (Application.gameSkin){
-            case 0: shapeRenderer.setColor(Color.BLACK);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Inner1Color);
-        }
+        switchInner(shapeRenderer);
         shapeRenderer.rect(posBlock.x + x+ 3, 310 -11, (TEXTURE_SIZE * 7)-6, 3);
 
         for(int i =0; i < topLeftRects.length; i++){
             shapeRenderer.rect(topLeftRects[i].getX(), topLeftRects[i].getY(), topLeftRects[i].getWidth(), topLeftRects[i].getHeight());
         }
 
-        switch(Application.gameSkin){
-            case 0: shapeRenderer.setColor(Globals.SidesColor);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Sides1Color);
-        }
+        switchSides(shapeRenderer);
 
         shapeRenderer.rect(posBlock.x + x,posBlock.y +FREE_SPACE + 24,3, TEXTURE_SIZE*5 + 8);
 
@@ -240,22 +254,15 @@ public class Corridor {
         }
     }
     private void drawTopRight(ShapeRenderer shapeRenderer, float x){
-        switch (Application.gameSkin){
-            case 0: shapeRenderer.setColor(Color.BLACK);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Inner1Color);
-        }
+        switchInner(shapeRenderer);
         shapeRenderer.rect(posBlock.x + x+ TEXTURE_SIZE * (8+3) + 32, 310-11, TEXTURE_SIZE*7 - 3,3);
 
         for(int i =0; i < topRightRects.length; i++){
             shapeRenderer.rect(topRightRects[i].getX(), topRightRects[i].getY(), topRightRects[i].getWidth(), topRightRects[i].getHeight());
         }
 
-        switch(Application.gameSkin){
-            case 0: shapeRenderer.setColor(Globals.SidesColor);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Sides1Color);
-        }
+        switchSides(shapeRenderer);
+
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE *19 -3,posBlock.y + FREE_SPACE + 24,3, TEXTURE_SIZE*5 + 8);
 
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE* 18 -3, posBlock.y+ FREE_SPACE +24,3,24);

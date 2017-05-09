@@ -84,6 +84,12 @@ public class Laser {
             case  2: laserTexture = new TextureRegion(laserAtlas.findRegion("laser2"));
                 flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser2"));
                 break;
+            case 3: laserTexture = new TextureRegion(laserAtlas.findRegion("laser3"));
+                flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser3"));
+                break;
+            case 4: laserTexture = new TextureRegion(laserAtlas.findRegion("laser4"));
+                flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser4"));
+                break;
         }
 
         flipLaserTexture.flip(false, true);
@@ -214,25 +220,78 @@ public class Laser {
         }
     }
 
-    // отрисовывает стену с пушкой
-    public void drawLaserShell(ShapeRenderer shapeRenderer, int x) {
-        //space
+    private void switchSides(ShapeRenderer shapeRenderer){
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Globals.SidesColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Sides1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Sides2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Sides3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Sides4Color);
+                break;
+        }
+    }
+    private void switchInner(ShapeRenderer shapeRenderer){
         switch (Application.gameSkin) {
             case 0: shapeRenderer.setColor(Color.BLACK);
                 break;
             case 1: shapeRenderer.setColor(Globals.Inner1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Inner2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Inner3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Inner4Color);
+                break;
         }
+    }
+
+    private void switchJumpColor(ShapeRenderer shapeRenderer){
+        switch (Application.gameSkin){
+            case 0: shapeRenderer.setColor(Globals.OrangeColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Sides1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Player2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Player3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Player4Color);
+                break;
+        }
+    }
+
+    private void switchOnLineColor(ShapeRenderer shapeRenderer){
+        switch (Application.gameSkin) {
+            case 0:  shapeRenderer.setColor(Globals.LightBlueColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Line1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Line2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Line3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Line4Color);
+                break;
+        }
+    }
+
+    // отрисовывает стену с пушкой
+    public void drawLaserShell(ShapeRenderer shapeRenderer, int x) {
+        //space
+
+        switchInner(shapeRenderer);
+
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, Globals.TEXTURE_SIZE-6, 3); //top
         shapeRenderer.rect(posBlock.x + x + 3, 11-3, Globals.TEXTURE_SIZE-6, 3); // bot
 
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y, Globals.TEXTURE_SIZE-6, 32);
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + 32*8, Globals.TEXTURE_SIZE-6, 32);
 
-        switch (Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Globals.SidesColor);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Sides1Color);
-        }
+        switchSides(shapeRenderer);
         //bot block
         shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, Globals.TEXTURE_SIZE);  //left
         shapeRenderer.rect(posBlock.x + x + Globals.TEXTURE_SIZE - 3, posBlock.y, 3, Globals.TEXTURE_SIZE); // right
@@ -250,11 +309,7 @@ public class Laser {
         for(int i = 0; i < massive.length; i++){
             if(massive[i] == 1 && size[i] <= laserHeight
                     && posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= laserFieldOfView) {
-                switch (Application.gameSkin){
-                    case 0: shapeRenderer.setColor(Globals.OrangeColor);
-                        break;
-                    case 1: shapeRenderer.setColor(Globals.Sides1Color);
-                }
+                switchJumpColor(shapeRenderer);
 
                 shapeRenderer.rect(2 + posBlock.x + x + i * FREE_SPACE + i * Globals.TEXTURE_SIZE,
                         posBlock.y + Globals.TEXTURE_SIZE * 2, Globals.TEXTURE_SIZE - 4, size[i]);
@@ -266,11 +321,8 @@ public class Laser {
             if(massive[i] == 2 && size[i] >= -laserHeight
                     && posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE <= laserFieldOfView) {
 
-                switch (Application.gameSkin) {
-                    case 0:  shapeRenderer.setColor(Globals.LightBlueColor);
-                        break;
-                    case 1: shapeRenderer.setColor(Globals.Line1Color);
-                }
+                switchOnLineColor(shapeRenderer);
+
                 shapeRenderer.rect(2 + posBlock.x + x + i * FREE_SPACE + i * Globals.TEXTURE_SIZE,
                         posBlock.y + Globals.TEXTURE_SIZE * 4 + Globals.FREE_SPACE, Globals.TEXTURE_SIZE - 4, size[i]);
                 size[i] -= laserSpeed * delta;

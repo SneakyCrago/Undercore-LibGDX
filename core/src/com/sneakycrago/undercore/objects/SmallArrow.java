@@ -124,6 +124,12 @@ public class SmallArrow {
                 break;
             case 1: shapeRenderer.setColor(Globals.Sides1Color);
                 break;
+            case 2: shapeRenderer.setColor(Globals.Sides2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Sides3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Sides4Color);
+                break;
         }
         if(wave ==1) {
             for (int i = 0; i < amountOfArrows; i++) {

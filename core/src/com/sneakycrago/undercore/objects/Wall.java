@@ -207,27 +207,15 @@ public class Wall {
     }
     // positions drawing constructor
     public void drawWallPos1(ShapeRenderer shapeRenderer, float x) {
+
+        switchInner(shapeRenderer);
         //space
-        if(Application.gameSkin == 0) {
-        shapeRenderer.setColor(Color.BLACK);
-        } else if(Application.gameSkin == 1){
-            shapeRenderer.setColor(Globals.Inner1Color);
-        }
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3);
 
-        switch (Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Color.BLACK);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Inner1Color);
-                break;
-        }
         shapeRenderer.rect(posBlock.x + x+ 3, posBlock.y + TEXTURE_SIZE * 3 + 3, TEXTURE_SIZE - 6, TEXTURE_SIZE * 6);
         //block
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Globals.SidesColor);
-        } else if(Application.gameSkin == 1) {
-            shapeRenderer.setColor(Globals.Sides1Color);
-        }
+
+        switchSides(shapeRenderer);
         shapeRenderer.rect(posBlock.x + x, posBlock.y + TEXTURE_SIZE *3, 3, TEXTURE_SIZE * 6);  //left
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y + TEXTURE_SIZE *3, 3, 3+TEXTURE_SIZE * 6); // right
 
@@ -236,31 +224,16 @@ public class Wall {
 
     }
     public void drawWallPos2(ShapeRenderer shapeRenderer, float x) {
+
+        switchInner(shapeRenderer);
         //space
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Color.BLACK);
-        } else if(Application.gameSkin == 1){
-            shapeRenderer.setColor(Globals.Inner1Color);
-        }
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3); //top
         shapeRenderer.rect(posBlock.x + x + 3, 11-3, TEXTURE_SIZE-6, 3); // bot
-
-        //INNER
-        switch (Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Color.BLACK);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Inner1Color);
-                break;
-        }
 
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y, TEXTURE_SIZE - 6, TEXTURE_SIZE * 1.5f -3);
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE *4.5f +3, TEXTURE_SIZE - 6, TEXTURE_SIZE * 4.5f -3);
 
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Globals.SidesColor);
-        } else if(Application.gameSkin == 1) {
-            shapeRenderer.setColor(Globals.Sides1Color);
-        }
+        switchSides(shapeRenderer);
         //bot block
         shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, 48);  //left
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y, 3, 48); // right
@@ -274,31 +247,16 @@ public class Wall {
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE *4.5f, TEXTURE_SIZE-6, 3);
     }
     public void drawWallPos3(ShapeRenderer shapeRenderer, float x) {
+
+        switchInner(shapeRenderer);
         //space
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Color.BLACK);
-        } else if(Application.gameSkin == 1){
-            shapeRenderer.setColor(Globals.Inner1Color);
-        }
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3); //top
         shapeRenderer.rect(posBlock.x + x + 3, 11-3, TEXTURE_SIZE-6, 3); // bot
-
         //INNER
-        switch (Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Color.BLACK);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Inner1Color);
-                break;
-        }
-
         shapeRenderer.rect(posBlock.x + x +3, posBlock.y, TEXTURE_SIZE -6, TEXTURE_SIZE *3 -3);
         shapeRenderer.rect(posBlock.x + x +3, posBlock.y + TEXTURE_SIZE*6 + 3, TEXTURE_SIZE -6, TEXTURE_SIZE *3 -3);
 
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Globals.SidesColor);
-        } else if(Application.gameSkin == 1) {
-            shapeRenderer.setColor(Globals.Sides1Color);
-        }
+        switchSides(shapeRenderer);
         //bot block
         shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, TEXTURE_SIZE * 3);  //left
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y, 3, TEXTURE_SIZE * 3); // right
@@ -312,31 +270,16 @@ public class Wall {
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE * 6, TEXTURE_SIZE-6, 3);
     }
     public void drawWallPos4(ShapeRenderer shapeRenderer, float x) {
+        switchInner(shapeRenderer);
         //space
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Color.BLACK);
-        } else if(Application.gameSkin == 1){
-            shapeRenderer.setColor(Globals.Inner1Color);
-        }
         shapeRenderer.rect(posBlock.x + x + 3, 310 -11, TEXTURE_SIZE-6, 3); //top
         shapeRenderer.rect(posBlock.x + x + 3, 11-3, TEXTURE_SIZE-6, 3); // bot
 
         //INNER
-        switch (Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Color.BLACK);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Inner1Color);
-                break;
-        }
-
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y, TEXTURE_SIZE - 6, TEXTURE_SIZE * 4.5f -3);
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE *7.5f +3, TEXTURE_SIZE - 6, TEXTURE_SIZE * 1.5f -3);
 
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Globals.SidesColor);
-        } else if(Application.gameSkin == 1) {
-            shapeRenderer.setColor(Globals.Sides1Color);
-        }
+        switchSides(shapeRenderer);
         //bot block
         shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, TEXTURE_SIZE * 3 + 48);  //left
         shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y, 3, TEXTURE_SIZE * 3 + 48); // right
@@ -350,34 +293,46 @@ public class Wall {
         shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE * 7 + 16, TEXTURE_SIZE-6, 3);
     }
     public void drawWallPos5(ShapeRenderer shapeRenderer, float x) {
-        //space
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Color.BLACK);
-        } else if(Application.gameSkin == 1){
-            shapeRenderer.setColor(Globals.Inner1Color);
-        }
-        shapeRenderer.rect(posBlock.x + x + 3, 11-3, TEXTURE_SIZE-6, 3); // bot
 
+        switchInner(shapeRenderer);
+        //space
+        shapeRenderer.rect(posBlock.x + x + 3, 11-3, TEXTURE_SIZE-6, 3); // bot
         //INNER
+        shapeRenderer.rect(posBlock.x + x + 3, posBlock.y, TEXTURE_SIZE - 6, TEXTURE_SIZE * 6f -3);
+
+       switchSides(shapeRenderer);
+        shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, TEXTURE_SIZE * 6);  //left
+        shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y, 3, TEXTURE_SIZE * 6); // right
+
+        shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE * 6 -3, TEXTURE_SIZE-6, 3);
+    }
+
+    private void switchInner(ShapeRenderer shapeRenderer){
         switch (Application.gameSkin) {
             case 0: shapeRenderer.setColor(Color.BLACK);
                 break;
             case 1: shapeRenderer.setColor(Globals.Inner1Color);
                 break;
+            case 2: shapeRenderer.setColor(Globals.Inner2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Inner3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Inner4Color);
+                break;
         }
-
-        shapeRenderer.rect(posBlock.x + x + 3, posBlock.y, TEXTURE_SIZE - 6, TEXTURE_SIZE * 6f -3);
-
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Globals.SidesColor);
-        } else if(Application.gameSkin == 1) {
-            shapeRenderer.setColor(Globals.Sides1Color);
+    }
+    private void switchSides(ShapeRenderer shapeRenderer){
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Globals.SidesColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Sides1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Sides2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Sides3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Sides4Color);
         }
-
-        shapeRenderer.rect(posBlock.x + x, posBlock.y, 3, TEXTURE_SIZE * 6);  //left
-        shapeRenderer.rect(posBlock.x + x + TEXTURE_SIZE - 3, posBlock.y, 3, TEXTURE_SIZE * 6); // right
-
-        shapeRenderer.rect(posBlock.x + x + 3, posBlock.y + TEXTURE_SIZE * 6 -3, TEXTURE_SIZE-6, 3);
     }
 
     public Rectangle[] getMassiveRect() {

@@ -143,7 +143,7 @@ public class Player {
     }
     public void drawPlayerLine(ShapeRenderer shapeRenderer) {
         if(alive) {
-            switchLineColor(shapeRenderer);
+            switchLineCubeColor(shapeRenderer);
             shapeRenderer.rect(0, playerCubeRectangle.getY() + 16 - lineY / 2, 96 - 3, lineY);
             shapeRenderer.rect(96 + 32 + 3, playerCubeRectangle.getY() + 16 - lineY / 2, 512, lineY);
         }
@@ -178,6 +178,10 @@ public class Player {
             case 2:
                 shapeRenderer.setColor(Globals.Player2Color);
                 break;
+            case 3: shapeRenderer.setColor(Globals.Player3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Player4Color);
+                break;
         }
     }
     private void switchLineCubeColor(ShapeRenderer shapeRenderer){
@@ -188,16 +192,10 @@ public class Player {
             case 1: shapeRenderer.setColor(Globals.Line1Color);
                 break;
             case 2: shapeRenderer.setColor(Globals.Line2Color);
-        }
-    }
-
-    private void switchLineColor(ShapeRenderer shapeRenderer){
-        switch (Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Globals.LightBlueColor);
                 break;
-            case 1: shapeRenderer.setColor(Globals.Line1Color);
+            case 3: shapeRenderer.setColor(Globals.Line3Color);
                 break;
-            case 2: shapeRenderer.setColor(Globals.Line2Color);
+            case 4: shapeRenderer.setColor(Globals.Line4Color);
         }
     }
 

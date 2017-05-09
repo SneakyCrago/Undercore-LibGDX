@@ -121,21 +121,44 @@ public class Sniper {
         drawLine(shapeRenderer, playerY);
     }
 
-    private void drawSniperStation(ShapeRenderer shapeRenderer) {
-
+    private void switchInner(ShapeRenderer shapeRenderer){
         switch(Application.gameSkin) {
             case 0: shapeRenderer.setColor(Color.BLACK);
                 break;
             case 1: shapeRenderer.setColor(Globals.Inner1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Inner2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Inner3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Inner4Color);
+                break;
         }
+    }
 
-        shapeRenderer.rect(posBlock.x + 3, posBlock.y + y + 3, 32-6, 32-6);
-
+    private void switchSides(ShapeRenderer shapeRenderer){
         switch(Application.gameSkin) {
             case 0: shapeRenderer.setColor(Globals.SidesColor);
                 break;
             case 1: shapeRenderer.setColor(Globals.Sides1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Sides2Color);
+                break;
+            case 3: shapeRenderer.setColor(Globals.Sides3Color);
+                break;
+            case 4: shapeRenderer.setColor(Globals.Sides4Color);
+                break;
         }
+    }
+
+    private void drawSniperStation(ShapeRenderer shapeRenderer) {
+
+        switchInner(shapeRenderer);
+
+        shapeRenderer.rect(posBlock.x + 3, posBlock.y + y + 3, 32-6, 32-6);
+
+        switchSides(shapeRenderer);
+
         shapeRenderer.rect(posBlock.x, posBlock.y + y, line, 32);
         shapeRenderer.rect(posBlock.x +line, posBlock.y + y, 32-line, line);
         shapeRenderer.rect(posBlock.x + 32-line, posBlock.y + y + line, line, 32-line);
