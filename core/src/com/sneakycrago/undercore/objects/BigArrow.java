@@ -81,6 +81,15 @@ public class BigArrow {
             case 1: arrow = new Sprite(arrowAtlas.findRegion("big_arrow1"));
                 arrow2 = new Sprite(arrowAtlas.findRegion("big_arrow1"));
                 break;
+            case 2: arrow = new Sprite(arrowAtlas.findRegion("big_arrow2"));
+                arrow2 = new Sprite(arrowAtlas.findRegion("big_arrow2"));
+                break;
+            case 3: arrow = new Sprite(arrowAtlas.findRegion("big_arrow3"));
+                arrow2 = new Sprite(arrowAtlas.findRegion("big_arrow3"));
+                break;
+            case 4: arrow = new Sprite(arrowAtlas.findRegion("big_arrow4"));
+                arrow2 = new Sprite(arrowAtlas.findRegion("big_arrow4"));
+                break;
         }
 
 

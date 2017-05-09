@@ -35,6 +35,7 @@ public class Wall {
     private Rectangle[] massiveRect2;
 
     private Rectangle endZone;
+    private Rectangle startZone;
 
     public boolean[] isScored;
 
@@ -118,6 +119,7 @@ public class Wall {
         int test = 0;
         endZone = new Rectangle();
         endZone.set(posBlock.x + START, posBlock.y, 2, 288);
+
         for (int i = 0; i < massiveRect.length; i++){
             if(massive[i] == 1) {
                 massiveRect[i] = new Rectangle();

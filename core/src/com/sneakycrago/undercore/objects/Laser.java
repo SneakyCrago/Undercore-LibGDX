@@ -80,6 +80,10 @@ public class Laser {
                 break;
             case 1: laserTexture = new TextureRegion(laserAtlas.findRegion("laser1"));
                 flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser1"));
+                break;
+            case  2: laserTexture = new TextureRegion(laserAtlas.findRegion("laser2"));
+                flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser2"));
+                break;
         }
 
         flipLaserTexture.flip(false, true);

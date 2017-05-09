@@ -28,8 +28,8 @@ public class Currency {
             Money++;
         }
 
-        System.out.println("Random:" + randomNumber);
-        System.out.println("Chance:" + chance);
+        //System.out.println("Random:" + randomNumber);
+        //System.out.println("Chance:" + chance);
     }
 
 

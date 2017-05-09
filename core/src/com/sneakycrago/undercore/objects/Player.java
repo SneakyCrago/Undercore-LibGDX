@@ -146,24 +146,37 @@ public class Player {
     }
 
     private void switchCubeColor(ShapeRenderer shapeRenderer){
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Globals.OrangeColor);
-        } else if(Application.gameSkin == 1){
-            shapeRenderer.setColor(Globals.Sides1Color);
+
+        switch(Application.gameSkin) {
+            case 0:
+                shapeRenderer.setColor(Globals.OrangeColor);
+                break;
+            case 1:
+                shapeRenderer.setColor(Globals.Sides1Color);
+                break;
+            case 2:
+                shapeRenderer.setColor(Globals.Player2Color);
+                break;
         }
     }
     private void switchLineCubeColor(ShapeRenderer shapeRenderer){
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Globals.LightBlueColor);
-        } else if(Application.gameSkin == 1){
-            shapeRenderer.setColor(Globals.Line1Color);
+
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Globals.LightBlueColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Line1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Line2Color);
         }
     }
+
     private void switchLineColor(ShapeRenderer shapeRenderer){
-        if(Application.gameSkin == 0) {
-            shapeRenderer.setColor(Globals.LightBlueColor);
-        } else if(Application.gameSkin == 1){
-            shapeRenderer.setColor(Globals.Line1Color);
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Globals.LightBlueColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Line1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Line2Color);
         }
     }
 
@@ -200,6 +213,10 @@ public class Player {
 
     public Polygon getPlayerPolygon() {
         return playerPolygon;
+    }
+
+    public Vector2 getPosition() {
+        return position;
     }
 }
 

@@ -14,19 +14,26 @@ public class WhiteSides {
 
     // draw whiteSides at Screen
     public void drawWhiteSides(ShapeRenderer shapeRenderer) {
-        if(Application.gameSkin ==0) {
-            shapeRenderer.setColor(Globals.SidesColor);
-        } else if(Application.gameSkin == 1) {
-            shapeRenderer.setColor(Globals.Sides1Color);
+
+        switch (Application.gameSkin) {
+            case 0: shapeRenderer.setColor(Globals.SidesColor);
+                break;
+            case 1: shapeRenderer.setColor(Globals.Sides1Color);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Sides2Color);
         }
             shapeRenderer.rect(0, 11 - lineY, 512, lineY);
             shapeRenderer.rect(0, 310 - 11, 512, lineY);
 
-
-        if(Application.gameSkin == 1){
-            shapeRenderer.setColor(Globals.Inner1Color);
-            shapeRenderer.rect(0,0, 512, 11-lineY);
-            shapeRenderer.rect(0, 310 - 11 + lineY, 512, 11-lineY);
+        switch (Application.gameSkin) {
+            case 1: shapeRenderer.setColor(Globals.Inner1Color);
+                shapeRenderer.rect(0,0, 512, 11-lineY);
+                shapeRenderer.rect(0, 310 - 11 + lineY, 512, 11-lineY);
+                break;
+            case 2: shapeRenderer.setColor(Globals.Inner2Color);
+                shapeRenderer.rect(0,0, 512, 11-lineY);
+                shapeRenderer.rect(0, 310 - 11 + lineY, 512, 11-lineY);
+                break;
         }
     }
 }

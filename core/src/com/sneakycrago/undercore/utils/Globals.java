@@ -25,5 +25,13 @@ public class Globals {
     public static final Color Backgound1Color = new Color (175/255f,209/255f,234/255f, 1f);
     public static final Color Inner1Color = new Color(65/255f,108/255f,133/255f, 1f);
     public static final Color Line1Color = new Color(213/255f, 227/255f, 212/255f, 1f);
+
+    public static final Color Sides2Color = new Color(31/255f, 169/255f, 88/255f, 1f);
+    public static final Color Background2Color = new Color(26/255f, 50/255f, 15/255f, 1f);
+    public static final Color Inner2Color = new Color(66/255f, 115/255f, 34/255f, 1f);
+
+    public static final Color Line2Color = new Color(213/255f, 227/255f, 212/255f, 1f);
+    public static final Color Player2Color = new Color(63/255f, 193/255f, 133/255f, 1f);
+
 }
 

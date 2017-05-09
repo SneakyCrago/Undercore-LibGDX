@@ -160,6 +160,15 @@ public class Circle {
                 case 1: circleTop[i] = new Sprite(circleAtlas.findRegion("circle1"));
                     circleBot[i] = new Sprite(circleAtlas.findRegion("circle1"));
                     break;
+                case 2: circleTop[i] = new Sprite(circleAtlas.findRegion("circle2"));
+                    circleBot[i] = new Sprite(circleAtlas.findRegion("circle2"));
+                    break;
+                case 3: circleTop[i] = new Sprite(circleAtlas.findRegion("circle3"));
+                    circleBot[i] = new Sprite(circleAtlas.findRegion("circle3"));
+                    break;
+                case 4: circleTop[i] = new Sprite(circleAtlas.findRegion("circle4"));
+                    circleBot[i] = new Sprite(circleAtlas.findRegion("circle4"));
+                    break;
             }
             circleTop[i].setSize(SPRITE_SIZE,SPRITE_SIZE);
             circleBot[i].setSize(SPRITE_SIZE,SPRITE_SIZE);
@@ -173,6 +182,12 @@ public class Circle {
                 case 0: circleMiddle[i] = new Sprite(circleAtlas.findRegion("circle"));
                     break;
                 case 1: circleMiddle[i] = new Sprite(circleAtlas.findRegion("circle1"));
+                    break;
+                case 2: circleMiddle[i] = new Sprite(circleAtlas.findRegion("circle2"));
+                    break;
+                case 3: circleMiddle[i] = new Sprite(circleAtlas.findRegion("circle3"));
+                    break;
+                case 4: circleMiddle[i] = new Sprite(circleAtlas.findRegion("circle4"));
                     break;
             }
             circleMiddle[i].setSize(SPRITE_SIZE,SPRITE_SIZE);
