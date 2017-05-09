@@ -173,7 +173,9 @@ public class SmallArrowZone {
     public void update(float delta){
         for(int i=0; i < smallArrow.length; i++) {
             smallArrow[i].update(delta);
-            smallArrow[i].checkScore();
+            if(Application.playerAlive) {
+                smallArrow[i].checkScore();
+            }
         }
 
         posBlock.add(SPEED * delta, 0);
@@ -190,13 +192,15 @@ public class SmallArrowZone {
         shapeRenderer.rect(endZone.getX(),endZone.getY(), endZone.getWidth(), endZone.getHeight());
         shapeRenderer.end();
     }
-    public void checkCollision(Rectangle player, Application game){
+    public void checkCollision(Rectangle player, Application game, Player pl){
 
         for(int i =0; i < massive.length; i++) {
             if(downHelper[i] == 1) {
                 for (int k = 0; k < smallArrow[i].getDownWave().length; k++) {
-                    if (player.overlaps(smallArrow[i].getDownWave()[k])) {
-                        game.setScreen(game.gameOver);
+                    if (player.overlaps(smallArrow[i].getDownWave()[k]) && Application.playerAlive) {
+                        pl.alive = false;
+                        Application.playerAlive = false;
+                        pl.deathAnimation();
                         System.out.println("Collision: SMALL ARROW");
                     }
                 }
@@ -204,7 +208,9 @@ public class SmallArrowZone {
             if(upHelper[i] == 1) {
                 for (int k = 0; k < smallArrow[i].getUpWave().length; k++) {
                     if (player.overlaps(smallArrow[i].getUpWave()[k])) {
-                        game.setScreen(game.gameOver);
+                        pl.alive = false;
+                        Application.playerAlive = false;
+                        pl.deathAnimation();
                         System.out.println("Collision: SMALL ARROW");
                     }
                 }
@@ -212,7 +218,9 @@ public class SmallArrowZone {
             if(randHelper[i] == 1) {
                 for (int k = 0; k < smallArrow[i].getRandomWave().length; k++) {
                     if (player.overlaps(smallArrow[i].getRandomWave()[k])) {
-                        game.setScreen(game.gameOver);
+                        pl.alive = false;
+                        Application.playerAlive = false;
+                        pl.deathAnimation();
                         System.out.println("Collision: SMALL ARROW");
                     }
                 }

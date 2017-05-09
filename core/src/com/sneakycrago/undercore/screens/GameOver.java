@@ -130,7 +130,6 @@ public class GameOver implements Screen {
                 case 13:death = "Son, I am disappointed";
                     break;
             }
-            System.out.println("Death FRASE: " + frase);
             newFrase = false;
         }
 

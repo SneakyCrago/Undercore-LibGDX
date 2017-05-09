@@ -1,5 +1,11 @@
 package com.sneakycrago.undercore.utils;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.TimeUtils;
+
 import java.util.Random;
 
 /**
@@ -16,6 +22,17 @@ public class Currency {
     private static double chance;
     private static double fraction; //остаток от деления
     private static int randomNumber = 0;
+
+    private static Texture currencyTexture = new Texture(Gdx.files.internal("textures/currency.png"), true);
+    private static Sprite currencySprite = new Sprite(currencyTexture);
+
+    private static float timer = TimeUtils.nanoTime();
+    private static float time = 0;
+
+    private static float alpha = 1;
+    private static float start =0.1f * alpha;
+    private static float alphaMax = 0;
+    private static float startMax =0.1f * alpha;
 
     public static void countCurency(int numberOfBlocks){
 

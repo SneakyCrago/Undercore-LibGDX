@@ -74,8 +74,9 @@ public class SniperZone {
     public void update(float delta){
         for(int i =0;i < amountOfWave; i++) {
             sniper[i].update(delta);
-
-            sniper[i].checkScore();
+            if(Application.playerAlive) {
+                sniper[i].checkScore();
+            }
         }
         if(secondAmount != 0) {
             for (int i = 0; i < secondAmount; i++) {
@@ -91,10 +92,18 @@ public class SniperZone {
     public void drawSniperBlock(ShapeRenderer shapeRenderer, int playerY){
         for(int i =0;i < amountOfWave; i++) {
             sniper[i].drawSniperBlock(shapeRenderer, playerY);
+            if(Application.playerAlive) {
+                sniper[i].drawSniperLine(shapeRenderer, playerY);
+            }
         }
         if(secondAmount != 0) {
             for (int i = 0; i < secondAmount; i++) {
                 sniper2[i].drawSniperBlock(shapeRenderer, playerY);
+            }
+            if(Application.playerAlive) {
+                for (int i = 0; i < secondAmount; i++) {
+                    sniper2[i].drawSniperLine(shapeRenderer, playerY);
+                }
             }
         }
     }
@@ -144,27 +153,35 @@ public class SniperZone {
         shapeRenderer.rect(endZone.getX(),endZone.getY(),endZone.getWidth(),endZone.getHeight());
         shapeRenderer.end();
     }
-    public void checkCollision(Rectangle player, Application game) {
+    public void checkCollision(Rectangle player, Application game, Player pl) {
 
         for (int i = 0; i < amountOfWave; i++) {
-            if (player.overlaps(sniper[i].getStationRect())) {
-                game.setScreen(game.gameOver);
+            if (player.overlaps(sniper[i].getStationRect()) && pl.alive) {
+                pl.alive = false;
+                Application.playerAlive = false;
+                pl.deathAnimation();
                 System.out.println("Collision: SNIPERS");
             }
-            if(Intersector.overlaps(sniper[i].getCircle(), player)){
-                game.setScreen(game.gameOver);
+            if(Intersector.overlaps(sniper[i].getCircle(), player) && pl.alive){
+                pl.alive = false;
+                Application.playerAlive = false;
+                pl.deathAnimation();
                 System.out.println("Collision: SNIPERS");
             }
         }
 
         if (secondAmount != 0) {
             for (int i = 0; i < secondAmount; i++) {
-                if (player.overlaps(sniper2[i].getStationRect())) {
-                    game.setScreen(game.gameOver);
+                if (player.overlaps(sniper2[i].getStationRect()) && pl.alive) {
+                    pl.alive = false;
+                    Application.playerAlive = false;
+                    pl.deathAnimation();
                     System.out.println("Collision: SNIPERS");
                 }
-                if(Intersector.overlaps(sniper2[i].getCircle(), player)){
-                    game.setScreen(game.gameOver);
+                if(Intersector.overlaps(sniper2[i].getCircle(), player) && pl.alive){
+                    pl.alive = false;
+                    Application.playerAlive = false;
+                    pl.deathAnimation();
                     System.out.println("Collision: SNIPERS");
                 }
             }

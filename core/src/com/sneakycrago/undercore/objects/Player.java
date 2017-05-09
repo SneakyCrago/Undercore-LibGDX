@@ -33,8 +33,8 @@ public class Player {
     public boolean Line = false;
     public boolean Shield = false;
 
-    public boolean Alive = true;
-    public boolean Death = false;
+    public boolean alive = true;
+    //public boolean dead = false;
 
     private Rectangle playerCubeRectangle;
 
@@ -70,7 +70,6 @@ public class Player {
         // x = SPEED * delta = движение по x
         position.add(0, velocity.y);
         // не заходит за белые границы
-        sidesGhost(true);
 
         velocity.scl(1 / delta);
 
@@ -82,27 +81,45 @@ public class Player {
 
         currentFrame += 22*delta;
 
+        if(alive) {
+            if (position.y < BOT_SIDE) {
+                position.y = BOT_SIDE;
+            }
+            if (position.y > TOP_SIDE) {
+                position.y = TOP_SIDE;
+            }
+        } else {
+            if (position.y < -128) {
+                position.y = -128;
+            }
+            if (position.y > 310+32) {
+                position.y = 310+32;
+            }
+        }
     }
 
     // Прыжок
     public void onClick() {
-        velocity.y = 300;
-        GRAVITY = -15;
+        if(alive) {
+            velocity.y = 300;
+            GRAVITY = -15;
 
-        Jump = true;   //1
-        Line = false;  //0
-        Shield = false;//0
+            Jump = true;   //1
+            Line = false;  //0
+            Shield = false;//0
+        }
     }
     //Состояние: Линия
     public void onLine() {
+        if(alive) {
+            velocity.y = playerPos;
+            position.add(0, playerPos);
+            GRAVITY = 0;
 
-        velocity.y = playerPos;
-        position.add(0, playerPos);
-        GRAVITY = 0;
-
-        Jump = false;  //0
-        Line = true;   //1
-        Shield = false;//0
+            Jump = false;  //0
+            Line = true;   //1
+            Shield = false;//0
+        }
     }
 
     // Возвращает гравитацию, когда отпускаем кнопку(кнопки на сенсоре), с линией или щитом
@@ -119,29 +136,33 @@ public class Player {
         switchCubeColor(shapeRenderer);
         shapeRenderer.rect(position.x, position.y, TEXTURE_SIZE,TEXTURE_SIZE);
 
-        if(Line) {
+        if(Line && alive) {
             switchLineCubeColor(shapeRenderer);
             shapeRenderer.rect(position.x, position.y, TEXTURE_SIZE,TEXTURE_SIZE);
         }
     }
     public void drawPlayerLine(ShapeRenderer shapeRenderer) {
-        switchLineColor(shapeRenderer);
-        shapeRenderer.rect(0, playerCubeRectangle.getY() + 16 - lineY /2, 96 - 3, lineY);
-        shapeRenderer.rect(96 + 32  + 3, playerCubeRectangle.getY() + 16 - lineY /2, 512, lineY);
+        if(alive) {
+            switchLineColor(shapeRenderer);
+            shapeRenderer.rect(0, playerCubeRectangle.getY() + 16 - lineY / 2, 96 - 3, lineY);
+            shapeRenderer.rect(96 + 32 + 3, playerCubeRectangle.getY() + 16 - lineY / 2, 512, lineY);
+        }
     }
 
     public void drawPlayerAnimation(SpriteBatch sb){
-        elapsedTime += Gdx.graphics.getDeltaTime();
-        if(currentFrame >8){
-            currentFrame = 0;
-        }
-        if(Application.gameSkin == 0) {
-            spriteAnim.setRegion(32 * (int) currentFrame, 0, 32, 32);
-            if (Jump) {
-                spriteAnim.draw(sb);
+        if(alive) {
+            elapsedTime += Gdx.graphics.getDeltaTime();
+            if (currentFrame > 8) {
+                currentFrame = 0;
             }
-        } else if(Application.gameSkin == 1){
+            if (Application.gameSkin == 0) {
+                spriteAnim.setRegion(32 * (int) currentFrame, 0, 32, 32);
+                if (Jump) {
+                    spriteAnim.draw(sb);
+                }
+            } else if (Application.gameSkin == 1) {
 
+            }
         }
     }
 
@@ -182,28 +203,25 @@ public class Player {
 
 
     public boolean sidesCollision() {
-        if(position.y <= 11 || position.y >= 267) {
-            return true;
-        } else {
-            return false;
+        if(alive) {
+            if (position.y <= 11 || position.y >= 267) {
+                return true;
+            } else {
+                return false;
+            }
         }
+        return false;
     }
-    // может ли зайти за белые границы
-    public void sidesGhost(boolean set) {
-        if(set) {
-            if (position.y < BOT_SIDE) {
-                position.y = BOT_SIDE;
-            }
-            if (position.y > TOP_SIDE) {
-                position.y = TOP_SIDE;
-            }
-        } else if(!set) {
-            if (position.y < -32) {
-                position.y = -32;
-            }
-            if (position.y > 310+32) {
-                position.y = 310+32;
-            }
+
+    private boolean isJumped = false;
+    private boolean deathPlayed = false;
+
+    public void deathAnimation(){
+        if(!alive && !deathPlayed) {
+            velocity.y = 300;
+            GRAVITY = -15;
+            isJumped = true;
+            deathPlayed = true;
         }
     }
 

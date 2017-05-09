@@ -116,8 +116,11 @@ public class Sniper {
 
         getPlayerPos(playerY);
 
+    }
+    public void drawSniperLine(ShapeRenderer shapeRenderer, int playerY) {
         drawLine(shapeRenderer, playerY);
     }
+
     private void drawSniperStation(ShapeRenderer shapeRenderer) {
 
         switch(Application.gameSkin) {

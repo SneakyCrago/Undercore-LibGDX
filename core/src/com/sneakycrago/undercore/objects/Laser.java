@@ -127,7 +127,9 @@ public class Laser {
 
         moveRects();
 
-        checkScore();
+        if(Application.playerAlive) {
+            checkScore();
+        }
     }
 
     public void random() {

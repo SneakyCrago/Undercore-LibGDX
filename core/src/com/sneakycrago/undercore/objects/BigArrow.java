@@ -203,7 +203,9 @@ public class BigArrow {
         //line.setX(arrow.getX() + 48-512);
         arrowPolygon.setPosition(arrow.getX(),arrow.getY());
 
-        checkScore();
+        if(Application.playerAlive) {
+            checkScore();
+        }
     }
 
     boolean isScored = false;

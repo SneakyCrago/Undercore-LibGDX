@@ -91,7 +91,9 @@ public class Circle {
         moveSprites();
         moveRects();
 
-        checkScore();
+        if(Application.playerAlive) {
+            checkScore();
+        }
     }
 
     private boolean isScoredTop[];

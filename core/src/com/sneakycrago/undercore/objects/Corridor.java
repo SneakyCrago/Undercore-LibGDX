@@ -59,8 +59,9 @@ public class Corridor {
         //update positions(for rectangles)
         moveRects(x);
         endZone.setX(posBlock.x + x + BLOCK_SIZE);
-
-        checkScore();
+        if(Application.playerAlive) {
+            checkScore();
+        }
     }
     //SCORE
     boolean halfScore = false;

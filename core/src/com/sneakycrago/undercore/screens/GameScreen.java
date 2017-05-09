@@ -69,8 +69,8 @@ public class GameScreen implements Screen {
     int nextZoneRandom;
 
     // for platform switch
-    private boolean android = false;
-    private boolean desktop = true;
+    private boolean android = true;
+    private boolean desktop = false;
 
     private boolean circleCreated = false, laserCreated = false, sniperCreated = false, smallArrowCreated = false;
 
@@ -96,6 +96,7 @@ public class GameScreen implements Screen {
         wall = new Wall(start_wall); //START BLOCK
         start_corridor = start_wall + wall.getBLOCK_SIZE() + 256;
         corridor = new Corridor(start_corridor);
+        Application.playerAlive = true;
 
         startZoneStart = true;
 
@@ -111,37 +112,7 @@ public class GameScreen implements Screen {
 
         amountOfBigArrows = random.nextInt(3) + 3;
         System.out.println("Big Arrows: " + amountOfBigArrows);
-        /*
-        // зона после стартового блока
-        nextZoneRandom = random.nextInt(5)+1; // создаем зону после стартового блока
-        if(nextZoneRandom ==1) {
-            System.out.println("NEXT ZONE: BIG ARROWS");
-        } else if(nextZoneRandom ==2) {
-            System.out.println("NEXT ZONE: LASERS");
-            laser = new Laser(start_corridor + corridor.BLOCK_SIZE + 256);
-            laserZoneStart = true;
 
-            laserCreated = true;
-        } else if(nextZoneRandom ==3){
-            System.out.println("NEXT ZONE: CIRCLES");
-            circle = new Circle(start_corridor + corridor.BLOCK_SIZE + 256);
-            circlesStart = true;
-            circleCreated = true;
-        } else if(nextZoneRandom ==4){
-            System.out.println("NEXT ZONE: SNIPERS");
-            sniperZone = new SniperZone(start_corridor + corridor.BLOCK_SIZE + 256);
-            snipersStart = true;
-
-            sniperCreated = true;
-        } else if(nextZoneRandom ==5){
-            System.out.println("NEXT ZONE: SMALL ARROWS");
-            smallArrowZone = new SmallArrowZone((start_corridor+ corridor.BLOCK_SIZE + 256) *2);
-            //smallArrowZone = new SmallArrowZone(SPAWN);
-            smallArrowStart = true;
-
-            smallArrowCreated = true;
-        }
-        */
         //currency.setSize(6, 12);
         //currency.setPosition(player.getPosition().x + 24, player.getPosition().y+ 32 + 4);
         //glyphLayout = new GlyphLayout(game.font10, "+10000", Color.WHITE, 16, Align.center, true);
@@ -151,8 +122,9 @@ public class GameScreen implements Screen {
         blocksNumber = 1000;
         Currency.resetMoney();
 
-        //test
 
+        //test
+        Application.gameSkin = random.nextInt(2);
     }
 
     @Override
@@ -176,7 +148,6 @@ public class GameScreen implements Screen {
 
         // SPRITES
         game.batch.begin();
-
 
         if(circlesStart) {
             circle.drawCircles(game.batch);
@@ -217,7 +188,7 @@ public class GameScreen implements Screen {
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         whiteSides.drawWhiteSides(game.shapeRenderer); //draw WhiteSides
-        player.drawPlayerCube(game.shapeRenderer); //draw PlayerCube
+
         // DRAW ELEMENTS
         if(startZoneStart) {
             wall.drawWallBlock(game.shapeRenderer); //draw walls
@@ -275,10 +246,14 @@ public class GameScreen implements Screen {
         //game.font10.draw(game.batch,glyphLayout, player.getPosition().x + 16, player.getPosition().y + 32 + 12);
         game.batch.end();
 
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        player.drawPlayerCube(game.shapeRenderer); //draw PlayerCube
+        game.shapeRenderer.end();
+
         zoneCreator();
 
         //COLLISION
-        //collisionCheck();
+        collisionCheck();
         //collisionDebug();
     }
 
@@ -301,7 +276,8 @@ public class GameScreen implements Screen {
             smallArrowZone.update(delta);
         }
 
-        currency.setPosition(player.getPosition().x + 24 -4, player.getPosition().y+ 32 + 4);
+        //currency.setPosition(player.getPosition().x + 24 -4, player.getPosition().y+ 32 + 4);
+
     }
 
     @Override
@@ -444,11 +420,12 @@ public class GameScreen implements Screen {
             snipersEndCheck = false;
             smallArrowEndCheck = false;
 
+            /*
             startZoneStart = false;
             laserZoneStart = false;
             circlesStart = false;
             snipersStart = false;
-            smallArrowStart = false;
+            smallArrowStart = false; */
 
             countMoney();
 
@@ -506,12 +483,12 @@ public class GameScreen implements Screen {
             laserZoneOverlaped = true;
 
             startOverlaped = false;
-
+            /*
             startZoneStart = false;
             circlesStart = false;
             snipersStart = false;
             smallArrowStart = false;
-
+            */
                 blockCounter += 1;
             if(blockCounter != 8) {
 
@@ -545,18 +522,15 @@ public class GameScreen implements Screen {
                 startOverlaped = false;
             }
         }
-        if(player.getPlayerRectangle().overlaps(laser.getEndZone())) {
+        // Money
+        if(player.getPlayerRectangle().overlaps(laser.getEndZone()) && !laserEndCheck){
             if (zoneCreate == 1) {
                 bigArrowBlockStart = true;
-
                 bigArrow = new BigArrow();
                 amountOfBigArrows = random.nextInt(3) + 3;
                 bigArrowsCount = 0;
-
             }
-        }
-        // Money
-        if(player.getPlayerRectangle().overlaps(laser.getEndZone()) && !laserEndCheck){
+
             countMoney();
             laserEndCheck = true;
         }
@@ -572,12 +546,12 @@ public class GameScreen implements Screen {
             snipersZoneOverlaped = false;
             smallArrowZoneOverlaped = false;
             circleZoneOverlaped = true;
-
+            /*
             startZoneStart = false;
             laserZoneStart = false;
             snipersStart = false;
             smallArrowStart = false;
-
+            */
                 blockCounter += 1;
             if(blockCounter != 8) {
                 zoneCreate = random.nextInt(4) + 1;
@@ -620,15 +594,14 @@ public class GameScreen implements Screen {
             }
         }
 
-        if(player.getPlayerRectangle().overlaps(circle.getEndZone())){
+        if(player.getPlayerRectangle().overlaps(circle.getEndZone()) &&!circleEndCheck){
+
             if (zoneCreate == 1) {
                 bigArrowBlockStart = true;
                 bigArrow = new BigArrow();
                 amountOfBigArrows = random.nextInt(3) + 3;
                 bigArrowsCount = 0;
             }
-        }
-        if(player.getPlayerRectangle().overlaps(circle.getEndZone()) &&!circleEndCheck){
             countMoney();
             circleEndCheck = true;
         }
@@ -641,12 +614,12 @@ public class GameScreen implements Screen {
             smallArrowEndCheck = false;
 
             snipersZoneOverlaped = true;
-
+            /*
             startZoneStart = false;
             laserZoneStart = false;
             circlesStart = false;
             smallArrowStart = false;
-
+            */
 
                 blockCounter += 1;
 
@@ -692,16 +665,13 @@ public class GameScreen implements Screen {
             }
         }
 
-        if(player.getPlayerRectangle().overlaps(sniperZone.getEndZone())){
+        if(player.getPlayerRectangle().overlaps(sniperZone.getEndZone()) &&!snipersEndCheck){
             if (zoneCreate == 1) {
                 bigArrowBlockStart = true;
                 bigArrow = new BigArrow();
                 amountOfBigArrows = random.nextInt(3) + 3;
                 bigArrowsCount = 0;
             }
-        }
-
-        if(player.getPlayerRectangle().overlaps(sniperZone.getEndZone()) &&!snipersEndCheck){
             countMoney();
             snipersEndCheck = true;
         }
@@ -714,13 +684,13 @@ public class GameScreen implements Screen {
             snipersEndCheck = false;
 
             smallArrowZoneOverlaped = true;
-
+            /*
             startZoneStart = false;
             laserZoneStart = false;
             circlesStart = false;
             snipersStart = false;
-
-                blockCounter += 1;
+            */
+            blockCounter += 1;
 
             if(blockCounter != 8) {
                 zoneCreate = random.nextInt(4) + 1;
@@ -760,16 +730,14 @@ public class GameScreen implements Screen {
                 startOverlaped = false;
             }
         }
-        if(player.getPlayerRectangle().overlaps(smallArrowZone.getEndZone())) {
+        if(player.getPlayerRectangle().overlaps(smallArrowZone.getEndZone()) &&!smallArrowEndCheck){
             if (zoneCreate == 1) {
                 bigArrowBlockStart = true;
                 bigArrow = new BigArrow();
                 amountOfBigArrows = random.nextInt(3) + 3;
                 bigArrowsCount = 0;
             }
-        }
-        // Money
-        if(player.getPlayerRectangle().overlaps(smallArrowZone.getEndZone()) &&!smallArrowEndCheck){
+            // Money
             countMoney();
             smallArrowEndCheck = true;
         }
@@ -865,94 +833,99 @@ public class GameScreen implements Screen {
     public void collisionCheck(){
         //WHITE SIDES
         if(player.sidesCollision()) {
-            game.setScreen(game.gameOver); //between sides
-            System.out.println("Collision: Sides");
+            playerDeath();
         }
         if(startZoneStart) {
             //WALL
             for (int i = 0; i < wall.getMassiveRect().length; i++) {
                 if (player.getPlayerRectangle().overlaps(wall.getMassiveRect()[i]) ||
-                        player.getPlayerRectangle().overlaps(wall.getMassiveRect2()[i])) {
-                    game.setScreen(game.gameOver);
-                    System.out.println("Collision: Walls");
+                        player.getPlayerRectangle().overlaps(wall.getMassiveRect2()[i]) && player.alive) {
+                    playerDeath();
                 }
             }
             //CORRIDOR
             for(int i=0; i< corridor.getTopLeftRects().length; i++) { //between corridor top
                 if (player.getPlayerRectangle().overlaps(corridor.getTopLeftRects()[i]) ||
-                        player.getPlayerRectangle().overlaps(corridor.getTopRightRects()[i])){
-                    game.setScreen(game.gameOver);
-                    System.out.println("Collision: Corridor Left");
+                        player.getPlayerRectangle().overlaps(corridor.getTopRightRects()[i]) && player.alive){
+                    playerDeath();
                 }
             }
             for(int i=0; i < corridor.getBottomRets().length;i++) {
-                if(player.getPlayerRectangle().overlaps(corridor.getBottomRets()[i])) { // between corridor bottom
-                    game.setScreen(game.gameOver);
-                    System.out.println("Collision: Corridor Bottom");
+                if(player.getPlayerRectangle().overlaps(corridor.getBottomRets()[i]) && player.alive) { // between corridor bottom
+                    playerDeath();
                 }
             }
         }
 
-
         //BIG ARROW check collision
         if(bigArrowBlockStart) {
-            if (player.getPlayerRectangle().overlaps(bigArrow.getLineRectangle())) { // between line
-                game.setScreen(game.gameOver);
+            if (player.getPlayerRectangle().overlaps(bigArrow.getLineRectangle()) && player.alive) { // between line
+                playerDeath();
                 System.out.println("Collision: BIG ARROW Line");
             }
-            if (player.getPlayerRectangle().overlaps(bigArrow.getLine2Rectangle())) {
-                game.setScreen(game.gameOver);
+            if (player.getPlayerRectangle().overlaps(bigArrow.getLine2Rectangle())&& player.alive) {
+                playerDeath();
                 System.out.println("Collision: BIG ARROW Line2");
             }
-            if (Intersector.overlapConvexPolygons(player.getPlayerPolygon(), bigArrow.getArrowPolygon())) {
-                game.setScreen(game.gameOver);
+            if (Intersector.overlapConvexPolygons(player.getPlayerPolygon(), bigArrow.getArrowPolygon())&& player.alive) {
+                playerDeath();
                 System.out.println("Collision: BIG ARROW Polygon");
             }
-            if (Intersector.overlapConvexPolygons(player.getPlayerPolygon(), bigArrow.getArrowPolygon2())) {
-                game.setScreen(game.gameOver);
+            if (Intersector.overlapConvexPolygons(player.getPlayerPolygon(), bigArrow.getArrowPolygon2())&& player.alive) {
+                playerDeath();
                 System.out.println("Collision: BIG ARROW Polygon2");
             }
         }
         //LaserCollision
         for(int i =0; i < laser.getTopWall().length; i++) {
             if (player.getPlayerRectangle().overlaps(laser.getTopWall()[i]) ||
-                    player.getPlayerRectangle().overlaps(laser.getDownWall()[i])) {
-                game.setScreen(game.gameOver);
+                    player.getPlayerRectangle().overlaps(laser.getDownWall()[i]) && player.alive) {
+                playerDeath();
                 System.out.println("Collision: LASER WALL");
             }
             // проверяем оранжевый лазер, если на линии -> смерть
-            if(player.getPlayerRectangle().overlaps(laser.getOrangeLaserRect()[i]) && player.Line){
-                game.setScreen(game.gameOver);
+            if(player.getPlayerRectangle().overlaps(laser.getOrangeLaserRect()[i]) && player.Line && player.alive){
+                playerDeath();
                 System.out.println("Collision: Orange LASER");
             }
             // проверяем голубой лазер, если состояние в прыжке -> смерть
-            if(player.getPlayerRectangle().overlaps(laser.getBlueLaserRect()[i]) && player.Jump) {
-                game.setScreen(game.gameOver);
+            if(player.getPlayerRectangle().overlaps(laser.getBlueLaserRect()[i]) && player.Jump && player.alive) {
+                playerDeath();
                 System.out.println("Collision: Blue LASER");
             }
         }
 
         //Circles
         for(int i=0; i < circle.getMiddleRect().length; i++) {
-            if(player.getPlayerRectangle().overlaps(circle.getMiddleRect()[i])) {
-                game.setScreen(game.gameOver);
+            if(player.getPlayerRectangle().overlaps(circle.getMiddleRect()[i]) && player.alive) {
+                playerDeath();
                 System.out.println("Collision: Middle CIRCLE");
             }
         }
         for(int i =0; i< circle.getTopRect().length;i++){
             if(player.getPlayerRectangle().overlaps(circle.getTopRect()[i]) ||
-                    player.getPlayerRectangle().overlaps(circle.getBotRect()[i])){
-                game.setScreen(game.gameOver);
-                System.out.println("Collision: Bot or Top CIRCLE");
+                    player.getPlayerRectangle().overlaps(circle.getBotRect()[i]) && player.alive){
+                playerDeath();
+                System.out.println("Collision: Botz or Top CIRCLE");
             }
         }
 
         //Sniper
         if(snipersStart) {
-            sniperZone.checkCollision(player.getPlayerRectangle(), game);
+            sniperZone.checkCollision(player.getPlayerRectangle(), game, player);
         }
 
-        smallArrowZone.checkCollision(player.getPlayerRectangle(), game);
+        smallArrowZone.checkCollision(player.getPlayerRectangle(), game, player);
+
+        if(player.getPosition().y <= -64*2){
+            game.setScreen(game.gameOver);
+        }
+    }
+
+    private void playerDeath(){
+        player.alive = false;
+        Application.playerAlive = false;
+        player.deathAnimation();
     }
 
     boolean bigArrowEnd = false;

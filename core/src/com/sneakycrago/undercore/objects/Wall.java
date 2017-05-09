@@ -85,7 +85,9 @@ public class Wall {
         moveRects(x);
 
         //SCORE
-        checkScore();
+        if(Application.playerAlive) {
+            checkScore();
+        }
     }
 
     //create massive for position
