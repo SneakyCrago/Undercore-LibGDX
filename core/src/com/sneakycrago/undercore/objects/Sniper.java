@@ -49,9 +49,11 @@ public class Sniper {
         x = START;
         y = Y;
         startY = Y;
-
-        texture = new Texture(Gdx.files.internal("textures/animation/sniper.png"));
-
+        if(Application.gameSkin == 2) {
+            texture = new Texture(Gdx.files.internal("textures/animation/sniper2.png"));
+        } else {
+            texture = new Texture(Gdx.files.internal("textures/animation/sniper.png"));
+        }
         posBlock = new Vector2(x,11);
         velocity = new Vector2();
 
@@ -67,24 +69,26 @@ public class Sniper {
         circle = new Circle(bullet.getX()+ 16, bullet.getY() + 16, 16);
     }
     public void update(float delta){
-        //movement
-        velocity.add(0, 0);
-        velocity.scl(delta);
+        if(Application.playerAlive) {
+            //movement
+            velocity.add(0, 0);
+            velocity.scl(delta);
 
-        // x = SPEED * delta = движение по x
-        posBlock.add(SPEED * delta, velocity.y);
-        posBlock.add(SPEED * delta, velocity.y);
+            // x = SPEED * delta = движение по x
+            posBlock.add(SPEED * delta, velocity.y);
+            posBlock.add(SPEED * delta, velocity.y);
 
-        velocity.scl(1 / delta);
+            velocity.scl(1 / delta);
 
+            moveCollision();
+        }
 
         endY =playerLastPos - 16;
         currentFrame += 12 * delta;
-
         moveBullet(delta);
         moveBulletSpite();
 
-        moveCollision();
+        moveBulletCollision();
 
     }
 
@@ -167,12 +171,20 @@ public class Sniper {
     }
     private void drawLine(ShapeRenderer shapeRenderer,int playerY){
         if(posBlock.x < 256+ 128 && posBlock.x > -96) {
-            shapeRenderer.setColor(Globals.RedLineColor);
+            if(Application.gameSkin == 2) {
+                shapeRenderer.setColor(225/255f, 190/255f, 96/255f, 1f);
+            } else {
+                shapeRenderer.setColor(Globals.RedLineColor);
+            }
             shapeRenderer.circle(posBlock.x + 16, posBlock.y + y + 16, 1);
             shapeRenderer.rectLine(posBlock.x + 16, posBlock.y + y + 16, 96 + 16, playerY, 2);
         }
         if(posBlock.x < -96 && posBlock.x > -192) {
-            shapeRenderer.setColor(1f,0f,0f,1f);
+            if(Application.gameSkin == 2) {
+                shapeRenderer.setColor(246/255f, 208/255f, 61/255f, 1f);
+             } else {
+                shapeRenderer.setColor(1f,0f,0f,1f);
+            }
             shapeRenderer.rectLine(posBlock.x + 16, posBlock.y + y + 16, 96 + 16, playerY, 4);
         }
     }
@@ -211,6 +223,8 @@ public class Sniper {
     private void moveCollision() {
         stationRect.setPosition(posBlock.x, posBlock.y + y);
 
+    }
+    private void moveBulletCollision() {
         circle.set(bulletPos.x, bulletPos.y, 16);
     }
 

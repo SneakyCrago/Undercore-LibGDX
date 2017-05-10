@@ -73,27 +73,29 @@ public class SmallArrow {
 
     // movement
     public void update(float delta) {
-        velocity.add(0, 0);
-        velocity.scl(delta);
+        if(Application.playerAlive) {
+            velocity.add(0, 0);
+            velocity.scl(delta);
 
-        // x = SPEED * delta = движение по x
-        posBlock.add(SPEED * delta, velocity.y);
-        posBlock.add(SPEED * delta, velocity.y);
+            // x = SPEED * delta = движение по x
+            posBlock.add(SPEED * delta, velocity.y);
+            posBlock.add(SPEED * delta, velocity.y);
 
-        velocity.scl(1 / delta);
+            velocity.scl(1 / delta);
 
-        //move rects
-        if(wave == 1) {
-            for (int i = 0; i < amountOfArrows; i++) {
-                upWave[i].setPosition(posBlock.x + x + 24 * i, posBlock.y + 6 + 4 * i + 14 * i);
-            }
-        } else if(wave == 2) {
-            for (int i = 0; i < amountOfArrows; i++) {
-                downWave[i].setPosition(posBlock.x + x + 24*i, posBlock.y + 288 - 10 - 4 * i - 14 * i);
-            }
-        } else if(wave == 3) {
-            for(int i=0; i < randomWave.length; i++){
-                randomWave[i].setX(posBlock.x + x);
+            //move rects
+            if (wave == 1) {
+                for (int i = 0; i < amountOfArrows; i++) {
+                    upWave[i].setPosition(posBlock.x + x + 24 * i, posBlock.y + 6 + 4 * i + 14 * i);
+                }
+            } else if (wave == 2) {
+                for (int i = 0; i < amountOfArrows; i++) {
+                    downWave[i].setPosition(posBlock.x + x + 24 * i, posBlock.y + 288 - 10 - 4 * i - 14 * i);
+                }
+            } else if (wave == 3) {
+                for (int i = 0; i < randomWave.length; i++) {
+                    randomWave[i].setX(posBlock.x + x);
+                }
             }
         }
     }

@@ -28,12 +28,14 @@ public class Globals {
 
     // SKIN = 2
 
-    public static final Color Sides2Color = new Color(31/255f, 169/255f, 88/255f, 1f);
+    public static final Color Sides2Color = new Color(131/255f, 169/255f, 88/255f, 1f);
     public static final Color Background2Color = new Color(26/255f, 50/255f, 15/255f, 1f);
     public static final Color Inner2Color = new Color(66/255f, 115/255f, 34/255f, 1f);
 
-    public static final Color Line2Color = new Color(213/255f, 227/255f, 212/255f, 1f);
-    public static final Color Player2Color = new Color(63/255f, 193/255f, 133/255f, 1f);
+    public static final Color Line2Color = new Color(163/255f, 193/255f, 133/255f, 1f);
+    public static final Color Player2Color = new Color(66/255f, 115/255f, 34/255f, 1f);
+
+    public static final Color BigArrow2Color = new Color(216/255f,229/255f,198/255f,1f);
 
     // SKIN = 3
 

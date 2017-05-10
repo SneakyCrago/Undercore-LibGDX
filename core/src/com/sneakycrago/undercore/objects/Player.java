@@ -84,9 +84,13 @@ public class Player {
         if(alive) {
             if (position.y < BOT_SIDE) {
                 position.y = BOT_SIDE;
+                playerCubeRectangle.setY(BOT_SIDE);
+                spriteAnim.setY(BOT_SIDE);
             }
             if (position.y > TOP_SIDE) {
                 position.y = TOP_SIDE;
+                playerCubeRectangle.setY(TOP_SIDE);
+                spriteAnim.setY(TOP_SIDE);
             }
         } else {
             if (position.y < -128) {
@@ -217,7 +221,7 @@ public class Player {
     public void deathAnimation(){
         if(!alive && !deathPlayed) {
             velocity.y = 300;
-            GRAVITY = -15;
+            GRAVITY = -30; //15
             isJumped = true;
             deathPlayed = true;
         }

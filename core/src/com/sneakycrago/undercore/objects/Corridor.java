@@ -46,6 +46,7 @@ public class Corridor {
         createRects(x);
     }
     public void update(float delta){
+        if(Application.playerAlive) {
         //movement
         velocity.add(0, 0);
         velocity.scl(delta);
@@ -59,7 +60,7 @@ public class Corridor {
         //update positions(for rectangles)
         moveRects(x);
         endZone.setX(posBlock.x + x + BLOCK_SIZE);
-        if(Application.playerAlive) {
+
             checkScore();
         }
     }

@@ -280,7 +280,7 @@ public class BigArrow {
                 break;
             case 1: shapeRenderer.setColor(Globals.Line1Color);
                 break;
-            case 2: shapeRenderer.setColor(Globals.Line2Color);
+            case 2: shapeRenderer.setColor(Globals.BigArrow2Color);
                 break;
             case 3: shapeRenderer.setColor(Globals.Line3Color);
                 break;

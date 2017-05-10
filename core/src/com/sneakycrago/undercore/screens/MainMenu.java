@@ -51,10 +51,6 @@ public class MainMenu implements Screen {
         this.font = game.font30;
         this.fontWhite = game.font30white;
 
-        texture = new Texture(Gdx.files.internal("fonts/test.png"), true);
-        texture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.MipMapLinearNearest);
-
-        fontHiero = new BitmapFont(Gdx.files.internal("fonts/test.fnt"), new TextureRegion(texture), false);
     }
 
     @Override

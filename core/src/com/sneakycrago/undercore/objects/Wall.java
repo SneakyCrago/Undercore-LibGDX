@@ -67,6 +67,7 @@ public class Wall {
 
     // movement
     public void update(float delta) {
+        if(Application.playerAlive) {
         //movement
         velocity.add(0, 0);
         velocity.scl(delta);
@@ -81,9 +82,8 @@ public class Wall {
         for(int i = 0; i < massiveRect.length; i++) {
             massiveRect[i].setPosition(posBlock.x,posBlock.y);
         }
-
-        moveRects(x);
-
+            moveRects(x);
+        }
         //SCORE
         if(Application.playerAlive) {
             checkScore();
@@ -120,7 +120,7 @@ public class Wall {
     public void createRects(float START) {
         int test = 0;
         endZone = new Rectangle();
-        endZone.set(posBlock.x + START, posBlock.y, 2, 288);
+        endZone.set(posBlock.x + START, posBlock.y, 1, 288);
 
         for (int i = 0; i < massiveRect.length; i++){
             if(massive[i] == 1) {
@@ -348,5 +348,9 @@ public class Wall {
 
     public int getBLOCK_SIZE() {
         return BLOCK_SIZE;
+    }
+
+    public Vector2 getPosBlock() {
+        return posBlock;
     }
 }

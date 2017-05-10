@@ -78,6 +78,7 @@ public class Circle {
     }
 
     public void update(float delta) {
+        if(Application.playerAlive) {
         //movement
         velocity.add(0, 0);
         velocity.scl(delta);
@@ -91,7 +92,7 @@ public class Circle {
         moveSprites();
         moveRects();
 
-        if(Application.playerAlive) {
+
             checkScore();
         }
     }

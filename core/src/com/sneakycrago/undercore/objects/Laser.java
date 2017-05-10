@@ -116,6 +116,7 @@ public class Laser {
 
     // movement
     public void update(float delta) {
+        if(Application.playerAlive) {
         //movement
         velocity.add(0, 0);
         velocity.scl(delta);
@@ -133,8 +134,7 @@ public class Laser {
 
         moveRects();
 
-        if(Application.playerAlive) {
-            checkScore();
+        checkScore();
         }
     }
 
