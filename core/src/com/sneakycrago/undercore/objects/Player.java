@@ -56,7 +56,20 @@ public class Player {
                 32,32,
                 32,0});
 
-        texture = new Texture(Gdx.files.internal("textures/animation/playerAnim.png"));
+        switch (Application.gameSkin){
+            case 0: texture = new Texture(Gdx.files.internal("textures/animation/playerAnim.png"));
+                break;
+            case 1: texture = new Texture(Gdx.files.internal("textures/animation/playerAnim1.png"));
+                break;
+            case 2: texture = new Texture(Gdx.files.internal("textures/animation/playerAnim2.png"));
+                break;
+            case 3: texture = new Texture(Gdx.files.internal("textures/animation/playerAnim3.png"));
+                break;
+            case 4: texture = new Texture(Gdx.files.internal("textures/animation/playerAnim4.png"));
+                break;
+        }
+
+
 
         spriteAnim = new Sprite(texture);
         spriteAnim.setSize(32,32);
@@ -91,13 +104,6 @@ public class Player {
                 position.y = TOP_SIDE;
                 playerCubeRectangle.setY(TOP_SIDE);
                 spriteAnim.setY(TOP_SIDE);
-            }
-        } else {
-            if (position.y < -128) {
-                position.y = -128;
-            }
-            if (position.y > 310+32) {
-                position.y = 310+32;
             }
         }
     }
@@ -159,14 +165,10 @@ public class Player {
             if (currentFrame > 8) {
                 currentFrame = 0;
             }
-            if (Application.gameSkin == 0) {
                 spriteAnim.setRegion(32 * (int) currentFrame, 0, 32, 32);
                 if (Jump) {
                     spriteAnim.draw(sb);
                 }
-            } else if (Application.gameSkin == 1) {
-
-            }
         }
     }
 

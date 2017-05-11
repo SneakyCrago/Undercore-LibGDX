@@ -67,16 +67,13 @@ public class GameScreen implements Screen {
     private boolean smallArrowStart = false;
 
     int nextZoneRandom;
-
     // for platform switch
     private boolean android = false;
     private boolean desktop = true;
 
-    private boolean circleCreated = false, laserCreated = false, sniperCreated = false, smallArrowCreated = false;
+    private boolean circleCreated = false, laserCreated = false, sniperCreated = false, smallArrowCreated = false,
+    bigArrowCreated = false;
 
-    private Texture currencyTexture = new Texture(Gdx.files.internal("textures/currency.png"), true);
-    private Sprite currency = new Sprite(currencyTexture);
-    private GlyphLayout glyphLayout;
 
     public GameScreen(Application game) {
         System.out.println();
@@ -98,12 +95,10 @@ public class GameScreen implements Screen {
         wall = new Wall(start_wall); //START BLOCK
         start_corridor = start_wall + wall.getBLOCK_SIZE() + 256;
         corridor = new Corridor(start_corridor);
+
         Application.playerAlive = true;
 
         startZoneStart = true;
-
-        currencyTexture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Nearest);
-        //MipMapLinearNearest,Nearest
 
         /////////////////////// FIX IT ///////////////////
         laser = new Laser(start_laser); //Lasers
@@ -117,9 +112,8 @@ public class GameScreen implements Screen {
 
         //Обнуляем счет
         Score.setGameScore(0);
-        blocksNumber = 1000;
+        blocksNumber = 0;
         Currency.resetMoney();
-
 
         //test
 
@@ -251,7 +245,7 @@ public class GameScreen implements Screen {
 
         //COLLISION
         //collisionCheck();
-        collisionDebug();
+        //collisionDebug();
     }
 
     public void update(float delta) {
@@ -272,7 +266,6 @@ public class GameScreen implements Screen {
         if(smallArrowStart) {
             smallArrowZone.update(delta);
         }
-
     }
 
     @Override
@@ -328,14 +321,14 @@ public class GameScreen implements Screen {
                 startEndCheck = true;
             }
 
-            //System.out.println(startOverlaped);
-                System.out.println(wall.getPosBlock().x);
             if (player.getPlayerRectangle().overlaps(wall.getZoneRect()) && !startOverlaped) {
                 System.out.println("Start overlaped");
-                blockCounter = 6;
+                blockCounter = 0;
 
                 bigArrowBlockStart = false;
                 bigArrowEnd = false;
+
+                startOverlaped = true;
 
                 laserZoneOverlaped = false;
                 circleZoneOverlaped = false;
@@ -355,13 +348,11 @@ public class GameScreen implements Screen {
                     laser = new Laser(start_corridor + corridor.BLOCK_SIZE - 96);
                     laserZoneStart = true;
 
-
                     laserCreated = true;
                 } else if (nextZoneRandom == 3) {
                     System.out.println("NEXT ZONE: CIRCLES");
                     circle = new Circle(start_corridor + corridor.BLOCK_SIZE - 96);
                     circlesStart = true;
-
 
                     circleCreated = true;
                 } else if (nextZoneRandom == 4) {
@@ -369,18 +360,17 @@ public class GameScreen implements Screen {
                     sniperZone = new SniperZone(start_corridor + corridor.BLOCK_SIZE - 96);
                     snipersStart = true;
 
-
                     sniperCreated = true;
                 } else if (nextZoneRandom == 5) {
                     System.out.println("NEXT ZONE: SMALL ARROWS");
                     smallArrowZone = new SmallArrowZone((start_corridor + corridor.BLOCK_SIZE - 96) * 2);
-                    //smallArrowZone = new SmallArrowZone(SPAWN);
                     smallArrowStart = true;
 
                     smallArrowCreated = true;
                 }
-                startOverlaped = true;
+
             }
+
             createBigArrowZone(); // BIG ARROW
             createLaserZone(); // LASER
             createCircleZone(); //CIRCLE
@@ -399,13 +389,12 @@ public class GameScreen implements Screen {
             snipersEndCheck = false;
             smallArrowEndCheck = false;
 
-            /*
-            startZoneStart = false;
-            laserZoneStart = false;
-            circlesStart = false;
-            snipersStart = false;
-            smallArrowStart = false; */
+            circleZoneOverlaped = false;
+            snipersZoneOverlaped = false;
+            smallArrowZoneOverlaped = false;
+            laserZoneOverlaped = false;
 
+            startOverlaped = false;
             countMoney();
 
             blockCounter +=1;
@@ -525,6 +514,8 @@ public class GameScreen implements Screen {
             snipersZoneOverlaped = false;
             smallArrowZoneOverlaped = false;
             circleZoneOverlaped = true;
+
+            startOverlaped = false;
             /*
             startZoneStart = false;
             laserZoneStart = false;
@@ -592,7 +583,13 @@ public class GameScreen implements Screen {
             circleEndCheck = false;
             smallArrowEndCheck = false;
 
+            laserZoneOverlaped = false;
+            circleZoneOverlaped = false;
+            smallArrowZoneOverlaped = false;
+
             snipersZoneOverlaped = true;
+
+            startOverlaped = false;
             /*
             startZoneStart = false;
             laserZoneStart = false;
@@ -662,7 +659,13 @@ public class GameScreen implements Screen {
             circleEndCheck = false;
             snipersEndCheck = false;
 
+            laserZoneOverlaped = false;
+            circleZoneOverlaped = false;
+            snipersZoneOverlaped = false;
+
             smallArrowZoneOverlaped = true;
+
+            startOverlaped = false;
             /*
             startZoneStart = false;
             laserZoneStart = false;
