@@ -25,7 +25,7 @@ import java.awt.Shape;
  * Created by Sneaky Crago on 22.04.2017.
  */
 
-public class MainMenu implements Screen {
+public class MainMenuTest implements Screen {
     Application game;
 
     private OrthographicCamera camera;
@@ -43,9 +43,9 @@ public class MainMenu implements Screen {
     Texture texture;
     BitmapFont fontHiero;
 
-    public MainMenu(Application game) {
+    public MainMenuTest(Application game) {
         System.out.println();
-        System.out.println("MainMenu");
+        System.out.println("MainMenuTest");
         this.game = game;
         this.camera = game.camera;
         this.font = game.font30;

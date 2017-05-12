@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -17,6 +18,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.sneakycrago.undercore.Application;
@@ -55,17 +57,24 @@ public class GameOver implements Screen {
     private boolean menuReleased = false;
     private boolean exitReleased = false;
 
+    private Texture currencyTexture;
+    private Sprite currencySprite;
+
     private boolean newFrase = true;
 
+    private int best;
+
+    private GlyphLayout glyphLayout;
+
     public GameOver(Application game) {
-        this.game = game;
-        this.camera = game.camera;
 
         random = new Random();
 
-
         buttons = new TextureAtlas(Gdx.files.internal("textures/buttons/buttons.atlas"),
                 Gdx.files.internal("textures/buttons"));
+
+        this.game = game;
+        this.camera = game.camera;
     }
 
     @Override
@@ -99,6 +108,14 @@ public class GameOver implements Screen {
         exitPressed.setPosition(exitX, bntY);
 
         touch = new Vector3();
+
+        currencyTexture = new Texture(Gdx.files.internal("textures/currency.png"), true);
+        currencyTexture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Nearest);
+        currencySprite = new Sprite(currencyTexture);
+        currencySprite.setScale(0.125f);
+        currencySprite.setPosition(256 - currencySprite.getWidth()/2 - 20, 0 + 80 - currencySprite.getY()/4); //205 - 24 -15 + 15
+
+        glyphLayout = new GlyphLayout();
 
         if(newFrase) {
             frase = random.nextInt(13) + 1;
@@ -135,11 +152,13 @@ public class GameOver implements Screen {
 
         //Money
         Currency.addMoneyToCurrency();
-        Score.makeBestScore();
         game.preferences.putInteger("bestScore", Score.bestScore);
         game.preferences.flush();
         game.preferences.putInteger("currency", Currency.currency);
         game.preferences.flush();
+
+        best = Score.getBestScore();
+        Score.makeBestScore();
     }
 
     @Override
@@ -154,12 +173,29 @@ public class GameOver implements Screen {
         start.draw(game.batch);
         menu.draw(game.batch);
         exit.draw(game.batch);
-        game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 80, 15);
+        game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 80, 15 );
 
-        game.font30.draw(game.batch, death, 512/2 - 24*3, 270+15);
-        game.font.draw(game.batch,"Best score: "+ Score.getBestScore(), 512/2 - 24*3, 195 + 45);
-        game.font.draw(game.batch,"Your score: "+ Score.getGameScore(), 512/2 - 24*3, 160 + 45);
-        game.font.draw(game.batch,"Money: "+ Currency.Money, 512/2 - 24*3, 160-35 + 45);
+        glyphLayout.setText(game.font40white, death , Color.WHITE,512, Align.center, true);
+        game.font40white.draw(game.batch, glyphLayout, 0, 310-10);
+
+        glyphLayout.setText(game.font30white,"" +Currency.Money,Color.WHITE,512, Align.center, true);
+        game.font30white.draw(game.batch,glyphLayout , 0, 310/2 + currencySprite.getY() + 8);
+
+        currencySprite.setX(256 - currencySprite.getWidth()/2 -glyphLayout.width/2 -20);
+
+        if(Score.getGameScore() > best){
+        //if(true){
+            glyphLayout.setText(game.font,"New record!", Color.WHITE,512, Align.center, true);
+            game.font.draw(game.batch,glyphLayout, 0, 205 -10);
+            glyphLayout.setText(game.smallWhiteFont, "Score: "+ Score.getGameScore() , Color.WHITE,512, Align.center, true);
+            game.smallWhiteFont.draw(game.batch,glyphLayout, 0,205 - 24 -15);
+        } else {
+            glyphLayout.setText(game.smallWhiteFont, "Score: "+ Score.getGameScore() , Color.WHITE,512, Align.center, true);
+            game.smallWhiteFont.draw(game.batch,glyphLayout, 0,205 -((24+15)/2) -6);
+        }
+        //game.font.draw(game.batch,"Money: "+ Currency.Money, 512/2 - 24*3, 160-35 + 45);
+
+
 
         if(checkPlayButton() && Gdx.input.isTouched()){
             startPressed.draw(game.batch);
@@ -175,7 +211,7 @@ public class GameOver implements Screen {
             menuPressed.draw(game.batch);
             menuReleased = true;
         } else if(checkMenuButton() && menuReleased) {
-            game.setScreen(game.mainMenu);
+            game.setScreen(game.mainMenuTest);
             menuReleased = false;
 
             newFrase = true;
@@ -192,6 +228,7 @@ public class GameOver implements Screen {
             newFrase = true;
         }
 
+        currencySprite.draw(game.batch);
 
         game.batch.end();
     }

@@ -33,7 +33,7 @@ public class InfoScreen implements Screen {
         game.batch.end();
 
         if(Gdx.input.justTouched()){
-            game.setScreen(game.mainMenu);
+            game.setScreen(game.mainMenuTest);
         }
     }
 

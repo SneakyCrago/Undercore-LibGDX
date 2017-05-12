@@ -3,6 +3,7 @@ package com.sneakycrago.undercore.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.utils.Align;
 import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.objects.BigArrow;
 import com.sneakycrago.undercore.objects.Circle;
@@ -68,11 +70,13 @@ public class GameScreen implements Screen {
 
     int nextZoneRandom;
     // for platform switch
-    private boolean android = false;
-    private boolean desktop = true;
+    private boolean android = true;
+    private boolean desktop = false;
 
     private boolean circleCreated = false, laserCreated = false, sniperCreated = false, smallArrowCreated = false,
     bigArrowCreated = false;
+
+    private GlyphLayout glyphLayout;
 
 
     public GameScreen(Application game) {
@@ -114,6 +118,8 @@ public class GameScreen implements Screen {
         Score.setGameScore(0);
         blocksNumber = 0;
         Currency.resetMoney();
+
+        glyphLayout = new GlyphLayout();
 
         //test
 
@@ -221,19 +227,22 @@ public class GameScreen implements Screen {
 
         game.shapeRenderer.end();
 
-        //game info
-        game.batch.begin();
-        game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 0, 288-24);
-        game.font10.draw(game.batch, "blocks:" + blocksNumber, 0, 288-24-12);
-        game.font10.draw(game.batch, "money:" + Currency.Money, 0, 288-24-12*2);
-        game.font10.draw(game.batch, "counter:" + blockCounter, 0, 288-24-12*3);
-
+        if(desktop) {
+            //game info
+            game.batch.begin();
+            game.font10.draw(game.batch, "fps:" + Gdx.graphics.getFramesPerSecond(), 0, 288 - 24);
+            game.font10.draw(game.batch, "blocks:" + blocksNumber, 0, 288 - 24 - 12);
+            game.font10.draw(game.batch, "money:" + Currency.Money, 0, 288 - 24 - 12 * 2);
+            game.font10.draw(game.batch, "counter:" + blockCounter, 0, 288 - 24 - 12 * 3);
+        }
         if(snipersStart) {
             sniperZone.drawBullet(game.batch);
         }
         player.drawPlayerAnimation(game.batch);
 
-        game.font.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
+        //game.borderFont.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
+        glyphLayout.setText(game.borderFont, ""+ Score.getGameScore() , Color.WHITE,512, Align.center, true);
+        game.borderFont.draw(game.batch, glyphLayout, 0, 11 + 288 - 4);
 
         game.batch.end();
 
@@ -244,7 +253,7 @@ public class GameScreen implements Screen {
         zoneCreator();
 
         //COLLISION
-        //collisionCheck();
+        collisionCheck();
         //collisionDebug();
     }
 
@@ -310,67 +319,56 @@ public class GameScreen implements Screen {
     private boolean startEndCheck = false, laserEndCheck = false, circleEndCheck = false, snipersEndCheck = false,
     smallArrowEndCheck = false;
 
-
-    public void zoneCreator(){
+    private void zoneCreator(){
         if(player.alive) {
             if (player.getPlayerRectangle().overlaps(corridor.getEndZone()) && !startEndCheck) {
                 countMoney();
                 if (nextZoneRandom == 1) {
-                    bigArrowBlockStart = true;
+                    makeBigArrow();
                 }
                 startEndCheck = true;
+                startOverlaped = false;
             }
 
             if (player.getPlayerRectangle().overlaps(wall.getZoneRect()) && !startOverlaped) {
-                System.out.println("Start overlaped");
+
                 blockCounter = 0;
 
                 bigArrowBlockStart = false;
                 bigArrowEnd = false;
 
-                startOverlaped = true;
+                laserEndCheck = false;
+                circleEndCheck= false;
+                startEndCheck = false;
+                snipersEndCheck = false;
+                smallArrowEndCheck = false;
 
-                laserZoneOverlaped = false;
                 circleZoneOverlaped = false;
                 snipersZoneOverlaped = false;
                 smallArrowZoneOverlaped = false;
+                laserZoneOverlaped = false;
 
-                laserEndCheck = false;
-                circleEndCheck = false;
-                snipersEndCheck = false;
-                smallArrowEndCheck = false;
+                startOverlaped = true;
 
                 nextZoneRandom = random.nextInt(5) + 1; // создаем зону после стартового блока
                 if (nextZoneRandom == 1) {
                     System.out.println("NEXT ZONE: BIG ARROWS");
                 } else if (nextZoneRandom == 2) {
                     System.out.println("NEXT ZONE: LASERS");
-                    laser = new Laser(start_corridor + corridor.BLOCK_SIZE - 96);
-                    laserZoneStart = true;
-
-                    laserCreated = true;
+                    makeLaser(start_corridor + corridor.BLOCK_SIZE - 96);
                 } else if (nextZoneRandom == 3) {
                     System.out.println("NEXT ZONE: CIRCLES");
-                    circle = new Circle(start_corridor + corridor.BLOCK_SIZE - 96);
-                    circlesStart = true;
-
-                    circleCreated = true;
+                    makeCircle(start_corridor + corridor.BLOCK_SIZE - 96);
                 } else if (nextZoneRandom == 4) {
                     System.out.println("NEXT ZONE: SNIPERS");
                     sniperZone = new SniperZone(start_corridor + corridor.BLOCK_SIZE - 96);
-                    snipersStart = true;
-
-                    sniperCreated = true;
+                    makeSniper(start_corridor + corridor.BLOCK_SIZE - 96);
                 } else if (nextZoneRandom == 5) {
                     System.out.println("NEXT ZONE: SMALL ARROWS");
-                    smallArrowZone = new SmallArrowZone((start_corridor + corridor.BLOCK_SIZE - 96) * 2);
-                    smallArrowStart = true;
-
-                    smallArrowCreated = true;
+                    makeSmallArrow((start_corridor + corridor.BLOCK_SIZE - 96) * 2);
                 }
 
             }
-
             createBigArrowZone(); // BIG ARROW
             createLaserZone(); // LASER
             createCircleZone(); //CIRCLE
@@ -378,7 +376,7 @@ public class GameScreen implements Screen {
             createSmallArrowZone(); //Small Arrow
         }
     }
-    public void createBigArrowZone(){
+    private void createBigArrowZone(){
         if(bigArrowEnd) {
             bigArrowBlockStart = false;
             bigArrowEnd = false;
@@ -393,330 +391,192 @@ public class GameScreen implements Screen {
             snipersZoneOverlaped = false;
             smallArrowZoneOverlaped = false;
             laserZoneOverlaped = false;
-
             startOverlaped = false;
+
             countMoney();
 
             blockCounter +=1;
             if(blockCounter != 8) {
-
                 zoneCreate = random.nextInt(4) + 1;
                 System.out.println("Zone: " + zoneCreate);
                 if (zoneCreate == 1) {
-                    laser = new Laser(512 + 64);
-                    laserZoneStart = true;
-
-                    laserCreated = true;
-
-                    laserZoneOverlaped = false;
+                    makeLaser(512 + 64);
                 } else if (zoneCreate == 2) {
-                    circle = new Circle(512 + 64);
-                    circlesStart = true;
-                    circleCreated = true;
-
-                    circleZoneOverlaped = false;
+                    makeCircle(512+64);
                 } else if (zoneCreate == 3) {
-                    sniperZone = new SniperZone(512 + 64);
-                    snipersStart = true;
-                    sniperCreated = true;
-
-                    snipersZoneOverlaped = false;
+                    makeSniper(512 + 64);
                 } else if (zoneCreate == 4) {
-                    smallArrowZone = new SmallArrowZone(512 + 64);
-                    smallArrowStart = true;
-                    smallArrowCreated = true;
-
-                    smallArrowZoneOverlaped = false;
+                    makeSmallArrow(512 + 64);
                 }
             } else if(blockCounter == 8) {
-                //blockCounter =6;
-                wall = new Wall(SPAWN + 64);
-                corridor = new Corridor(start_corridor + 64);
-
-                startZoneStart = true;
-                startOverlaped = false;
+                makeStart(SPAWN + 64);
             }
         }
     }
-    public void createLaserZone(){
-        if(player.getPlayerRectangle().overlaps(laser.getStartZone())&& !laserZoneOverlaped){
+    private void createLaserZone(){
+        if(player.getPlayerRectangle().overlaps(laser.getStartZone()) && !laserZoneOverlaped) {
+            laserZoneOverlaped = true;
+
+            bigArrowBlockStart = false;
+            bigArrowEnd = false;
+
             circleEndCheck = false;
             startEndCheck = false;
             snipersEndCheck = false;
             smallArrowEndCheck = false;
 
-            circleZoneOverlaped = false;
             snipersZoneOverlaped = false;
             smallArrowZoneOverlaped = false;
-            laserZoneOverlaped = true;
-
+            circleZoneOverlaped = false;
             startOverlaped = false;
-            /*
-            startZoneStart = false;
-            circlesStart = false;
-            snipersStart = false;
-            smallArrowStart = false;
-            */
-                blockCounter += 1;
-            if(blockCounter != 8) {
 
+            blockCounter += 1;
+            if(blockCounter != 8){
                 zoneCreate = random.nextInt(4) + 1;
-
-                if (zoneCreate == 2) {
-                    circle = new Circle(laser.BLOCK_ZONE + 128 + 256);
-                    circlesStart = true;
-                    circleCreated = true;
+                if(zoneCreate ==2) {
+                    makeCircle(laser.BLOCK_ZONE + 128+ 256);
                 }
-                if (zoneCreate == 3) {
-                    sniperZone = new SniperZone(laser.BLOCK_ZONE + 128 + 256);
-                    snipersStart = true;
-                    sniperCreated = true;
-
-                    snipersZoneOverlaped = false;
+                if(zoneCreate ==3){
+                    makeSniper(laser.BLOCK_ZONE + 128+256);
                 }
-                if (zoneCreate == 4) {
-                    smallArrowZone = new SmallArrowZone((laser.BLOCK_ZONE + 128 + 256) * 2);
-                    smallArrowStart = true;
-                    smallArrowCreated = true;
-
-                    smallArrowZoneOverlaped = false;
+                if(zoneCreate ==4) {
+                    makeSmallArrow((laser.BLOCK_ZONE + 128+256) *2);
                 }
-            } else if(blockCounter ==  8){
-                //blockCounter =6;
-                wall = new Wall(laser.BLOCK_ZONE + 128 + 256);
-                corridor = new Corridor(laser.BLOCK_ZONE +start_corridor);
-
-                startZoneStart = true;
-                startOverlaped = false;
+            } else if(blockCounter ==8){
+                makeStart(laser.BLOCK_ZONE + 128+256);
             }
         }
-        // Money
-        if(player.getPlayerRectangle().overlaps(laser.getEndZone()) && !laserEndCheck){
-            if (zoneCreate == 1) {
-                bigArrowBlockStart = true;
-                bigArrow = new BigArrow();
-                amountOfBigArrows = random.nextInt(3) + 3;
-                bigArrowsCount = 0;
-            }
 
+        if(player.getPlayerRectangle().overlaps(laser.getEndZone()) && !laserEndCheck){
+            if(zoneCreate == 1 && blockCounter != 8){
+                System.out.println("BIG ARROW START");
+                makeBigArrow();
+            }
             countMoney();
             laserEndCheck = true;
         }
     }
-    public void createCircleZone(){
+    private void createCircleZone(){
         if(player.getPlayerRectangle().overlaps(circle.getStartZone()) && !circleZoneOverlaped) {
+            circleZoneOverlaped = true;
+
+            bigArrowBlockStart = false;
+            bigArrowEnd = false;
+
             laserEndCheck = false;
             startEndCheck = false;
             snipersEndCheck = false;
             smallArrowEndCheck = false;
 
-            laserZoneOverlaped = false;
             snipersZoneOverlaped = false;
             smallArrowZoneOverlaped = false;
-            circleZoneOverlaped = true;
-
+            laserZoneOverlaped = false;
             startOverlaped = false;
-            /*
-            startZoneStart = false;
-            laserZoneStart = false;
-            snipersStart = false;
-            smallArrowStart = false;
-            */
+
             blockCounter += 1;
             if(blockCounter != 8) {
                 zoneCreate = random.nextInt(4) + 1;
-
-
                 if (zoneCreate == 2) {
-                    laser = new Laser(circle.BLOCK_SIZE + 128 + 256);
-                    laserZoneStart = true;
-                    laserCreated = true;
-
-                    bigArrowBlockStart = false;
-                    bigArrowEnd = false;
-                    laserZoneOverlaped = false;
+                    makeLaser(circle.BLOCK_SIZE + 128 + 256);
                 }
                 if (zoneCreate == 3) {
-                    sniperZone = new SniperZone(circle.BLOCK_SIZE + 128 + 256);
-                    snipersStart = true;
-                    sniperCreated = true;
-
-                    bigArrowBlockStart = false;
-                    bigArrowEnd = false;
-                    snipersZoneOverlaped = false;
+                    makeSniper(circle.BLOCK_SIZE + 128 + 256);
                 }
                 if (zoneCreate == 4) {
-                    smallArrowZone = new SmallArrowZone((circle.BLOCK_SIZE + 128 + 256) * 2);
-                    smallArrowStart = true;
-                    smallArrowCreated = true;
-
-                    bigArrowBlockStart = false;
-                    bigArrowEnd = false;
-                    smallArrowZoneOverlaped = false;
+                    makeSmallArrow((circle.BLOCK_SIZE + 128 + 256) * 2);
                 }
             } else if(blockCounter == 8) {
-                //blockCounter =6;
-                wall = new Wall(circle.BLOCK_SIZE + 128 + 256);
-                corridor = new Corridor(circle.BLOCK_SIZE +start_corridor);
-
-                startZoneStart = true;
-                startOverlaped = false;
+                makeStart(circle.BLOCK_SIZE + 128 + 256);
             }
         }
 
         if(player.getPlayerRectangle().overlaps(circle.getEndZone()) &&!circleEndCheck){
-
-            if (zoneCreate == 1) {
-                bigArrowBlockStart = true;
-                bigArrow = new BigArrow();
-                amountOfBigArrows = random.nextInt(3) + 3;
-                bigArrowsCount = 0;
+            if (zoneCreate == 1 && blockCounter != 8) {
+                makeBigArrow();
             }
             countMoney();
             circleEndCheck = true;
         }
     }
-    public void createSniperZone(){
+    private void createSniperZone(){
         if(player.getPlayerRectangle().overlaps(sniperZone.getStartZone()) && !snipersZoneOverlaped){
-            laserEndCheck = false;
-            startEndCheck = false;
-            circleEndCheck = false;
-            smallArrowEndCheck = false;
-
-            laserZoneOverlaped = false;
-            circleZoneOverlaped = false;
-            smallArrowZoneOverlaped = false;
-
             snipersZoneOverlaped = true;
 
+            bigArrowBlockStart = false;
+            bigArrowEnd = false;
+
+            laserEndCheck = false;
+            circleEndCheck= false;
+            startEndCheck = false;
+            smallArrowEndCheck = false;
+
+            circleZoneOverlaped = false;
+            smallArrowZoneOverlaped = false;
+            laserZoneOverlaped = false;
             startOverlaped = false;
-            /*
-            startZoneStart = false;
-            laserZoneStart = false;
-            circlesStart = false;
-            smallArrowStart = false;
-            */
 
-                blockCounter += 1;
-
+            blockCounter += 1;
             if(blockCounter != 8) {
-
-
                 zoneCreate = random.nextInt(4) + 1;
 
                 if (zoneCreate == 2) {
-                    laser = new Laser(sniperZone.BLOCK_SIZE + 128 + 256);
-                    laserZoneStart = true;
-                    laserCreated = true;
-
-                    bigArrowBlockStart = false;
-                    bigArrowEnd = false;
-                    laserZoneOverlaped = false;
+                    makeLaser(sniperZone.BLOCK_SIZE + 128 + 256);
                 }
                 if (zoneCreate == 3) {
-                    circle = new Circle(sniperZone.BLOCK_SIZE + 128 + 256);
-                    circlesStart = true;
-                    circleCreated = true;
-
-                    bigArrowBlockStart = false;
-                    bigArrowEnd = false;
-                    circleZoneOverlaped = false;
+                    makeCircle(sniperZone.BLOCK_SIZE + 128 + 256);
                 }
                 if (zoneCreate == 4) {
-                    smallArrowZone = new SmallArrowZone((sniperZone.BLOCK_SIZE + 128 + 256) * 2);
-                    smallArrowStart = true;
-                    smallArrowCreated = true;
-
-                    bigArrowBlockStart = false;
-                    bigArrowEnd = false;
-                    smallArrowZoneOverlaped = false;
+                    makeSmallArrow((sniperZone.BLOCK_SIZE + 128 + 256) * 2);
                 }
             } else if(blockCounter == 8) {
-                //blockCounter =6;
-                wall = new Wall(sniperZone.BLOCK_SIZE + 128 + 256);
-                corridor = new Corridor(sniperZone.BLOCK_SIZE +start_corridor);
-
-                startZoneStart = true;
-                startOverlaped = false;
+                makeStart(sniperZone.BLOCK_SIZE + 128 + 256);
             }
         }
 
         if(player.getPlayerRectangle().overlaps(sniperZone.getEndZone()) &&!snipersEndCheck){
-            if (zoneCreate == 1) {
-                bigArrowBlockStart = true;
-                bigArrow = new BigArrow();
-                amountOfBigArrows = random.nextInt(3) + 3;
-                bigArrowsCount = 0;
+            if (zoneCreate == 1 && blockCounter != 8) {
+               makeBigArrow();
             }
             countMoney();
             snipersEndCheck = true;
         }
     }
-    public void createSmallArrowZone(){
+    private void createSmallArrowZone(){
         if(player.getPlayerRectangle().overlaps(smallArrowZone.getStartZone()) && !smallArrowZoneOverlaped) {
-            laserEndCheck = false;
-            startEndCheck = false;
-            circleEndCheck = false;
-            snipersEndCheck = false;
-
-            laserZoneOverlaped = false;
-            circleZoneOverlaped = false;
-            snipersZoneOverlaped = false;
-
             smallArrowZoneOverlaped = true;
 
+            bigArrowBlockStart = false;
+            bigArrowEnd = false;
+
+            laserEndCheck = false;
+            circleEndCheck= false;
+            startEndCheck = false;
+            snipersEndCheck = false;
+
+            circleZoneOverlaped = false;
+            snipersZoneOverlaped = false;
+            laserZoneOverlaped = false;
             startOverlaped = false;
-            /*
-            startZoneStart = false;
-            laserZoneStart = false;
-            circlesStart = false;
-            snipersStart = false;
-            */
+
             blockCounter += 1;
             if(blockCounter != 8) {
                 zoneCreate = random.nextInt(4) + 1;
                 if (zoneCreate == 2) {
-                    laser = new Laser(smallArrowZone.BLOCK_SIZE / 2 + 512);
-                    laserZoneStart = true;
-                    laserCreated = true;
-
-                    bigArrowBlockStart = false;
-                    bigArrowEnd = false;
-                    laserZoneOverlaped = false;
+                    makeLaser(smallArrowZone.BLOCK_SIZE / 2 + 512);
                 }
                 if (zoneCreate == 3) {
-                    circle = new Circle(smallArrowZone.BLOCK_SIZE / 2 + 512);
-                    circlesStart = true;
-                    circleCreated = true;
-
-                    bigArrowBlockStart = false;
-                    bigArrowEnd = false;
-                    circleZoneOverlaped = false;
+                    makeCircle(smallArrowZone.BLOCK_SIZE / 2 + 512);
                 }
                 if (zoneCreate == 4) {
-                    sniperZone = new SniperZone(smallArrowZone.BLOCK_SIZE / 2 + 512);
-                    snipersStart = true;
-                    sniperCreated = true;
-
-                    bigArrowBlockStart = false;
-                    bigArrowEnd = false;
-                    snipersZoneOverlaped = false;
+                    makeSniper(smallArrowZone.BLOCK_SIZE / 2 + 512);
                 }
             } else if(blockCounter == 8){
-                //blockCounter =6;
-                wall = new Wall(smallArrowZone.BLOCK_SIZE / 2 + 512);
-                corridor = new Corridor(smallArrowZone.BLOCK_SIZE / 2 +start_corridor);
-
-                startZoneStart = true;
-                startOverlaped = false;
+                makeStart(smallArrowZone.BLOCK_SIZE / 2 + 512);
             }
         }
         if(player.getPlayerRectangle().overlaps(smallArrowZone.getEndZone()) &&!smallArrowEndCheck){
-            if (zoneCreate == 1) {
-                bigArrowBlockStart = true;
-                bigArrow = new BigArrow();
-                amountOfBigArrows = random.nextInt(3) + 3;
-                bigArrowsCount = 0;
+            if (zoneCreate == 1  && blockCounter != 8) {
+                makeBigArrow();
             }
             // Money
             countMoney();
@@ -724,6 +584,130 @@ public class GameScreen implements Screen {
         }
     }
 
+    private void makeStart(int lastZone){
+        wall = new Wall(lastZone);
+        corridor = new Corridor(lastZone +start_corridor - 512);
+
+        startZoneStart = true;
+        startOverlaped = false;
+        /*
+        bigArrowBlockStart = false;
+        bigArrowEnd = false;
+
+        laserEndCheck = false;
+        circleEndCheck= false;
+        startEndCheck = false;
+        snipersEndCheck = false;
+        smallArrowEndCheck = false;
+
+        circleZoneOverlaped = false;
+        snipersZoneOverlaped = false;
+        smallArrowZoneOverlaped = false;
+        laserZoneOverlaped = false;
+        startOverlaped = false; */
+    }
+    private void makeBigArrow(){
+        bigArrowBlockStart = true;
+        bigArrow = new BigArrow();
+        amountOfBigArrows = random.nextInt(3) + 3;
+        bigArrowsCount = 0;
+        /*
+        laserEndCheck = false;
+        circleEndCheck= false;
+        startEndCheck = false;
+        snipersEndCheck = false;
+        smallArrowEndCheck = false;
+
+        circleZoneOverlaped = false;
+        snipersZoneOverlaped = false;
+        smallArrowZoneOverlaped = false;
+        laserZoneOverlaped = false;
+        startOverlaped = false; */
+    }
+    private void makeLaser(int lastZone){
+        laser = new Laser(lastZone);
+        laserZoneStart = true;
+        laserCreated = true;
+
+        laserZoneOverlaped = false;
+        /*
+        bigArrowBlockStart = false;
+        bigArrowEnd = false;
+
+        circleEndCheck = false;
+        startEndCheck = false;
+        snipersEndCheck = false;
+        smallArrowEndCheck = false;
+
+        circleZoneOverlaped = false;
+        snipersZoneOverlaped = false;
+        smallArrowZoneOverlaped = false;
+        startOverlaped = false;
+        */
+    }
+    private void makeCircle(int lastZone){
+        circle = new Circle(lastZone);
+        circlesStart = true;
+        circleCreated = true;
+
+        circleZoneOverlaped = false;
+        /*
+        bigArrowBlockStart = false;
+        bigArrowEnd = false;
+
+        laserEndCheck = false;
+        startEndCheck = false;
+        snipersEndCheck = false;
+        smallArrowEndCheck = false;
+
+        snipersZoneOverlaped = false;
+        smallArrowZoneOverlaped = false;
+        laserZoneOverlaped = false;
+        startOverlaped = false;
+        */
+    }
+    private void makeSniper(int lastZone){
+        sniperZone = new SniperZone(lastZone);
+        snipersStart = true;
+        sniperCreated = true;
+
+        snipersZoneOverlaped = false;
+        /*
+        bigArrowBlockStart = false;
+        bigArrowEnd = false;
+
+        laserEndCheck = false;
+        circleEndCheck= false;
+        startEndCheck = false;
+        smallArrowEndCheck = false;
+
+        circleZoneOverlaped = false;
+        smallArrowZoneOverlaped = false;
+        laserZoneOverlaped = false;
+        startOverlaped = false;
+        */
+    }
+    private void makeSmallArrow(int lastZone){
+        smallArrowZone = new SmallArrowZone(lastZone);
+        smallArrowStart = true;
+        smallArrowCreated = true;
+
+        smallArrowZoneOverlaped = false;
+        /*
+        bigArrowBlockStart = false;
+        bigArrowEnd = false;
+
+        laserEndCheck = false;
+        circleEndCheck= false;
+        startEndCheck = false;
+        snipersEndCheck = false;
+
+        circleZoneOverlaped = false;
+        snipersZoneOverlaped = false;
+        laserZoneOverlaped = false;
+        startOverlaped = false;
+        */
+    }
 
     // COLLISION
     public void collisionDebug(){
@@ -811,7 +795,7 @@ public class GameScreen implements Screen {
 
         smallArrowZone.collisionDebug(game.shapeRenderer);
     }
-    public void collisionCheck(){
+    private void collisionCheck(){
         //WHITE SIDES
         if(player.sidesCollision()) {
             playerDeath();
@@ -895,9 +879,9 @@ public class GameScreen implements Screen {
         if(snipersStart) {
             sniperZone.checkCollision(player.getPlayerRectangle(), game, player);
         }
-
-        smallArrowZone.checkCollision(player.getPlayerRectangle(), game, player);
-
+        if(smallArrowStart) {
+            smallArrowZone.checkCollision(player.getPlayerRectangle(), game, player);
+        }
         if(player.getPosition().y <= -64*2){
             game.setScreen(game.gameOver);
         }
@@ -910,7 +894,7 @@ public class GameScreen implements Screen {
     }
 
     boolean bigArrowEnd = false;
-    public void bigArrowLogic(float delta) {
+    private void bigArrowLogic(float delta) {
         if (bigArrowBlockStart) {
             //DRAW BIG ARROW LINE
             game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -948,7 +932,7 @@ public class GameScreen implements Screen {
         }
     }
 
-    public void countMoney(){
+    private void countMoney(){
         blocksNumber +=1;
         Currency.countCurency(blocksNumber);
 

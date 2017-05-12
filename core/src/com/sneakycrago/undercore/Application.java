@@ -14,14 +14,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.sneakycrago.undercore.screens.GameOver;
 import com.sneakycrago.undercore.screens.GameScreen;
 import com.sneakycrago.undercore.screens.InfoScreen;
-import com.sneakycrago.undercore.screens.MainMenu;
+import com.sneakycrago.undercore.screens.MainMenuTest;
 import com.sneakycrago.undercore.utils.Currency;
 import com.sneakycrago.undercore.utils.Score;
 
 public class Application extends Game {
 
 	public static final String TITLE = "Undercore";
-	public static final float VERSION = 0.60f;
+	public static final float VERSION = 0.63f;
 	public static final int V_WIDTH = 512;
 	public static final int V_HEIGHT = 310;
 
@@ -30,11 +30,11 @@ public class Application extends Game {
 	public ShapeRenderer shapeRenderer;
 
 	public AssetManager assetManager;
-	public BitmapFont font, font30,font30white, font10;
+	public BitmapFont font, font30,font30white, font10, borderFont, smallWhiteFont, font40white;
 
 	public GameScreen gameScreen;
 	public GameOver gameOver;
-	public MainMenu mainMenu;
+	public MainMenuTest mainMenuTest;
 	public InfoScreen infoScreen;
 
 	public Preferences preferences;
@@ -59,7 +59,7 @@ public class Application extends Game {
 
 		initFonts();
 
-		mainMenu = new MainMenu(this);
+		mainMenuTest = new MainMenuTest(this);
 		gameScreen = new GameScreen(this);
 		gameOver = new GameOver(this);
 		infoScreen = new InfoScreen(this);
@@ -74,7 +74,7 @@ public class Application extends Game {
 			}
 		}
 		//setScreen(gameScreen);
-		setScreen(mainMenu);
+		setScreen(mainMenuTest);
 	}
 	
 	@Override
@@ -112,12 +112,37 @@ public class Application extends Game {
 		params30white.magFilter = Texture.TextureFilter.Linear;
 		font30white = generator.generateFont(params30white);
 
+		FreeTypeFontGenerator.FreeTypeFontParameter params34white = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		params34white.size = 40;
+		params34white.color = Color.WHITE;
+		params34white.minFilter = Texture.TextureFilter.Linear;
+		params34white.magFilter = Texture.TextureFilter.Linear;
+		font40white = generator.generateFont(params34white);
+
 		FreeTypeFontGenerator.FreeTypeFontParameter params10 = new FreeTypeFontGenerator.FreeTypeFontParameter();
 		params10.size = 10;
 		params10.color = Color.GRAY;
 		params10.minFilter = Texture.TextureFilter.Linear;
 		params10.magFilter = Texture.TextureFilter.Linear;
 		font10 = generator.generateFont(params10);
+
+		FreeTypeFontGenerator.FreeTypeFontParameter smallParams = new FreeTypeFontGenerator.FreeTypeFontParameter();
+		smallParams.size = 15;
+		smallParams.color = Color.WHITE;
+		smallParams.minFilter = Texture.TextureFilter.Linear;
+		smallParams.magFilter = Texture.TextureFilter.Linear;
+		smallWhiteFont = generator.generateFont(smallParams);
+
+		FreeTypeFontGenerator.FreeTypeFontParameter paramsBorder = new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+		paramsBorder.size = 24;
+		paramsBorder.color = Color.WHITE;
+		paramsBorder.minFilter = Texture.TextureFilter.Linear;
+		paramsBorder.magFilter = Texture.TextureFilter.Linear;
+		paramsBorder.borderColor = Color.BLACK;
+		paramsBorder.borderWidth = 2;
+		borderFont = generator.generateFont(paramsBorder);
+
 	}
 	protected Preferences getPrefs() {
 		if(preferences==null){
