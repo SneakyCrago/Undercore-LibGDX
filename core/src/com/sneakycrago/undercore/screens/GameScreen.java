@@ -227,9 +227,9 @@ public class GameScreen implements Screen {
 
         game.shapeRenderer.end();
 
+        game.batch.begin();
         if(desktop) {
             //game info
-            game.batch.begin();
             game.font10.draw(game.batch, "fps:" + Gdx.graphics.getFramesPerSecond(), 0, 288 - 24);
             game.font10.draw(game.batch, "blocks:" + blocksNumber, 0, 288 - 24 - 12);
             game.font10.draw(game.batch, "money:" + Currency.Money, 0, 288 - 24 - 12 * 2);

@@ -96,6 +96,7 @@ public class Application extends Game {
 		params.color = Color.WHITE;
 		params.minFilter = Texture.TextureFilter.Linear;
 		params.magFilter = Texture.TextureFilter.Linear;
+		//MipMapLinearNearest,Nearest
 		font = generator.generateFont(params);
 
 		FreeTypeFontGenerator.FreeTypeFontParameter params30 = new FreeTypeFontGenerator.FreeTypeFontParameter();

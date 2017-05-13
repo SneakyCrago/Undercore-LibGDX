@@ -152,13 +152,14 @@ public class GameOver implements Screen {
 
         //Money
         Currency.addMoneyToCurrency();
+
+        best = Score.getBestScore();
+        Score.makeBestScore();
+
         game.preferences.putInteger("bestScore", Score.bestScore);
         game.preferences.flush();
         game.preferences.putInteger("currency", Currency.currency);
         game.preferences.flush();
-
-        best = Score.getBestScore();
-        Score.makeBestScore();
     }
 
     @Override
@@ -184,7 +185,7 @@ public class GameOver implements Screen {
         currencySprite.setX(256 - currencySprite.getWidth()/2 -glyphLayout.width/2 -20);
 
         if(Score.getGameScore() > best){
-        //if(true){
+            Score.makeBestScore();
             glyphLayout.setText(game.font,"New record!", Color.WHITE,512, Align.center, true);
             game.font.draw(game.batch,glyphLayout, 0, 205 -10);
             glyphLayout.setText(game.smallWhiteFont, "Score: "+ Score.getGameScore() , Color.WHITE,512, Align.center, true);
@@ -193,8 +194,6 @@ public class GameOver implements Screen {
             glyphLayout.setText(game.smallWhiteFont, "Score: "+ Score.getGameScore() , Color.WHITE,512, Align.center, true);
             game.smallWhiteFont.draw(game.batch,glyphLayout, 0,205 -((24+15)/2) -6);
         }
-        //game.font.draw(game.batch,"Money: "+ Currency.Money, 512/2 - 24*3, 160-35 + 45);
-
 
 
         if(checkPlayButton() && Gdx.input.isTouched()){
@@ -205,6 +204,8 @@ public class GameOver implements Screen {
             playReleased = false;
 
             newFrase = true;
+
+            best = Score.getBestScore();
         }
 
         if(checkMenuButton() && Gdx.input.isTouched()){
@@ -215,6 +216,8 @@ public class GameOver implements Screen {
             menuReleased = false;
 
             newFrase = true;
+
+            best = Score.getBestScore();
         }
 
 
@@ -226,6 +229,8 @@ public class GameOver implements Screen {
             exitReleased = false;
 
             newFrase = true;
+
+            best = Score.getBestScore();
         }
 
         currencySprite.draw(game.batch);
