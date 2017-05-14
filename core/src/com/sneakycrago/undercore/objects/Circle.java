@@ -53,14 +53,15 @@ public class Circle {
 
     private int x;
 
-    public Circle(int start) {
+    public Circle(int start, Application game) {
 
         x = start;
 
         posCircle = new Vector2(0,11);
         velocity = new Vector2();
 
-        circleAtlas = new TextureAtlas(Gdx.files.internal("textures/circle.atlas"), Gdx.files.internal("textures/"));
+        //circleAtlas = new TextureAtlas(Gdx.files.internal("textures/circle.atlas"), Gdx.files.internal("textures/"));
+        circleAtlas = game.assetManager.get("textures/circle.atlas");
 
         random = new Random();
 

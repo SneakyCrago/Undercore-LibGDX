@@ -45,14 +45,16 @@ public class Sniper {
 
     private Circle circle;
 
-    public Sniper(int START, int Y){
+    public Sniper(int START, int Y, Application game){
         x = START;
         y = Y;
         startY = Y;
         if(Application.gameSkin == 2) {
-            texture = new Texture(Gdx.files.internal("textures/animation/sniper2.png"));
+            //texture = new Texture(Gdx.files.internal("textures/animation/sniper2.png"));
+            texture = game.assetManager.get("textures/animation/sniper2.png");
         } else {
-            texture = new Texture(Gdx.files.internal("textures/animation/sniper.png"));
+            //texture = new Texture(Gdx.files.internal("textures/animation/sniper.png"));
+            texture = game.assetManager.get("textures/animation/sniper.png");
         }
         posBlock = new Vector2(x,11);
         velocity = new Vector2();

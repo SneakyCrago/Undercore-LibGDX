@@ -2,10 +2,8 @@ package com.sneakycrago.undercore.objects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
@@ -44,9 +42,11 @@ public class Player {
     private Sprite spriteAnim;
     private Texture texture;
 
-    public Player(float x, float y) {
+
+    public Player(float x, float y, Application game) {
         position = new Vector2(x, y);
         velocity = new Vector2(0, 0);
+
 
         playerCubeRectangle = new Rectangle(x, y, 32, 32);
 
@@ -56,16 +56,19 @@ public class Player {
                 32,32,
                 32,0});
 
+
+        texture = game.assetManager.get("textures/animation/playerAnim.png");
+
         switch (Application.gameSkin){
-            case 0: texture = new Texture(Gdx.files.internal("textures/animation/playerAnim.png"));
+            case 0: texture = game.assetManager.get("textures/animation/playerAnim.png");
                 break;
-            case 1: texture = new Texture(Gdx.files.internal("textures/animation/playerAnim1.png"));
+            case 1: texture = game.assetManager.get("textures/animation/playerAnim1.png");
                 break;
-            case 2: texture = new Texture(Gdx.files.internal("textures/animation/playerAnim2.png"));
+            case 2: texture = game.assetManager.get("textures/animation/playerAnim2.png");
                 break;
-            case 3: texture = new Texture(Gdx.files.internal("textures/animation/playerAnim3.png"));
+            case 3: texture = game.assetManager.get("textures/animation/playerAnim3.png");
                 break;
-            case 4: texture = new Texture(Gdx.files.internal("textures/animation/playerAnim4.png"));
+            case 4: texture = game.assetManager.get("textures/animation/playerAnim4.png");
                 break;
         }
 

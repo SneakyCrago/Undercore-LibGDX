@@ -55,7 +55,6 @@ public class MainMenuTest implements Screen {
 
     @Override
     public void show() {
-        background = new Texture("textures/main_menu_background.png");
 
         touch = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 
@@ -93,7 +92,6 @@ public class MainMenuTest implements Screen {
         //94 black region middle
 
         game.batch.begin();
-        game.batch.draw(background,0,0);
 
         //PLAY BUTTON
         if(touch.x > btnPlay.getX() && touch.x < btnPlay.getX() +btnPlay.getWidth() &&

@@ -63,7 +63,7 @@ public class BigArrow {
     private float timer2 = TimeUtils.nanoTime();
     private float time2 = 0;
 
-    public BigArrow() {
+    public BigArrow(Application game) {
         posArrow = new Vector2(-256,11);
         velocity = new Vector2();
 
@@ -73,7 +73,8 @@ public class BigArrow {
         random();
         secondArrowRandom();
 
-        arrowAtlas = new TextureAtlas(Gdx.files.internal("textures/big_arrow.atlas"),Gdx.files.internal("textures/"));
+        //arrowAtlas = new TextureAtlas(Gdx.files.internal("textures/big_arrow.atlas"),Gdx.files.internal("textures/"));
+        arrowAtlas = game.assetManager.get("textures/big_arrow.atlas");
 
         switch(Application.gameSkin) {
             case 0: arrow = new Sprite(arrowAtlas.findRegion("big_arrow"));

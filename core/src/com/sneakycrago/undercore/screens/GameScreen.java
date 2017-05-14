@@ -2,16 +2,17 @@ package com.sneakycrago.undercore.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.objects.BigArrow;
 import com.sneakycrago.undercore.objects.Circle;
@@ -23,6 +24,7 @@ import com.sneakycrago.undercore.objects.SniperZone;
 import com.sneakycrago.undercore.objects.Wall;
 import com.sneakycrago.undercore.objects.WhiteSides;
 import com.sneakycrago.undercore.utils.Currency;
+import com.sneakycrago.undercore.utils.MyInputProcessor;
 import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
@@ -36,6 +38,8 @@ public class GameScreen implements Screen {
     Application game;
 
     private OrthographicCamera camera;
+
+    private OrthographicCamera spriteCamera;
 
     //objects
     private WhiteSides whiteSides;
@@ -56,6 +60,7 @@ public class GameScreen implements Screen {
 
     private Random random;
 
+
     //BIG ARROW LOGIC
     private int amountOfBigArrows;
     private int bigArrowsCount = 0;
@@ -70,32 +75,56 @@ public class GameScreen implements Screen {
 
     int nextZoneRandom;
     // for platform switch
-    private boolean android = true;
-    private boolean desktop = false;
+    private boolean android = false;
+    private boolean desktop = true;
 
     private boolean circleCreated = false, laserCreated = false, sniperCreated = false, smallArrowCreated = false,
     bigArrowCreated = false;
 
     private GlyphLayout glyphLayout;
 
+    //private Stage stage;
+    private Viewport viewport;
+    private Viewport spriteViewport;
+
+    private MyInputProcessor inputProcessor;
 
     public GameScreen(Application game) {
         System.out.println();
         System.out.println("GameScreen");
         this.game = game;
         this.camera = game.camera;
+
+        spriteCamera = new OrthographicCamera();
+        spriteCamera.setToOrtho(false, Application.V_WIDTH, Application.V_HEIGHT);
+
+
     }
 
 
     @Override
     public void show() {
-        random = new Random();
+        inputProcessor = new MyInputProcessor();
+        Gdx.input.setInputProcessor(inputProcessor);
 
+        game.mainMenuScreen.pause();
+        game.gameOver.pause();
+
+        random = new Random();
         Application.gameSkin = random.nextInt(5);
 
+        viewport = new StretchViewport(Application.V_WIDTH*2,Application.V_HEIGHT*2,camera);
+        viewport.apply();
+
+        spriteViewport = new StretchViewport(Application.V_WIDTH, Application.V_HEIGHT, spriteCamera);
+        spriteViewport.apply();
+
+
+        spriteCamera.position.set(camera.viewportWidth/2 - 256,camera.viewportHeight /2 - 155,0);
+        //spriteCamera.position.set(camera.viewportWidth,camera.viewportHeight,0);
         //create objects
         whiteSides = new WhiteSides();
-        player = new Player(96, 139);
+        player = new Player(96, 139, game);
         wall = new Wall(start_wall); //START BLOCK
         start_corridor = start_wall + wall.getBLOCK_SIZE() + 256;
         corridor = new Corridor(start_corridor);
@@ -105,10 +134,10 @@ public class GameScreen implements Screen {
         startZoneStart = true;
 
         /////////////////////// FIX IT ///////////////////
-        laser = new Laser(start_laser); //Lasers
-        circle = new Circle(SPAWN); // Circles //SPAWN
-        bigArrow = new BigArrow();
-        sniperZone = new SniperZone(SPAWN);
+        laser = new Laser(start_laser, game); //Lasers
+        circle = new Circle(SPAWN, game); // Circles //SPAWN
+        bigArrow = new BigArrow(game);
+        sniperZone = new SniperZone(SPAWN, game);
         smallArrowZone = new SmallArrowZone(SPAWN);
 
         amountOfBigArrows = random.nextInt(3) + 3;
@@ -121,12 +150,15 @@ public class GameScreen implements Screen {
 
         glyphLayout = new GlyphLayout();
 
+        //stage = new Stage(new ScreenViewport(), game.batch);
         //test
-
     }
 
     @Override
     public void render(float delta) {
+
+        spriteCamera.update();
+        game.batch.setProjectionMatrix(spriteCamera.combined);
         if(Application.gameSkin == 0) {
             Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         } else if(Application.gameSkin == 1) {
@@ -147,6 +179,9 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         update(delta);
+
+        //stage.act(delta);
+        //stage.draw();
 
         // SPRITES
         game.batch.begin();
@@ -227,24 +262,32 @@ public class GameScreen implements Screen {
 
         game.shapeRenderer.end();
 
+        camera.update();
+        game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
         if(desktop) {
             //game info
-            game.font10.draw(game.batch, "fps:" + Gdx.graphics.getFramesPerSecond(), 0, 288 - 24);
-            game.font10.draw(game.batch, "blocks:" + blocksNumber, 0, 288 - 24 - 12);
-            game.font10.draw(game.batch, "money:" + Currency.Money, 0, 288 - 24 - 12 * 2);
-            game.font10.draw(game.batch, "counter:" + blockCounter, 0, 288 - 24 - 12 * 3);
+            game.font10.draw(game.batch, "fps:" + Gdx.graphics.getFramesPerSecond(), 0, (288 - 24)*2);
+            game.font10.draw(game.batch, "blocks:" + blocksNumber, 0, (288 - 24 - 12)*2);
+            game.font10.draw(game.batch, "money:" + Currency.Money, 0, (288 - 24 - 12 * 2)*2);
+            game.font10.draw(game.batch, "counter:" + blockCounter, 0, (288 - 24 - 12 * 3)*2);
         }
+
+        //game.borderFont.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
+        glyphLayout.setText(game.borderFont, ""+ Score.getGameScore() , Color.WHITE,512*2, Align.center, true);
+        game.borderFont.draw(game.batch, glyphLayout, 0, (11 + 288 - 4)*2);
+
+        spriteCamera.update();
+        game.batch.setProjectionMatrix(spriteCamera.combined);
+
         if(snipersStart) {
             sniperZone.drawBullet(game.batch);
         }
         player.drawPlayerAnimation(game.batch);
 
-        //game.borderFont.draw(game.batch, ""+ Score.getGameScore(),0 +2, 11 + 288 - 4);
-        glyphLayout.setText(game.borderFont, ""+ Score.getGameScore() , Color.WHITE,512, Align.center, true);
-        game.borderFont.draw(game.batch, glyphLayout, 0, 11 + 288 - 4);
 
         game.batch.end();
+
 
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         player.drawPlayerCube(game.shapeRenderer); //draw PlayerCube
@@ -279,7 +322,11 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        viewport.update(width,height);
+        camera.position.set(camera.viewportWidth/2,camera.viewportHeight/2,0);
 
+        spriteViewport.update(width,height);
+        spriteCamera.position.set(camera.viewportWidth/2 - 256,camera.viewportHeight /2 - 155,0);
     }
 
     @Override
@@ -299,6 +346,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
+        System.out.println("GameScreen Dispose");
         if(circleCreated) {
             circle.dispose();
         }
@@ -361,7 +409,7 @@ public class GameScreen implements Screen {
                     makeCircle(start_corridor + corridor.BLOCK_SIZE - 96);
                 } else if (nextZoneRandom == 4) {
                     System.out.println("NEXT ZONE: SNIPERS");
-                    sniperZone = new SniperZone(start_corridor + corridor.BLOCK_SIZE - 96);
+                    sniperZone = new SniperZone(start_corridor + corridor.BLOCK_SIZE - 96, game);
                     makeSniper(start_corridor + corridor.BLOCK_SIZE - 96);
                 } else if (nextZoneRandom == 5) {
                     System.out.println("NEXT ZONE: SMALL ARROWS");
@@ -608,7 +656,7 @@ public class GameScreen implements Screen {
     }
     private void makeBigArrow(){
         bigArrowBlockStart = true;
-        bigArrow = new BigArrow();
+        bigArrow = new BigArrow(game);
         amountOfBigArrows = random.nextInt(3) + 3;
         bigArrowsCount = 0;
         /*
@@ -625,7 +673,7 @@ public class GameScreen implements Screen {
         startOverlaped = false; */
     }
     private void makeLaser(int lastZone){
-        laser = new Laser(lastZone);
+        laser = new Laser(lastZone, game);
         laserZoneStart = true;
         laserCreated = true;
 
@@ -646,7 +694,7 @@ public class GameScreen implements Screen {
         */
     }
     private void makeCircle(int lastZone){
-        circle = new Circle(lastZone);
+        circle = new Circle(lastZone, game);
         circlesStart = true;
         circleCreated = true;
 
@@ -667,7 +715,7 @@ public class GameScreen implements Screen {
         */
     }
     private void makeSniper(int lastZone){
-        sniperZone = new SniperZone(lastZone);
+        sniperZone = new SniperZone(lastZone, game);
         snipersStart = true;
         sniperCreated = true;
 
@@ -923,7 +971,7 @@ public class GameScreen implements Screen {
 
             // random amount 3-5
             if (bigArrow.arrow2.getX() >= bigArrow.INVISIBLE && bigArrowsCount < amountOfBigArrows) {
-                bigArrow = new BigArrow();
+                bigArrow = new BigArrow(game);
                 bigArrowsCount++;
                 System.out.println("number of arrow" + bigArrowsCount);
             } else if(bigArrowsCount == amountOfBigArrows){

@@ -52,7 +52,7 @@ public class Laser {
     public int BLOCK_ZONE;
 
     int x; // test Start
-    public Laser(float START) {
+    public Laser(float START, Application game) {
 
         x =(int) START;
 
@@ -72,7 +72,8 @@ public class Laser {
         OrangeLaserRect = new Rectangle[massive.length];
         BlueLaserRect = new Rectangle[massive.length];
 
-        laserAtlas = new TextureAtlas(Gdx.files.internal("textures/laser.atlas"), Gdx.files.internal("textures/"));
+        //laserAtlas = new TextureAtlas(Gdx.files.internal("textures/laser.atlas"), Gdx.files.internal("textures/"));
+        laserAtlas = game.assetManager.get("textures/laser.atlas");
 
         switch(Application.gameSkin){
             case 0: laserTexture = new TextureRegion(laserAtlas.findRegion("laser"));

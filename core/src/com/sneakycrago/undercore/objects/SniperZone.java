@@ -32,7 +32,7 @@ public class SniperZone {
 
     private Vector2 posBlock;
 
-    public SniperZone(int x) {
+    public SniperZone(int x, Application game) {
         random = new Random();
 
         posBlock = new Vector2(x,11);
@@ -56,14 +56,14 @@ public class SniperZone {
             }
 
 
-            sniper[i] = new Sniper(x + SPACE*i, 8 + randomHeight*32 + randomHeight*8);
+            sniper[i] = new Sniper(x + SPACE*i, 8 + randomHeight*32 + randomHeight*8, game);
 
             BLOCK_SIZE = amountOfWave*32+ amountOfWave* SPACE;
         }
         sniper2 = new Sniper[secondAmount];
         if(secondAmount != 0) {
             for (int i = 0; i < secondAmount; i++) {
-                sniper2[i] = new Sniper(x + SPACE * i, 8 + randomHeight2 * 32 + randomHeight2 * 8);
+                sniper2[i] = new Sniper(x + SPACE * i, 8 + randomHeight2 * 32 + randomHeight2 * 8, game);
             }
         }
 

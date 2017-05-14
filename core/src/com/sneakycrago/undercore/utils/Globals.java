@@ -22,7 +22,7 @@ public class Globals {
     // SKIN = 1
 
     public static final Color Sides1Color = new Color (39/255f, 35/255f, 62/255f, 1f); // Jump1
-    public static final Color Backgound1Color = new Color (175/255f,209/255f,234/255f, 1f);
+    public static final Color Background1Color = new Color (175/255f,209/255f,234/255f, 1f);
     public static final Color Inner1Color = new Color(65/255f,108/255f,133/255f, 1f);
     public static final Color Line1Color = new Color(213/255f, 227/255f, 212/255f, 1f);
 
@@ -55,6 +55,13 @@ public class Globals {
 
     public static final Color Player4Color = new Color(252/255f, 165/255f, 177/255f, 1f);
     public static final Color Line4Color = new Color(240/255f, 244/255f, 247/255f   , 1f);
+
+    //
+    public static  final Color Text0Color = new Color(22/255f,238/255f,247/255f,1f);
+    public static  final Color Text1Color = new Color(175/255f, 209/255f, 234/255f, 1f);
+    public static  final Color Text2Color = new Color(66/255f, 115/255f, 34/255f, 1f);
+    public static  final Color Text3Color = new Color(255/255f, 255/255f, 255/255f, 1f);
+    public static  final Color Text4Color = new Color(252/255f, 165/255f, 177/255f, 1f);
 
 }
 
