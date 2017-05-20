@@ -1,10 +1,9 @@
 package com.sneakycrago.undercore.objects;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.sneakycrago.undercore.Application;
@@ -24,7 +23,7 @@ public class Circle {
     private int SPRITE_SIZE = 90;
     public int BLOCK_SIZE;
 
-    private TextureAtlas circleAtlas;
+    private TextureRegion[] skins;
 
     private Sprite circleTop[],circleBot[];
     private Sprite circleMiddle[];
@@ -53,17 +52,28 @@ public class Circle {
 
     private int x;
 
-    public Circle(int start, Application game) {
-
-        x = start;
+    public Circle(Application game) {
 
         posCircle = new Vector2(0,11);
         velocity = new Vector2();
 
         //circleAtlas = new TextureAtlas(Gdx.files.internal("textures/circle.atlas"), Gdx.files.internal("textures/"));
-        circleAtlas = game.assetManager.get("textures/circle.atlas");
 
         random = new Random();
+
+        skins = new TextureRegion[5];
+        skins[0] = game.circlesSkin[0];
+        skins[1] = game.circlesSkin[1];
+        skins[2] = game.circlesSkin[2];
+        skins[3] = game.circlesSkin[3];
+        skins[4] = game.circlesSkin[4];
+    }
+
+    public void init(float start){
+        x =(int) start;
+
+        posCircle.set(0,11);
+        velocity.set(0,0);
 
         randomizeBlock();
         createBlock();
@@ -92,7 +102,6 @@ public class Circle {
 
         moveSprites();
         moveRects();
-
 
             checkScore();
         }
@@ -158,20 +167,20 @@ public class Circle {
 
         for(int i=0; i < circleTop.length; i++) {
             switch (Application.gameSkin){
-                case 0: circleTop[i] = new Sprite(circleAtlas.findRegion("circle"));
-                    circleBot[i] = new Sprite(circleAtlas.findRegion("circle"));
+                case 0: circleTop[i] = new Sprite(skins[0]);
+                    circleBot[i] = new Sprite(skins[0]);
                     break;
-                case 1: circleTop[i] = new Sprite(circleAtlas.findRegion("circle1"));
-                    circleBot[i] = new Sprite(circleAtlas.findRegion("circle1"));
+                case 1: circleTop[i] = new Sprite(skins[1]);
+                    circleBot[i] = new Sprite(skins[1]);
                     break;
-                case 2: circleTop[i] = new Sprite(circleAtlas.findRegion("circle2"));
-                    circleBot[i] = new Sprite(circleAtlas.findRegion("circle2"));
+                case 2: circleTop[i] = new Sprite(skins[2]);
+                    circleBot[i] = new Sprite(skins[2]);
                     break;
-                case 3: circleTop[i] = new Sprite(circleAtlas.findRegion("circle3"));
-                    circleBot[i] = new Sprite(circleAtlas.findRegion("circle3"));
+                case 3: circleTop[i] = new Sprite(skins[3]);
+                    circleBot[i] = new Sprite(skins[3]);
                     break;
-                case 4: circleTop[i] = new Sprite(circleAtlas.findRegion("circle4"));
-                    circleBot[i] = new Sprite(circleAtlas.findRegion("circle4"));
+                case 4: circleTop[i] = new Sprite(skins[4]);
+                    circleBot[i] = new Sprite(skins[4]);
                     break;
             }
             circleTop[i].setSize(SPRITE_SIZE,SPRITE_SIZE);
@@ -183,15 +192,15 @@ public class Circle {
         for(int i=0; i < circleMiddle.length; i++) {
 
             switch (Application.gameSkin){
-                case 0: circleMiddle[i] = new Sprite(circleAtlas.findRegion("circle"));
+                case 0: circleMiddle[i] = new Sprite(skins[0]);
                     break;
-                case 1: circleMiddle[i] = new Sprite(circleAtlas.findRegion("circle1"));
+                case 1: circleMiddle[i] = new Sprite(skins[1]);
                     break;
-                case 2: circleMiddle[i] = new Sprite(circleAtlas.findRegion("circle2"));
+                case 2: circleMiddle[i] = new Sprite(skins[2]);
                     break;
-                case 3: circleMiddle[i] = new Sprite(circleAtlas.findRegion("circle3"));
+                case 3: circleMiddle[i] = new Sprite(skins[3]);
                     break;
-                case 4: circleMiddle[i] = new Sprite(circleAtlas.findRegion("circle4"));
+                case 4: circleMiddle[i] = new Sprite(skins[4]);
                     break;
             }
             circleMiddle[i].setSize(SPRITE_SIZE,SPRITE_SIZE);
@@ -400,10 +409,6 @@ public class Circle {
         }
     }
 
-    public void dispose() {
-        circleAtlas.dispose();
-        System.out.println("Circle dispose");
-    }
 
     public Rectangle[] getTopRect() {
         return topRect;

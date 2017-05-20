@@ -60,7 +60,7 @@ public class SmallArrow {
                randPos[i] = random.nextInt(max) + 1;
                while (randPos[i] == randPos[i-1]) {
                    randPos[i] = random.nextInt(max) + 1;
-               System.out.println("Positions: " + randPos[i]);
+               //System.out.println("Positions: " + randPos[i]);
                }
            }
            randomWave = new Rectangle[randomArrowsAmount];

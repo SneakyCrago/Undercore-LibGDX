@@ -41,8 +41,18 @@ public class Wall {
 
     int x;
 
-    public Wall(float START){
+    public Wall(){
 
+        random = new Random();
+
+        posBlock = new Vector2(0, 11);
+        velocity = new Vector2();
+
+        massiveRect = new Rectangle[8];
+        massiveRect2 = new Rectangle[8];
+    }
+
+    public void init(float START){
         x =(int) START;
 
         isScored = new boolean[8];
@@ -51,15 +61,10 @@ public class Wall {
             //isScored[i] = false;
         }
 
-        random = new Random();
         rand();
 
-
-        posBlock = new Vector2(0, 11);
-        velocity = new Vector2();
-
-        massiveRect = new Rectangle[8];
-        massiveRect2 = new Rectangle[8];
+        posBlock.set(0, 11);
+        velocity.set(0,0);
 
         createRects(x);
     }

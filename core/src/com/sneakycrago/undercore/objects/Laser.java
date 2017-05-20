@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Pool;
 import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
@@ -21,7 +22,7 @@ import java.util.Random;
  * Created by Sneaky Crago on 01.04.2017.
  */
 
-public class Laser {
+public class Laser{
 
     public int SPEED = -90; // -90
 
@@ -32,7 +33,6 @@ public class Laser {
 
     private TextureRegion laserTexture, flipLaserTexture;
 
-    private TextureAtlas laserAtlas;
     private Sprite[] laser, flipLaser;
 
     private int[] massive;
@@ -51,20 +51,29 @@ public class Laser {
 
     public int BLOCK_ZONE;
 
+    private boolean setSkin;
+
     int x; // test Start
-    public Laser(float START, Application game) {
-
-        x =(int) START;
-
+    public Laser(Application game) {
         posBlock = new Vector2(0, 11); // 0,11
         velocity = new Vector2();
 
         random = new Random();
-        massive = new int[random.nextInt(3)+3];
+
+        setSkin = false;
+    }
+
+    public void init(float START, Application game) {
+        x = (int) START;
+
+        posBlock.set(0, 11); // 0,11
+        velocity.set(0,0);
+
+        massive = new int[random.nextInt(3) + 3];
         random();
-        BLOCK_ZONE = (massive.length-1)*FREE_SPACE + massive.length * 32;
+        BLOCK_ZONE = (massive.length - 1) * FREE_SPACE + massive.length * 32;
         size = new int[massive.length];
-        for(int i = 0; i< massive.length; i++) {
+        for (int i = 0; i < massive.length; i++) {
             size[i] = 0;
         }
         TopWall = new Rectangle[massive.length];
@@ -72,47 +81,59 @@ public class Laser {
         OrangeLaserRect = new Rectangle[massive.length];
         BlueLaserRect = new Rectangle[massive.length];
 
-        //laserAtlas = new TextureAtlas(Gdx.files.internal("textures/laser.atlas"), Gdx.files.internal("textures/"));
-        laserAtlas = game.assetManager.get("textures/laser.atlas");
-
-        switch(Application.gameSkin){
-            case 0: laserTexture = new TextureRegion(laserAtlas.findRegion("laser"));
-                flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser"));
-                break;
-            case 1: laserTexture = new TextureRegion(laserAtlas.findRegion("laser1"));
-                flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser1"));
-                break;
-            case  2: laserTexture = new TextureRegion(laserAtlas.findRegion("laser2"));
-                flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser2"));
-                break;
-            case 3: laserTexture = new TextureRegion(laserAtlas.findRegion("laser3"));
-                flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser3"));
-                break;
-            case 4: laserTexture = new TextureRegion(laserAtlas.findRegion("laser4"));
-                flipLaserTexture = new TextureRegion(laserAtlas.findRegion("laser4"));
-                break;
+        if(!setSkin) {
+            setSkin(game);
+            setSkin = true;
         }
-
-        flipLaserTexture.flip(false, true);
-
         laser = new Sprite[massive.length];
         flipLaser = new Sprite[massive.length];
 
-        for(int i = 0; i < massive.length; i++) {
+        for (int i = 0; i < massive.length; i++) {
             laser[i] = new Sprite(laserTexture);
-            laser[i].setPosition(posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE, posBlock.y + 32);
+            laser[i].setPosition(posBlock.x + x + i * FREE_SPACE + i * Globals.TEXTURE_SIZE, posBlock.y + 32);
 
             flipLaser[i] = new Sprite(flipLaserTexture);
-            flipLaser[i].setPosition(posBlock.x + x + i*FREE_SPACE +i*Globals.TEXTURE_SIZE,
+            flipLaser[i].setPosition(posBlock.x + x + i * FREE_SPACE + i * Globals.TEXTURE_SIZE,
                     posBlock.y + Globals.FREE_SPACE * 2 + 32);
         }
         createRects();
 
         isScored = new boolean[massive.length];
 
-        for(int i = 0; i < isScored.length; i++) {
+        for (int i = 0; i < isScored.length; i++) {
             isScored[i] = false;
         }
+    }
+
+    public void setSkin(Application game){
+        switch (Application.gameSkin) {
+            case 0:
+                laserTexture = game.laserSkin[0];
+                flipLaserTexture = game.flipLaserSkin[0];
+                //flipLaserTexture.flip(false, true);
+                break;
+            case 1:
+                laserTexture = game.laserSkin[1];
+                flipLaserTexture = game.flipLaserSkin[1];
+                //flipLaserTexture.flip(false, true);
+                break;
+            case 2:
+                laserTexture = game.laserSkin[2];
+                flipLaserTexture = game.flipLaserSkin[2];
+                //flipLaserTexture.flip(false, true);
+                break;
+            case 3:
+                laserTexture = game.laserSkin[3];
+                flipLaserTexture = game.flipLaserSkin[3];
+                //flipLaserTexture.flip(false, true);
+                break;
+            case 4:
+                laserTexture = game.laserSkin[4];
+                flipLaserTexture = game.flipLaserSkin[4];
+                //flipLaserTexture.flip(false, true);
+                break;
+        }
+
     }
 
     // movement
@@ -249,7 +270,6 @@ public class Laser {
                 break;
         }
     }
-
     private void switchJumpColor(ShapeRenderer shapeRenderer){
         switch (Application.gameSkin){
             case 0: shapeRenderer.setColor(Globals.OrangeColor);
@@ -264,7 +284,6 @@ public class Laser {
                 break;
         }
     }
-
     private void switchOnLineColor(ShapeRenderer shapeRenderer){
         switch (Application.gameSkin) {
             case 0:  shapeRenderer.setColor(Globals.LightBlueColor);
@@ -334,10 +353,6 @@ public class Laser {
         }
     }
 
-    public void dispose() {
-        laserAtlas.dispose();
-        System.out.println("Laser dispose");
-    }
 
     public Rectangle[] getTopWall() {
         return TopWall;
@@ -358,4 +373,6 @@ public class Laser {
     public Rectangle getEndZone() {
         return endZone;
     }
+
+
 }

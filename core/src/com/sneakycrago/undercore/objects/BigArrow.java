@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
@@ -32,9 +33,6 @@ public class BigArrow {
 
     public int SPEED = 90 * 6; // 90*6 x6 now
     private int FREE_SPACE = 96;
-
-    private TextureAtlas arrowAtlas;
-    private Texture arrowTexture;
 
     private Vector2 posArrow, posArrow2;
     private Vector2 velocity, velocity2;
@@ -70,45 +68,10 @@ public class BigArrow {
         posArrow2 = new Vector2(0,11);
         velocity2 = new Vector2();
 
-        random();
-        secondArrowRandom();
-
-        //arrowAtlas = new TextureAtlas(Gdx.files.internal("textures/big_arrow.atlas"),Gdx.files.internal("textures/"));
-        arrowAtlas = game.assetManager.get("textures/big_arrow.atlas");
-
-        switch(Application.gameSkin) {
-            case 0: arrow = new Sprite(arrowAtlas.findRegion("big_arrow"));
-                arrow2 = new Sprite(arrowAtlas.findRegion("big_arrow"));
-                break;
-            case 1: arrow = new Sprite(arrowAtlas.findRegion("big_arrow1"));
-                arrow2 = new Sprite(arrowAtlas.findRegion("big_arrow1"));
-                break;
-            case 2: arrow = new Sprite(arrowAtlas.findRegion("big_arrow2"));
-                arrow2 = new Sprite(arrowAtlas.findRegion("big_arrow2"));
-                break;
-            case 3: arrow = new Sprite(arrowAtlas.findRegion("big_arrow3"));
-                arrow2 = new Sprite(arrowAtlas.findRegion("big_arrow3"));
-                break;
-            case 4: arrow = new Sprite(arrowAtlas.findRegion("big_arrow4"));
-                arrow2 = new Sprite(arrowAtlas.findRegion("big_arrow4"));
-                break;
-        }
-
-
-        arrow.setAlpha(0);
-        arrow.setSize(102, 96 );
-        arrow.setPosition(512 - 128, randomHeight);
-
-
-        arrow2.setAlpha(0);
-        arrow2.setSize(102, 96);
-        arrow2.setPosition(512 - 128, randomHeight2);
+        setSkin(game);
 
         line = new Rectangle();
-        line.set(0,arrow.getY(),posArrow.x,96);
-
         line2 = new Rectangle();
-        line2.set(0,arrow2.getY(),posArrow2.x,96);
 
         arrowPolygon = new Polygon(new float[] {
                 0,0,
@@ -118,7 +81,6 @@ public class BigArrow {
                 0, 96,
                 102/2 -2, 96/2
         });
-
         arrowPolygon2 = new Polygon(new float[] {
                 0,0,
                 102/2 +3,0,
@@ -127,13 +89,71 @@ public class BigArrow {
                 0, 96,
                 102/2 -2, 96/2
         });
-
-        arrowPolygon.setPosition(arrow.getX(),arrow.getY());
-        arrowPolygon2.setPosition(arrow.getX(),arrow.getY());
         //line.set(-512,arrow.getY(), 512, 96);
     }
 
-    public void random() {
+    public void init(){
+        random();
+        secondArrowRandom();
+
+        posArrow.set(-256,11);
+        velocity.set(0,0);
+
+        posArrow2.set(0,11);
+        velocity2.set(0,0);
+
+        arrow.setAlpha(0);
+        arrow.setSize(102, 96 );
+        arrow.setPosition(512 - 128, randomHeight);
+
+        arrow2.setAlpha(0);
+        arrow2.setSize(102, 96);
+        arrow2.setPosition(512 - 128, randomHeight2);
+
+        arrowPolygon.setPosition(arrow.getX(),arrow.getY());
+        arrowPolygon2.setPosition(arrow.getX(),arrow.getY());
+
+        line.set(0,arrow.getY(),posArrow.x,96);
+        line2.set(0,arrow2.getY(),posArrow2.x,96);
+
+        timer = TimeUtils.nanoTime();
+        time = 0;
+
+        alpha = 1;
+        start =0.1f * alpha;
+        alphaMax = 0;
+        startMax =0.1f * alpha;
+
+        alpha2 = 1;
+        start2 =0.1f * alpha;
+        alphaMax2 = 0;
+        startMax2 =0.1f * alpha;
+
+        playEffect = true;
+        playEffect2 = true;
+        secondStart = false;
+    }
+    private void setSkin(Application game){
+        switch(Application.gameSkin) {
+            case 0: arrow = new Sprite(game.bigArrowSkin[0]);
+                arrow2 = new Sprite(game.bigArrowSkin[0]);
+                break;
+            case 1: arrow = new Sprite(game.bigArrowSkin[1]);
+                arrow2 = new Sprite(game.bigArrowSkin[1]);
+                break;
+            case 2: arrow = new Sprite(game.bigArrowSkin[2]);
+                arrow2 = new Sprite(game.bigArrowSkin[2]);
+                break;
+            case 3: arrow = new Sprite(game.bigArrowSkin[3]);
+                arrow2 = new Sprite(game.bigArrowSkin[3]);
+                break;
+            case 4: arrow = new Sprite(game.bigArrowSkin[4]);
+                arrow2 = new Sprite(game.bigArrowSkin[4]);
+                break;
+        }
+    }
+
+    private void random() {
         //simple
 
         //randomHeight = (int) posArrow.y + FREE_SPACE;

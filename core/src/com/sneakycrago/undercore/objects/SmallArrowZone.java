@@ -1,6 +1,8 @@
 package com.sneakycrago.undercore.objects;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -34,17 +36,26 @@ public class SmallArrowZone {
 
     private final int SPEED = -90*2;
 
-    public SmallArrowZone(int start) {
-        x = start;
 
-        posBlock = new Vector2(x, 11);
+
+    public SmallArrowZone() {
+        posBlock = new Vector2(0, 11);
 
         random = new Random();
+
+        startZone = new Rectangle();
+        endZone = new Rectangle();
+
+
+    }
+    public void init(int start){
+        x = start;
+
+        posBlock.set(x, 11);
 
         createMassive();
 
         smallArrow = new SmallArrow[massive.length];
-
         if(randomHelper == 1) {
             if(massive[2] == 3) {
                 BLOCK_SIZE = length[2]  + 48; //length[2] - SPACE *2 + 48
@@ -68,11 +79,8 @@ public class SmallArrowZone {
                 smallArrow[i] = new SmallArrow(x + length[i],3);  // random Wave
             }
         }
-
-
-        startZone = new Rectangle(posBlock.x, posBlock.y, 1, 288);
-
-        endZone = new Rectangle(posBlock.x + BLOCK_SIZE, posBlock.y, 1, 288);
+        startZone.set(posBlock.x, posBlock.y, 1, 288);
+        endZone.set(posBlock.x + BLOCK_SIZE, posBlock.y, 1, 288);
     }
 
     private void createMassive(){
@@ -82,23 +90,7 @@ public class SmallArrowZone {
         } else {
             massive = new int[5];
         }
-        /*
-        System.out.print("SMALL ARROW: ");
-        massive[0] = random.nextInt(3) +1; // (3)+1
-        System.out.print(massive[0] + " ");
-        for(int i =1; i< massive.length; i++){
-            massive[i] = random.nextInt(3) + 1;
-
-            if(massive[i] == 1 || massive[i] == 2) {
-                while (massive[i] == massive[i - 1]) {
-                    massive[i] = random.nextInt(3) + 1;
-                }
-            }
-            System.out.print(massive[i] + " ");
-        }
-        System.out.println();
-        */
-        System.out.print("SMALL ARROW: ");
+        //System.out.print("SMALL ARROW: ");
 
         value = random.nextInt(2) +1;
         massive[0] = random.nextInt(3) +1; // (3)+1
@@ -110,7 +102,7 @@ public class SmallArrowZone {
             value = 1;
         }
 
-        System.out.print(massive[0] + " ");
+        //System.out.print(massive[0] + " ");
         for(int i =1; i< massive.length; i++){
             massive[i] = random.nextInt(3) + 1;
 
@@ -127,9 +119,8 @@ public class SmallArrowZone {
                     massive[i] = random.nextInt(3) + 1;
                 }
             }
-            System.out.print(massive[i] + " ");
+            //System.out.print(massive[i] + " ");
         }
-        System.out.println();
 
         length = new int[massive.length];
 

@@ -31,7 +31,7 @@ public class Sniper {
     private Vector2 bulletPos;
 
     private Sprite bullet;
-    private Texture texture;
+    //private Texture texture;
 
 
     //trajectory variables
@@ -45,31 +45,38 @@ public class Sniper {
 
     private Circle circle;
 
-    public Sniper(int START, int Y, Application game){
+    public Sniper(Texture skin){
+        //texture = skin;
+        posBlock = new Vector2(0,11);
+        velocity = new Vector2();
+
+        bullet = new Sprite(skin);
+
+        bulletPos = new Vector2(startX,y);
+
+        stationRect = new Rectangle();
+
+        circle = new Circle();
+    }
+    public void init(int START, int Y){
         x = START;
         y = Y;
         startY = Y;
-        if(Application.gameSkin == 2) {
-            //texture = new Texture(Gdx.files.internal("textures/animation/sniper2.png"));
-            texture = game.assetManager.get("textures/animation/sniper2.png");
-        } else {
-            //texture = new Texture(Gdx.files.internal("textures/animation/sniper.png"));
-            texture = game.assetManager.get("textures/animation/sniper.png");
-        }
-        posBlock = new Vector2(x,11);
-        velocity = new Vector2();
 
-        bullet = new Sprite(texture);
+        posBlock.set(x,11);
+        velocity.set(0,0);
+
         bullet.setSize(32,32);
         bullet.setOrigin(16,16);
         bullet.setPosition(startX, startY);
 
-        bulletPos = new Vector2(startX,y);
+        bulletPos.set(startX,y);
 
-        stationRect = new Rectangle(posBlock.x,posBlock.y + y, 32, 32);
+        stationRect.set(posBlock.x,posBlock.y + y, 32, 32);
 
-        circle = new Circle(bullet.getX()+ 16, bullet.getY() + 16, 16);
+        circle.set(bullet.getX()+ 16, bullet.getY() + 16, 16);
     }
+
     public void update(float delta){
         if(Application.playerAlive) {
             //movement
@@ -218,9 +225,6 @@ public class Sniper {
         }
     }
 
-    public void dispose(){
-        texture.dispose();
-    }
 
     private void moveCollision() {
         stationRect.setPosition(posBlock.x, posBlock.y + y);

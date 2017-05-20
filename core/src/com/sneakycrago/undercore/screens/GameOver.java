@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -54,8 +55,8 @@ public class GameOver implements Screen {
     private boolean menuReleased = false;
     private boolean exitReleased = false;
 
-    private Texture currencyTexture;
-    private Sprite currencySprite;
+    private Sprite currency;
+
 
     private boolean newFrase = true;
 
@@ -76,6 +77,8 @@ public class GameOver implements Screen {
 
     private ImageButton play, menu, exit;
 
+    private float moneyX;
+
     public GameOver(Application game) {
 
         random = new Random();
@@ -85,10 +88,7 @@ public class GameOver implements Screen {
 
         spriteCamera = new OrthographicCamera();
         spriteCamera.setToOrtho(false, Application.V_WIDTH, Application.V_HEIGHT);
-    }
 
-    @Override
-    public void show() {
         viewport = new StretchViewport(Application.V_WIDTH*2,Application.V_HEIGHT*2,camera);
         viewport.apply();
 
@@ -103,7 +103,11 @@ public class GameOver implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         buttonsAtlas = game.assetManager.get("textures/buttons/gameOver.atlas");
+    }
 
+
+    @Override
+    public void show() {
         switch (Application.gameSkin){
             case 0:
                 playTex = new TextureRegion(buttonsAtlas.findRegion("play0"));
@@ -155,7 +159,6 @@ public class GameOver implements Screen {
                 exitPressedTex = new TextureRegion(buttonsAtlas.findRegion("exit4Pressed"));
         }
 
-
         play = new ImageButton(new TextureRegionDrawable(playTex),
                 new TextureRegionDrawable(playPressedTex),
                 new TextureRegionDrawable(playTex));
@@ -178,7 +181,9 @@ public class GameOver implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 newFrase = true;
                 best = Score.getBestScore();
-                game.setScreen(new GameScreen(game));
+                //game.setScreen(new GameScreen(game));
+                game.setScreen(game.gameScreen);
+                game.gameOver.pause();
             }
         });
 
@@ -188,6 +193,7 @@ public class GameOver implements Screen {
                 newFrase = true;
                 best = Score.getBestScore();
                 game.setScreen(game.mainMenuScreen);
+                game.gameOver.pause();
             }
         });
 
@@ -205,12 +211,15 @@ public class GameOver implements Screen {
         stage.addActor(exit);
         Gdx.input.setInputProcessor(stage);
 
-        currencyTexture = new Texture(Gdx.files.internal("textures/currency.png"), true);
-        currencyTexture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Nearest);
-        currencySprite = new Sprite(currencyTexture);
-        currencySprite.setScale(0.125f);
-        currencySprite.setPosition(256 - currencySprite.getWidth()/2 - 20, 0 + 80 - currencySprite.getY()/4);//205 - 24 -15 + 15
+        //currencySprite.setSize(199*0.125f, 300*0.125f);
+        //currencySprite.setScale(0.125f);
+        //currencySprite.setPosition(256 - currencySprite.getWidth()/2 - 20, 0 + 80 - currencySprite.getY()/4);//205 - 24 -15 + 15
 
+        //currencyTexture = new Texture(Gdx.files.internal("textures/currency.png"), true);
+        //currencyTexture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Nearest);
+        currency = new Sprite(game.currencyTexture);
+        float scale = 0.12f;
+        currency.setSize(199*scale, 300*scale);
         glyphLayout = new GlyphLayout();
 
         createNewFrase();
@@ -229,6 +238,8 @@ public class GameOver implements Screen {
                 break;
         }
 
+        game.gameScreen.dispose();
+
         //Money & Score
         Currency.addMoneyToCurrency();
 
@@ -243,28 +254,32 @@ public class GameOver implements Screen {
 
     @Override
     public void render(float delta) {
-        spriteCamera.update();
-        game.batch.setProjectionMatrix(spriteCamera.combined);
-
         Gdx.gl.glClearColor(18/255f,25/255f,26/255f,1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        game.batch.begin();
-
-        currencySprite.draw(game.batch);
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
 
+        stage.act(delta);
+        stage.draw();
+
+        game.batch.begin();
 
         game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 80*2, 15*2 );
         glyphLayout.setText(deathFont, death , Color.WHITE,512*2, Align.center, true);
         deathFont.draw(game.batch, glyphLayout, 0, (310-10)*2);
-
         glyphLayout.setText(game.font30white,"" +Currency.Money,Color.WHITE,512*2, Align.center, true);
-        game.font30white.draw(game.batch,glyphLayout , 0, (310/2 + currencySprite.getY() + 8)*2);
 
-        currencySprite.setX(256 - currencySprite.getWidth()/2 -glyphLayout.width/2 - 5);
+        //game.batch.end();
+        //game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        //game.shapeRenderer.rect(256 -glyphLayout.width/4, 200,glyphLayout.width/2,glyphLayout.height/2);
+        //game.shapeRenderer.end();
+        //game.batch.begin();
+        game.font30white.draw(game.batch,glyphLayout , 0+10, currency.getY()*2 + glyphLayout.height + 10);
+        moneyX = 256- currency.getWidth()-glyphLayout.width/4;
+        //currency.setPosition(512/2 - glyphLayout.width/2 - glyphLayout.width/4 -5, 200);
+        currency.setPosition(moneyX, 210);
+
 
         if(Score.getGameScore() > best){
             Score.makeBestScore();
@@ -277,10 +292,16 @@ public class GameOver implements Screen {
             game.smallWhiteFont.draw(game.batch,glyphLayout, 0,(205 -((24+15)/2) -6) *2);
         }
 
+        spriteCamera.update();
+        game.batch.setProjectionMatrix(spriteCamera.combined);
+
+        //currencySprite.draw(game.batch);
+        currency.draw(game.batch);
+
         game.batch.end();
 
-        stage.act(delta);
-        stage.draw();
+
+
     }
 
     private void createNewFrase(){
@@ -327,6 +348,15 @@ public class GameOver implements Screen {
         spriteCamera.position.set(camera.viewportWidth/2 - 256,camera.viewportHeight /2 - 155,0);
     }
 
+    private int getLengh(int X){
+        int number = X;
+        if(number >= 10) {
+            int amount = (int) Math.log10(number) + 1;
+            return amount;
+        }
+        return 0;
+    }
+
     @Override
     public void pause() {
 
@@ -344,5 +374,6 @@ public class GameOver implements Screen {
 
     @Override
     public void dispose() {
+        stage.dispose();
     }
 }

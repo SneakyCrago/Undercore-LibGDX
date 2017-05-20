@@ -41,7 +41,7 @@ public class Player {
     private float elapsedTime = 0f, currentFrame;
     private Sprite spriteAnim;
     private Texture texture;
-
+    //private Texture[] texture;
 
     public Player(float x, float y, Application game) {
         position = new Vector2(x, y);
@@ -56,27 +56,33 @@ public class Player {
                 32,32,
                 32,0});
 
-
-        texture = game.assetManager.get("textures/animation/playerAnim.png");
+        //texture = new Texture[5];
 
         switch (Application.gameSkin){
-            case 0: texture = game.assetManager.get("textures/animation/playerAnim.png");
+            case 0: //texture[0] = game.playerSkin0;
+                texture = game.playerSkin0;
+                spriteAnim = new Sprite(texture);
                 break;
-            case 1: texture = game.assetManager.get("textures/animation/playerAnim1.png");
+            case 1: texture = game.playerSkin1;
+                spriteAnim = new Sprite(texture);
                 break;
-            case 2: texture = game.assetManager.get("textures/animation/playerAnim2.png");
+            case 2: texture = game.playerSkin2;
+                spriteAnim = new Sprite(texture);
                 break;
-            case 3: texture = game.assetManager.get("textures/animation/playerAnim3.png");
+            case 3: texture = game.playerSkin3;
+                spriteAnim = new Sprite(texture);
                 break;
-            case 4: texture = game.assetManager.get("textures/animation/playerAnim4.png");
+            case 4: texture = game.playerSkin4;
+                spriteAnim = new Sprite(texture);
                 break;
         }
 
-
-
-        spriteAnim = new Sprite(texture);
+        //spriteAnim = new Sprite(texture);
         spriteAnim.setSize(32,32);
         spriteAnim.setPosition(position.x - 32, position.y);
+    }
+    public void initSkin(Application game){
+
     }
 
     public void update(float delta) {
@@ -230,6 +236,9 @@ public class Player {
             isJumped = true;
             deathPlayed = true;
         }
+    }
+
+    public void dispose(){
     }
 
     public Rectangle getPlayerRectangle() {

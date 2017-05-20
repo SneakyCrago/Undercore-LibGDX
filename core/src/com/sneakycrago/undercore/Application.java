@@ -11,24 +11,22 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.sneakycrago.undercore.screens.GameOver;
 import com.sneakycrago.undercore.screens.GameScreen;
-import com.sneakycrago.undercore.screens.InfoScreen;
 import com.sneakycrago.undercore.screens.LoadingScreen;
 import com.sneakycrago.undercore.screens.MainMenuScreen;
-import com.sneakycrago.undercore.screens.MainMenuTest;
+import com.sneakycrago.undercore.screens.TutorialScreen;
 import com.sneakycrago.undercore.utils.Currency;
 import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
 
-import sun.applet.Main;
-
 public class Application extends Game {
 
 	public static final String TITLE = "Undercore";
-	public static final float VERSION = 0.65f;
+	public static final float VERSION = 0.70f;
 	public static final int V_WIDTH = 512;
 	public static final int V_HEIGHT = 310;
 
@@ -37,24 +35,31 @@ public class Application extends Game {
 	public ShapeRenderer shapeRenderer;
 
 	public BitmapFont font, font30,font30white, font10, borderFont, smallWhiteFont, font40white,
-	death0, death1,death2,death3,death4, menu0Font, menu1Font,menu2Font,menu3Font,menu4Font, menuBig;
+	death0, death1,death2,death3,death4, menu0Font,tutFont, menu1Font,menu2Font,menu3Font,menu4Font, menuBig;
+
+	public Texture playerSkin0,playerSkin1,playerSkin2,playerSkin3,playerSkin4, currencyTexture;
+
+    public TextureAtlas circleAtlas,bigArrowAtlas, laserAtlas;
+
+    public TextureRegion[] circlesSkin, bigArrowSkin, laserSkin, flipLaserSkin;
+    public Texture[] snipersSkin;
 
 	public GameScreen gameScreen;
 	public GameOver gameOver;
-	public MainMenuTest mainMenuTest;
-	public InfoScreen infoScreen;
 	public LoadingScreen loadingScreen;
 	public MainMenuScreen mainMenuScreen;
+	public TutorialScreen tutorialScreen;
 
 	public AssetManager assetManager= new AssetManager();
 
 	public Preferences preferences;
-	boolean loadPrefs = true; // загружать ли ресурсы
+	boolean loadPrefs = true; // загружать ли сохранения
 
 	public static int gameSkin = 4; // 0 - standard
-	public static int playerSkin = 0;
 
 	public static boolean playerAlive;
+
+	public boolean goTutorial;
 
 	@Override
 	public void create () {
@@ -66,10 +71,6 @@ public class Application extends Game {
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setProjectionMatrix(camera.combined);
 
-		//initFonts();
-		//initDeathFonts();
-		//initMenuFonts();
-
 		assetManager = new AssetManager();
 
 		loadingScreen = new LoadingScreen(this);
@@ -78,28 +79,48 @@ public class Application extends Game {
 
 		if(loadPrefs){
 			if(preferences.contains("bestScore")){
-				System.out.println("checked preferences");
 				Score.bestScore = preferences.getInteger("bestScore");
 				Currency.currency = preferences.getInteger("currency");
+				goTutorial = preferences.getBoolean("goTutorial");
 			}
+		} else{
+			goTutorial = true;
 		}
-		//setScreen(gameScreen);
-		//setScreen(mainMenuTest);
 		setScreen(loadingScreen);
 	}
 	
 	@Override
 	public void dispose () {
-		System.out.println("Game Dispose");
 		batch.dispose();
 		shapeRenderer.dispose();
 
 		font.dispose();
+		font30.dispose();
+		font30white.dispose();
+		font10.dispose();
+		borderFont.dispose();
+		smallWhiteFont.dispose();
+		font40white.dispose();
+		death0.dispose();
+		death1.dispose();
+		death2.dispose();
+		death3.dispose();
+		death4.dispose();
+		menu0Font.dispose();
 
 		assetManager.dispose();
 
 		gameScreen.dispose();
 		gameOver.dispose();
+
+        playerSkin0.dispose();
+        playerSkin1.dispose();
+        playerSkin2.dispose();
+        playerSkin3.dispose();
+        playerSkin4.dispose();
+
+        circleAtlas.dispose();
+
 	}
 
 	private int borderSize =2;
@@ -189,6 +210,9 @@ public class Application extends Game {
 
 		params.size = 60;
 		menuBig = generator.generateFont(params);
+
+		params.size = 40;
+		tutFont = generator.generateFont(params);
 	}
 	public void initDeathFonts(){
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/font.ttf"));
@@ -220,24 +244,34 @@ public class Application extends Game {
 	protected Preferences getPrefs() {
 		if(preferences==null){
 			preferences = Gdx.app.getPreferences("saves");
+			preferences.putBoolean("goTutorial", true);
 		}
 		return preferences;
 	}
 
 	public void loadTextures(){
+		playerSkin0.setAssetManager(assetManager);
+		playerSkin1.setAssetManager(assetManager);
+		playerSkin2.setAssetManager(assetManager);
+		playerSkin3.setAssetManager(assetManager);
+		playerSkin4.setAssetManager(assetManager);
+		currencyTexture.setAssetManager(assetManager);
+
 		TextureLoader.TextureParameter param = new TextureLoader.TextureParameter();
 		param.genMipMaps = true; // enabling mipmaps
+		param.minFilter = Texture.TextureFilter.MipMapLinearNearest;
+		param.magFilter = Texture.TextureFilter.Nearest;
 		//Images
 		assetManager.load("textures/big_arrow.atlas", TextureAtlas.class);
-		assetManager.load("textures/big_arrow.png", Texture.class);
+		assetManager.load("textures/big_arrow.png", Texture.class, param);
 
 		assetManager.load("textures/circle.atlas", TextureAtlas.class);
-		assetManager.load("textures/circle.png", Texture.class);
+		assetManager.load("textures/circle.png", Texture.class, param);
 
 		assetManager.load("textures/laser.atlas", TextureAtlas.class);
-		assetManager.load("textures/laser.png", Texture.class);
+		assetManager.load("textures/laser.png", Texture.class, param);
 
-		assetManager.load("textures/currency.png", Texture.class);
+		assetManager.load("textures/currency.png", Texture.class, param);
 		//Animation
 		assetManager.load("textures/animation/playerAnim.png", Texture.class);
 		assetManager.load("textures/animation/playerAnim1.png", Texture.class);
@@ -250,6 +284,12 @@ public class Application extends Game {
 		assetManager.load("textures/buttons/gameOver.atlas", TextureAtlas.class);
 		// Main Menu
 		assetManager.load("textures/buttons/mainMenu.atlas", TextureAtlas.class);
+
+		//Tutorial
+		assetManager.load("textures/buttons/GotItButton_big.png", Texture.class, param);
+		assetManager.load("textures/buttons/tutorial0.png", Texture.class, param);
+		assetManager.load("textures/buttons/tutorial1.png", Texture.class, param);
 	}
+
 
 }

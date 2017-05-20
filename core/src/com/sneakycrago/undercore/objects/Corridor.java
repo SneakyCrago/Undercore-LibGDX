@@ -32,9 +32,7 @@ public class Corridor {
 
     private int x;
 
-    public Corridor(float START) {
-
-        x =(int) START;
+    public Corridor() {
 
         posBlock = new Vector2(0,11);
         velocity = new Vector2();
@@ -43,8 +41,16 @@ public class Corridor {
         topRightRects = new Rectangle[7];
         bottomRets = new Rectangle[15];
 
+    }
+    public void init(float START){
+        x =(int) START;
+
+        posBlock.set(0,11);
+        velocity.set(0,0);
+
         createRects(x);
     }
+
     public void update(float delta){
         if(Application.playerAlive) {
         //movement

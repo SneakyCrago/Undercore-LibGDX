@@ -17,8 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.viewport.FillViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sneakycrago.undercore.Application;
@@ -41,6 +39,7 @@ public class MainMenuScreen implements Screen {
             playerPressedTex, worldPressedTex, settingsPressedTex;
     private Sprite skull;
 
+    private Sprite currency, plusWhite;
 
     private int space = 32;
     private int buttonHeight = 32;
@@ -49,9 +48,8 @@ public class MainMenuScreen implements Screen {
 
     private Viewport viewport;
 
+
     public MainMenuScreen(Application game) {
-        System.out.println();
-        System.out.println("MainMenuScreen");
         this.game = game;
         this.camera = game.camera;
 
@@ -63,17 +61,6 @@ public class MainMenuScreen implements Screen {
 
         viewport.apply();
         camera.position.set(camera.viewportWidth/2,camera.viewportHeight/2,0);
-        Gdx.input.setInputProcessor(stage);
-
-
-    }
-
-    @Override
-    public void show() {
-
-
-        camera.setToOrtho(false,512, 310);
-        game.batch.setProjectionMatrix(camera.combined);
 
         mainMenuAtlas = game.assetManager.get("textures/buttons/mainMenu.atlas");
 
@@ -81,17 +68,34 @@ public class MainMenuScreen implements Screen {
         skull.setScale(0.75f);
         //384 + 32,0, 96, 310 black right board
         skull.setPosition((384 + 32)*2  + (192 - skull.getWidth())/2, 620/2 - skull.getHeight()/2);
-
         createButtons();
+
+        currency = new Sprite(game.currencyTexture);
+        float scale = 0.14f;
+        currency.setSize(199*scale, 300*scale);
+
+        plusWhite = new Sprite(mainMenuAtlas.findRegion("PlusWhite"));
+        plusWhite.setSize(16, 16);
+    }
+
+    @Override
+    public void show() {
+        camera.setToOrtho(false,512, 310);
+        game.batch.setProjectionMatrix(camera.combined);
 
         Gdx.input.setInputProcessor(stage);
 
+        game.loadingScreen.dispose();
     }
 
     private int squardWidth = 256, squardHeight = 256-96, line = 2,
-    scoreX =((384 + 32)/2 - squardWidth/2 + line)*2, scoreY = (310/2 + squardHeight - squardHeight/2 + 20 - line)*2 ;
+    scoreX =((384 + 32)/2 - squardWidth/2 + line)*2, scoreY = (310/2 + squardHeight - squardHeight/2  - line)*2;
 
+    private float moneyX, moneyY, moneyWidth;
 
+    private int up = 5;
+
+    private int minusLesha = 6;
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(18/255f,25/255f,26/255f,1f);
@@ -99,12 +103,27 @@ public class MainMenuScreen implements Screen {
 
 
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        //Background
         game.shapeRenderer.setColor(Color.BLACK);
-        game.shapeRenderer.rect(384 + 32,0, 96, 310 );
-        game.shapeRenderer.rect((384 + 32)/2 - squardWidth/2, 310/2 - squardHeight/2 + 20, squardWidth, squardHeight);
+        game.shapeRenderer.rect(384 + 32,0, 96, 310);
+
+        //Menu
+        game.shapeRenderer.rect((384 + 32)/2 - squardWidth/2, 310/2 - squardHeight/2 + up , squardWidth, squardHeight);
         game.shapeRenderer.setColor(15/255f, 16/255f, 16/255f,1f);
-        game.shapeRenderer.rect((384 + 32)/2 - squardWidth/2 + line, 310/2 - squardHeight/2 + 20 + line,
+        game.shapeRenderer.rect((384 + 32)/2 - squardWidth/2 + line, 310/2 - squardHeight/2  + up + line,
                 squardWidth -line*2, squardHeight- line*2);
+
+        // Alpha
+        game.shapeRenderer.setColor(19/255f,22/255f,22/255f, 0.1f);
+        game.shapeRenderer.rect((384 + 32)/2 - squardWidth/2 + line, 310/2 - squardHeight/2  + up + line, squardWidth -line*2, 16);
+        // Currency BottomLeft Version
+        //game.shapeRenderer.rect((384 + 32)/2 - 38, moneyY/2 + 1,76, 12);
+        // Currency Center Version
+        //game.shapeRenderer.rect(currency.getX() + currency.getWidth()/2,currency.getY(),
+        //        currency.getWidth() + moneyWidth/2, 16);
+        //game.shapeRenderer.rect(currency.getX() + currency.getWidth()/2, currency.getY(), 100, 16);
+        game.shapeRenderer.rect(moneyX/2 -2 +3,moneyY/2 +3,currency.getWidth()/2 + moneyWidth/2 + 7 + plusWhite.getWidth()/2 +4,16);
+
         game.shapeRenderer.end();
 
         stage.act(delta);
@@ -114,17 +133,15 @@ public class MainMenuScreen implements Screen {
 
         skull.draw(game.batch);
 
-        glyphLayout.setText(game.smallWhiteFont, "Score: "+ Score.getBestScore(), Color.WHITE ,(squardWidth - line*2)*2, Align.center, true);
+        glyphLayout.setText(game.smallWhiteFont, ""+ Score.getBestScore(), Color.WHITE ,(squardWidth - line*2)*2, Align.center, true);
         game.smallWhiteFont.draw(game.batch, glyphLayout, scoreX, scoreY - 5);
 
 
         //glyphLayout.setText(game.menu0Font, "Score: "+ Score.getBestScore(), Color.WHITE, 400, Align.bottomLeft, true);
         //game.menu0Font.draw(game.batch, glyphLayout, 0, 600);
-        glyphLayout.setText(game.menu0Font, "Money: "+ Currency.currency, Color.WHITE, 400, Align.bottomLeft, true);
-        game.menu0Font.draw(game.batch, glyphLayout, 0, 600-20);
 
         glyphLayout.setText(game.menuBig, "Normal", Color.WHITE, (384 + 32)* 2,Align.center, true);
-        game.menuBig.draw(game.batch, glyphLayout, 0, 310*2 - 40);
+        game.menuBig.draw(game.batch, glyphLayout, 0, 310*2 - 20);
 
         //Buttons Text
         glyphLayout.setText(game.menu0Font, "Play" , Color.WHITE, 85, Align.bottomLeft, true);
@@ -136,7 +153,47 @@ public class MainMenuScreen implements Screen {
         glyphLayout.setText(game.menu0Font, "Settings" , Color.WHITE, 100, Align.bottomLeft, true);
         game.menu0Font.draw(game.batch, glyphLayout, settings.getX() + 60, settings.getY() + settings.getHeight()/2 + glyphLayout.height/2);
 
+        //Currency.currency = 9999999;
+
+        // Currency BottomLeft Version
+        //glyphLayout.setText(game.menu0Font, ""+Currency.currency, Color.WHITE, (384 + 32)* 2, Align.bottomLeft, true);
+        //moneyX = (384 + 32) - 40*2;
+        //moneyY = 310*2 - 20 -60-currency.getHeight()/2 - glyphLayout.height/2 - minusLesha*2;
+        //moneyWidth = glyphLayout.height;
+        //game.menu0Font.draw(game.batch, glyphLayout, (384 + 32) - 38*2 + currency.getWidth(), 310*2 - 20 -60- minusLesha*2);
+
+        // Currency Center Version
+        glyphLayout.setText(game.menu0Font, ""+Currency.currency, Color.WHITE, (384 + 32)* 2, Align.center, true);
+        moneyX = (384 + 32) -currency.getWidth() - glyphLayout.width/2 - 4 -3;
+        moneyY = 310*2 - 20 -60-currency.getHeight()/2 - glyphLayout.height/2 - minusLesha*2;
+        moneyWidth = glyphLayout.width;
+        //game.menu0Font.draw(game.batch, glyphLayout, (384 + 32) - 38*2 + currency.getWidth(), 310*2 - 20 -60- minusLesha*2);
+        game.menu0Font.draw(game.batch, glyphLayout, 0, 310*2 - 20 -60- minusLesha*2);
+
+        //moneyX = (384 + 32)  -currency.getWidth() - glyphLayout.width/2 - 4 -3;
+        //game.menu0Font.draw(game.batch, glyphLayout,-(384 + 32) + glyphLayout.width/2 + currency.getY()*2+ currency.getWidth()*2+ 10,310*2 - 20 -60 ); //- currency.getY()+ currency.getWidth() + 10
+        //game.menu0Font.draw(game.batch, glyphLayout, 0,0);
         game.batch.end();
+
+
+        // Spites
+        game.batch.begin();
+        currency.setPosition(moneyX, moneyY);
+        currency.draw(game.batch);
+        //(384 + 32)/2 - 38
+        //plusWhite.setPosition((384 + 32) + glyphLayout.width/2 + 4 +3,
+        //        310*2 - 20 -60 -glyphLayout.height/2 - plusWhite.getHeight()/2 - minusLesha*2);
+
+        // Currency BottomLeft Version
+        //plusWhite.setPosition(((384 + 32)/2 - 38 + 76)*2 - plusWhite.getWidth()-4,
+        //                310*2 - 20 -60 -glyphLayout.height/2 - plusWhite.getHeight()/2 - minusLesha*2);
+
+        //Currency Center Version
+        plusWhite.setPosition((384 + 32) + glyphLayout.width/2 + 4 +3,
+                        310*2 - 20 -60 -glyphLayout.height/2 - plusWhite.getHeight()/2 - minusLesha*2);
+        plusWhite.draw(game.batch);
+        game.batch.end();
+
     }
 
     private void createButtons(){
@@ -169,8 +226,12 @@ public class MainMenuScreen implements Screen {
         play.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen(game));
-                game.mainMenuScreen.hide();
+                //game.setScreen(game.gameScreen);
+                if(game.goTutorial) {
+                    game.setScreen(game.tutorialScreen);
+                } else {
+                    game.setScreen(game.gameScreen);
+                }
                 game.mainMenuScreen.pause();
             }
         });
