@@ -35,13 +35,21 @@ public class Application extends Game {
 	public ShapeRenderer shapeRenderer;
 
 	public BitmapFont font, font30,font30white, font10, borderFont, smallWhiteFont, font40white,
-	death0, death1,death2,death3,death4, menu0Font,tutFont, menu1Font,menu2Font,menu3Font,menu4Font, menuBig;
+	death0, death1,death2,death3,death4, menu0Font,tutFont, menu1Font,menu2Font,menu3Font,menu4Font, menuBig,
+			menuScoreFont;
 
-	public Texture playerSkin0,playerSkin1,playerSkin2,playerSkin3,playerSkin4, currencyTexture;
+	public BitmapFont menu0FontRu, menuBigRu, tutFontRu, tutFont2RU, settingsFontRU,
+			death0RU,death1RU,death2RU,death3RU,death4RU, fontRU, smallWhiteFontRU;
 
-    public TextureAtlas circleAtlas,bigArrowAtlas, laserAtlas;
+	public Texture playerSkin0,playerSkin1,playerSkin2,playerSkin3,playerSkin4;
+	public TextureRegion currencyTexture;
 
-    public TextureRegion[] circlesSkin, bigArrowSkin, laserSkin, flipLaserSkin;
+    public TextureAtlas fullA1, fullA2, fullA3;
+
+    public TextureRegion[] circlesSkin, bigArrowSkin, laserSkin, flipLaserSkin, skinPrewTex;
+	public TextureRegion[] mplayTex,mplayPressedTex, mworldTex,mworldPressedTex,
+			mplayerTex,mplayerPressedTex, msettingsTex, msettingsPressedTex,
+		arrowLeftTex, arrowRightTex, arrowLeftPressedTex, arrowRightPressedTex;
     public Texture[] snipersSkin;
 
 	public GameScreen gameScreen;
@@ -52,15 +60,23 @@ public class Application extends Game {
 
 	public AssetManager assetManager= new AssetManager();
 
+	public boolean activePlay = true;
+
 	public Preferences preferences;
 	boolean loadPrefs = true; // загружать ли сохранения
-
-	public static int gameSkin = 4; // 0 - standard
-
+	public static int gameSkin = 0; // 0 - standard
 	public static boolean playerAlive;
 
-	public boolean goTutorial;
+	public static int price;
+	public static int skinsBought;
+	public static boolean[] skinLocked;
+	public static boolean goTutorial;
+	public static boolean ru, en;
+	public static boolean skin1bought = false, skin2bought = false, skin3bought = false, skin4bought = false;
 
+	public String FONT_CHARS = "";
+
+	public static int skinsAmount = 5;
 	@Override
 	public void create () {
 
@@ -75,20 +91,56 @@ public class Application extends Game {
 
 		loadingScreen = new LoadingScreen(this);
 
+		//LANGUAGE
+		//en = false;
+		//ru = !en;
+
 		getPrefs();
 
+		if(!en && !ru){
+			en = true;
+		}
+
+
+		price = 500;
+
+		skinLocked = new boolean[skinsAmount];
+		skinLocked[0] = false;
+		for(int i=1; i < skinLocked.length; i++){
+			skinLocked[i] = true;
+		}
+
+		for(int i = 32; i < 127; i++) FONT_CHARS += (char)i;
+		for(int i = 1024; i < 1104; i++) FONT_CHARS += (char)i;
 		if(loadPrefs){
-			if(preferences.contains("bestScore")){
-				Score.bestScore = preferences.getInteger("bestScore");
-				Currency.currency = preferences.getInteger("currency");
-				goTutorial = preferences.getBoolean("goTutorial");
-			}
-		} else{
+			if(preferences.contains("bestScore")) Score.bestScore = preferences.getInteger("bestScore");
+			if(preferences.contains("currency")) Currency.currency = preferences.getInteger("currency");
+
+			goTutorial = preferences.getBoolean("goTutorial",true);
+			ru = preferences.getBoolean("ru", true);
+			en = preferences.getBoolean("en",false);
+			//System.out.println(goTutorial + " loadedPref: " + preferences.getBoolean("goTutorial"));
+		} else{ //RESET SAVES TO ZERO
+			Score.bestScore = 0;
+			Currency.currency = 0;
 			goTutorial = true;
+			en = false;
+			ru = true;
+
+			preferences.putInteger("bestScore",Score.bestScore);
+			preferences.flush();
+			preferences.putInteger("currency", Currency.currency);
+			preferences.flush();
+			preferences.putBoolean("goTutorial", goTutorial);
+			preferences.flush();
+			preferences.putBoolean("en",en);
+			preferences.flush();
+			preferences.putBoolean("ru", ru);
+			preferences.flush();
 		}
 		setScreen(loadingScreen);
 	}
-	
+
 	@Override
 	public void dispose () {
 		batch.dispose();
@@ -119,8 +171,8 @@ public class Application extends Game {
         playerSkin3.dispose();
         playerSkin4.dispose();
 
-        circleAtlas.dispose();
-
+		fullA1.dispose();
+		fullA2.dispose();
 	}
 
 	private int borderSize =2;
@@ -213,6 +265,60 @@ public class Application extends Game {
 
 		params.size = 40;
 		tutFont = generator.generateFont(params);
+
+		params.size = 15*2;
+		params.borderColor = Color.BLACK;
+		params.borderWidth = gameBorderSize;
+		menuScoreFont = generator.generateFont(params);
+	}
+	public void initRuFonts(){
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/font.ttf"));
+		FreeTypeFontGenerator.FreeTypeFontParameter paramsRu = new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+		paramsRu.size = 20;
+		paramsRu.color = Color.WHITE;
+		paramsRu.minFilter = Texture.TextureFilter.Linear;
+		paramsRu.magFilter = Texture.TextureFilter.Linear;
+		paramsRu.characters = FONT_CHARS;
+
+		menu0FontRu = generator.generateFont(paramsRu);
+
+		paramsRu.size = 16;
+		settingsFontRU = generator.generateFont(paramsRu);
+
+		paramsRu.size = 60;
+		menuBigRu = generator.generateFont(paramsRu);
+
+		paramsRu.size = 40;
+		tutFontRu = generator.generateFont(paramsRu);
+
+		paramsRu.size = 34;
+		tutFont2RU = generator.generateFont(paramsRu);
+
+		paramsRu.size = 24*2;
+		fontRU = generator.generateFont(paramsRu);
+
+		paramsRu.size = 15*2;
+		smallWhiteFontRU = generator.generateFont(paramsRu);
+
+		paramsRu.size = 40*2;
+		paramsRu.color = Globals.Text0Color;
+		paramsRu.borderColor = Color.BLACK;
+		paramsRu.borderWidth = gameBorderSize;
+		death0RU = generator.generateFont(paramsRu);
+
+		paramsRu.color = Globals.Text1Color;
+		death1RU = generator.generateFont(paramsRu);
+
+		paramsRu.color = Globals.Text2Color;
+		death2RU = generator.generateFont(paramsRu);
+
+		paramsRu.color = Globals.Text3Color;
+		death3RU = generator.generateFont(paramsRu);
+
+		paramsRu.color = Globals.Text4Color;
+		death4RU = generator.generateFont(paramsRu);
+
 	}
 	public void initDeathFonts(){
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/font.ttf"));
@@ -230,7 +336,6 @@ public class Application extends Game {
 		death0params.color = Globals.Text1Color;
 		death1 = generator.generateFont(death0params);
 
-
 		death0params.color = Globals.Text2Color;
 		death2 = generator.generateFont(death0params);
 
@@ -241,10 +346,13 @@ public class Application extends Game {
 		death4 = generator.generateFont(death0params);
 
 	}
+
+
 	protected Preferences getPrefs() {
 		if(preferences==null){
 			preferences = Gdx.app.getPreferences("saves");
-			preferences.putBoolean("goTutorial", true);
+			//preferences.putBoolean("goTutorial", true);
+			//preferences.putBoolean("en", true);
 		}
 		return preferences;
 	}
@@ -255,23 +363,20 @@ public class Application extends Game {
 		playerSkin2.setAssetManager(assetManager);
 		playerSkin3.setAssetManager(assetManager);
 		playerSkin4.setAssetManager(assetManager);
-		currencyTexture.setAssetManager(assetManager);
 
 		TextureLoader.TextureParameter param = new TextureLoader.TextureParameter();
 		param.genMipMaps = true; // enabling mipmaps
 		param.minFilter = Texture.TextureFilter.MipMapLinearNearest;
 		param.magFilter = Texture.TextureFilter.Nearest;
-		//Images
-		assetManager.load("textures/big_arrow.atlas", TextureAtlas.class);
-		assetManager.load("textures/big_arrow.png", Texture.class, param);
 
-		assetManager.load("textures/circle.atlas", TextureAtlas.class);
-		assetManager.load("textures/circle.png", Texture.class, param);
-
-		assetManager.load("textures/laser.atlas", TextureAtlas.class);
-		assetManager.load("textures/laser.png", Texture.class, param);
-
-		assetManager.load("textures/currency.png", Texture.class, param);
+		//Atlas
+		assetManager.load("textures/FullA1.atlas", TextureAtlas.class);
+		assetManager.load("textures/FullA2.atlas", TextureAtlas.class);
+		assetManager.load("textures/FullA3.atlas", TextureAtlas.class);
+		//Tutorial
+		assetManager.load("textures/GotItButton_big.png", Texture.class);
+		assetManager.load("textures/tutorial0.png", Texture.class);
+		assetManager.load("textures/tutorial1.png", Texture.class);
 		//Animation
 		assetManager.load("textures/animation/playerAnim.png", Texture.class);
 		assetManager.load("textures/animation/playerAnim1.png", Texture.class);
@@ -280,15 +385,8 @@ public class Application extends Game {
 		assetManager.load("textures/animation/playerAnim4.png", Texture.class);
 		assetManager.load("textures/animation/sniper.png", Texture.class);
 		assetManager.load("textures/animation/sniper2.png", Texture.class);
-		//Menu Death Screen
-		assetManager.load("textures/buttons/gameOver.atlas", TextureAtlas.class);
-		// Main Menu
-		assetManager.load("textures/buttons/mainMenu.atlas", TextureAtlas.class);
 
-		//Tutorial
-		assetManager.load("textures/buttons/GotItButton_big.png", Texture.class, param);
-		assetManager.load("textures/buttons/tutorial0.png", Texture.class, param);
-		assetManager.load("textures/buttons/tutorial1.png", Texture.class, param);
+		//Test
 	}
 
 

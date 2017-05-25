@@ -81,9 +81,6 @@ public class Player {
         spriteAnim.setSize(32,32);
         spriteAnim.setPosition(position.x - 32, position.y);
     }
-    public void initSkin(Application game){
-
-    }
 
     public void update(float delta) {
         velocity.add(0, GRAVITY);
@@ -119,7 +116,7 @@ public class Player {
 
     // Прыжок
     public void onClick() {
-        if(alive) {
+        if(alive && Jump) {
             velocity.y = 300;
             GRAVITY = -15;
 
@@ -180,6 +177,38 @@ public class Player {
                 }
         }
     }
+    public void inMenuAnimation(SpriteBatch sb,float delta, Application game){
+            switch (Application.gameSkin){
+                case 0: //texture[0] = game.playerSkin0;
+                    texture = game.playerSkin0;
+                    spriteAnim = new Sprite(texture);
+                    break;
+                case 1: texture = game.playerSkin1;
+                    spriteAnim = new Sprite(texture);
+                    break;
+                case 2: texture = game.playerSkin2;
+                    spriteAnim = new Sprite(texture);
+                    break;
+                case 3: texture = game.playerSkin3;
+                    spriteAnim = new Sprite(texture);
+                    break;
+                case 4: texture = game.playerSkin4;
+                    spriteAnim = new Sprite(texture);
+                    break;
+            }
+            spriteAnim.setSize(32,32);
+            spriteAnim.setPosition(position.x - 32, position.y);
+            elapsedTime += Gdx.graphics.getDeltaTime();
+            if (currentFrame > 8) {
+                currentFrame = 0;
+            }
+            spriteAnim.setPosition(position.x - 32, position.y);
+            currentFrame += 22*delta;
+
+            spriteAnim.setRegion(32 * (int) currentFrame, 0, 32, 32);
+            spriteAnim.draw(sb);
+
+    }
 
     private void switchCubeColor(ShapeRenderer shapeRenderer){
 
@@ -236,9 +265,6 @@ public class Player {
             isJumped = true;
             deathPlayed = true;
         }
-    }
-
-    public void dispose(){
     }
 
     public Rectangle getPlayerRectangle() {

@@ -1,7 +1,6 @@
 package com.sneakycrago.undercore.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -52,11 +51,11 @@ public class TutorialScreen implements Screen {
         viewport.apply();
         camera.position.set(camera.viewportWidth/2,camera.viewportHeight/2,0);
 
-        tutorial0 = game.assetManager.get("textures/buttons/tutorial0.png", Texture.class);
-        tutorial1 = game.assetManager.get("textures/buttons/tutorial1.png", Texture.class);
+        tutorial0 = game.assetManager.get("textures/tutorial0.png", Texture.class);
+        tutorial1 = game.assetManager.get("textures/tutorial1.png", Texture.class);
 
         //gotItTexture = new TextureRegion(game.assetManager.get("textures/buttons/GotItButton.png", Texture.class));
-        gotItTexture = new TextureRegion(game.assetManager.get("textures/buttons/GotItButton_big.png", Texture.class));
+        gotItTexture = new TextureRegion(game.assetManager.get("textures/GotItButton_big.png", Texture.class));
         glyphLayout = new GlyphLayout();
 
 
@@ -82,6 +81,7 @@ public class TutorialScreen implements Screen {
                     game.goTutorial = false;
                     game.preferences.putBoolean("goTutorial", game.goTutorial);
                     game.preferences.flush();
+                    //System.out.println(game.goTutorial + " prefs: " + game.preferences.getBoolean("goTutorial"));
                     game.setScreen(game.gameScreen);
                 }
             }
@@ -108,14 +108,29 @@ public class TutorialScreen implements Screen {
 
         game.batch.begin();
         //Button
-        glyphLayout.setText(game.tutFont, "Got it!" , Color.WHITE, gotIt.getWidth(), Align.center, true);
-        game.tutFont.draw(game.batch, glyphLayout, gotIt.getX() , gotIt.getY() + gotIt.getHeight()/2 + glyphLayout.height/2);
+        if(game.en) {
+            glyphLayout.setText(game.tutFont, "Got it!", Color.WHITE, gotIt.getWidth(), Align.center, true);
+            game.tutFont.draw(game.batch, glyphLayout, gotIt.getX(), gotIt.getY() + gotIt.getHeight() / 2 + glyphLayout.height / 2);
+        } else if(game.ru){
+            glyphLayout.setText(game.tutFontRu, "Понял!", Color.WHITE, gotIt.getWidth(), Align.center, true);
+            game.tutFontRu.draw(game.batch, glyphLayout, gotIt.getX(), gotIt.getY() + gotIt.getHeight() / 2 + glyphLayout.height / 2);
+        }
         if(!drawSecond) {
-            glyphLayout.setText(game.tutFont, "Tap to jump", Color.WHITE, 512 * 2, Align.center, true);
-            game.tutFont.draw(game.batch, glyphLayout, 0, 310 * 2 - 120);
+            if(game.en) {
+                glyphLayout.setText(game.tutFont, "Tap to jump", Color.WHITE, 512 * 2, Align.center, true);
+                game.tutFont.draw(game.batch, glyphLayout, 0, 310 * 2 - 120);
+            } else if(game.ru){
+                glyphLayout.setText(game.tutFontRu, "Нажимай что бы прыгать", Color.WHITE, 512 * 2, Align.center, true);
+                game.tutFontRu.draw(game.batch, glyphLayout, 0, 310 * 2 - 120);
+            }
         } else {
-            glyphLayout.setText(game.tutFont, "Double-tap to keep the same height", Color.WHITE, 512 * 2, Align.center, true);
-            game.tutFont.draw(game.batch, glyphLayout, 0, 310 * 2 - 120);
+            if(game.en) {
+                glyphLayout.setText(game.tutFont, "Double-tap to keep the same height", Color.WHITE, 512 * 2, Align.center, true);
+                game.tutFont.draw(game.batch, glyphLayout, 0, 310 * 2 - 120);
+            }else if(game.ru){
+                glyphLayout.setText(game.tutFont2RU, "Для поддержания высоты используйте два пальца", Color.WHITE, 512 * 2, Align.center, true);
+                game.tutFont2RU.draw(game.batch, glyphLayout, 0, 310 * 2 - 120);
+            }
         }
         game.batch.end();
 

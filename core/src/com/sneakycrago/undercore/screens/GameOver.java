@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -38,12 +39,6 @@ public class GameOver implements Screen {
     private final static int exitX = 512/2 + 32 + 8 +8, menuX = 512/2 - 96 - 8-8, bntY =20;
 
     private OrthographicCamera camera;
-    /*
-    private TextureAtlas buttons;
-    private Sprite start, menu, exit, startPressed, menuPressed, exitPressed;
-    private Circle startBtn, menuBtn, exitBtn;
-    private Vector3 touch;
-    */
     private OrthographicCamera spriteCamera;
 
     private Random random;
@@ -51,12 +46,7 @@ public class GameOver implements Screen {
     private int frase;
     private String death;
 
-    private boolean playReleased = false;
-    private boolean menuReleased = false;
-    private boolean exitReleased = false;
-
     private Sprite currency;
-
 
     private boolean newFrase = true;
 
@@ -64,18 +54,15 @@ public class GameOver implements Screen {
 
     private GlyphLayout glyphLayout;
 
-    private BitmapFont deathFont;
+    private BitmapFont deathFont, deathFontRU;
 
     private Viewport viewport;
     private Viewport spriteViewport;
 
     private Stage stage;
-
-    private TextureAtlas buttonsAtlas;
-
     private TextureRegion playTex,playPressedTex, menuTex, menuPressedTex, exitTex, exitPressedTex;
 
-    private ImageButton play, menu, exit;
+    private Button playButton, menuButton, exitButton;
 
     private float moneyX;
 
@@ -101,8 +88,6 @@ public class GameOver implements Screen {
 
         stage = new Stage(viewport, game.batch);
         Gdx.input.setInputProcessor(stage);
-
-        buttonsAtlas = game.assetManager.get("textures/buttons/gameOver.atlas");
     }
 
 
@@ -110,73 +95,65 @@ public class GameOver implements Screen {
     public void show() {
         switch (Application.gameSkin){
             case 0:
-                playTex = new TextureRegion(buttonsAtlas.findRegion("play0"));
-                playPressedTex = new TextureRegion(buttonsAtlas.findRegion("play0Pressed"));
-
-                menuTex = new TextureRegion(buttonsAtlas.findRegion("menu0"));
-                menuPressedTex = new TextureRegion(buttonsAtlas.findRegion("menu0Pressed"));
-
-                exitTex = new TextureRegion(buttonsAtlas.findRegion("exit0"));
-                exitPressedTex = new TextureRegion(buttonsAtlas.findRegion("exit0Pressed"));
+                playTex = new TextureRegion(game.fullA1.findRegion("play0"));
+                playPressedTex = new TextureRegion(game.fullA1.findRegion("play0pressed"));
+                menuTex = new TextureRegion(game.fullA1.findRegion("menu0"));
+                menuPressedTex = new TextureRegion(game.fullA1.findRegion("menu0pressed"));
+                exitTex = new TextureRegion(game.fullA1.findRegion("exit0"));
+                exitPressedTex = new TextureRegion(game.fullA1.findRegion("exit0pressed"));
                 break;
             case 1:
-                playTex = new TextureRegion(buttonsAtlas.findRegion("play1"));
-                playPressedTex = new TextureRegion(buttonsAtlas.findRegion("play1Pressed"));
-
-                menuTex = new TextureRegion(buttonsAtlas.findRegion("menu1"));
-                menuPressedTex = new TextureRegion(buttonsAtlas.findRegion("menu1Pressed"));
-
-                exitTex = new TextureRegion(buttonsAtlas.findRegion("exit1"));
-                exitPressedTex = new TextureRegion(buttonsAtlas.findRegion("exit1Pressed"));
+                playTex = new TextureRegion(game.fullA1.findRegion("play1"));
+                playPressedTex = new TextureRegion(game.fullA1.findRegion("play1pressed"));
+                menuTex = new TextureRegion(game.fullA1.findRegion("menu1"));
+                menuPressedTex = new TextureRegion(game.fullA1.findRegion("menu1pressed"));
+                exitTex = new TextureRegion(game.fullA1.findRegion("exit1"));
+                exitPressedTex = new TextureRegion(game.fullA1.findRegion("exit1pressed"));
                 break;
-            case 2: playTex = new TextureRegion(buttonsAtlas.findRegion("play2"));
-                playPressedTex = new TextureRegion(buttonsAtlas.findRegion("play2Pressed"));
-
-                menuTex = new TextureRegion(buttonsAtlas.findRegion("menu2"));
-                menuPressedTex = new TextureRegion(buttonsAtlas.findRegion("menu2Pressed"));
-
-                exitTex = new TextureRegion(buttonsAtlas.findRegion("exit2"));
-                exitPressedTex = new TextureRegion(buttonsAtlas.findRegion("exit2Pressed"));
+            case 2: playTex = new TextureRegion(game.fullA1.findRegion("play2"));
+                playPressedTex = new TextureRegion(game.fullA1.findRegion("play2pressed"));
+                menuTex = new TextureRegion(game.fullA1.findRegion("menu2"));
+                menuPressedTex = new TextureRegion(game.fullA1.findRegion("menu2pressed"));
+                exitTex = new TextureRegion(game.fullA1.findRegion("exit2"));
+                exitPressedTex = new TextureRegion(game.fullA1.findRegion("exit2pressed"));
                 break;
             case 3:
-                playTex = new TextureRegion(buttonsAtlas.findRegion("play3"));
-                playPressedTex = new TextureRegion(buttonsAtlas.findRegion("play3Pressed"));
-
-                menuTex = new TextureRegion(buttonsAtlas.findRegion("menu3"));
-                menuPressedTex = new TextureRegion(buttonsAtlas.findRegion("menu3Pressed"));
-
-                exitTex = new TextureRegion(buttonsAtlas.findRegion("exit3"));
-                exitPressedTex = new TextureRegion(buttonsAtlas.findRegion("exit3Pressed"));
+                playTex = new TextureRegion(game.fullA1.findRegion("play3"));
+                playPressedTex = new TextureRegion(game.fullA1.findRegion("play3pressed"));
+                menuTex = new TextureRegion(game.fullA1.findRegion("menu3"));
+                menuPressedTex = new TextureRegion(game.fullA1.findRegion("menu3pressed"));
+                exitTex = new TextureRegion(game.fullA1.findRegion("exit3"));
+                exitPressedTex = new TextureRegion(game.fullA1.findRegion("exit3pressed"));
                 break;
             case 4:
-                playTex = new TextureRegion(buttonsAtlas.findRegion("play4"));
-                playPressedTex = new TextureRegion(buttonsAtlas.findRegion("play4Pressed"));
-
-                menuTex = new TextureRegion(buttonsAtlas.findRegion("menu4"));
-                menuPressedTex = new TextureRegion(buttonsAtlas.findRegion("menu4Pressed"));
-
-                exitTex = new TextureRegion(buttonsAtlas.findRegion("exit4"));
-                exitPressedTex = new TextureRegion(buttonsAtlas.findRegion("exit4Pressed"));
+                playTex = new TextureRegion(game.fullA1.findRegion("play4"));
+                playPressedTex = new TextureRegion(game.fullA1.findRegion("play4pressed"));
+                menuTex = new TextureRegion(game.fullA1.findRegion("menu4"));
+                menuPressedTex = new TextureRegion(game.fullA1.findRegion("menu4pressed"));
+                exitTex = new TextureRegion(game.fullA1.findRegion("exit4"));
+                exitPressedTex = new TextureRegion(game.fullA1.findRegion("exit4pressed"));
         }
 
-        play = new ImageButton(new TextureRegionDrawable(playTex),
+        playButton = new Button(new TextureRegionDrawable(playTex),
                 new TextureRegionDrawable(playPressedTex),
                 new TextureRegionDrawable(playTex));
 
-        menu = new ImageButton(new TextureRegionDrawable(menuTex),
+        menuButton = new Button(new TextureRegionDrawable(menuTex),
                 new TextureRegionDrawable(menuPressedTex),
                 new TextureRegionDrawable(menuTex));
 
-        exit = new ImageButton(new TextureRegionDrawable(exitTex),
+        exitButton = new Button(new TextureRegionDrawable(exitTex),
                 new TextureRegionDrawable(exitPressedTex),
                 new TextureRegionDrawable(exitTex));
 
+        playButton.setPosition((512/2 -btnRadiusPlay )*2, 50 *2);
+        playButton.setSize(168,168);
+        menuButton.setPosition(menuX *2, bntY *2);
+        menuButton.setSize(128,128);
+        exitButton.setPosition(exitX*2, bntY*2);
+        exitButton.setSize(128,128);
 
-        play.setPosition((512/2 -btnRadiusPlay )*2, 50 *2);
-        menu.setPosition(menuX *2, bntY *2);
-        exit.setPosition(exitX*2, bntY*2);
-
-        play.addListener(new ClickListener() {
+        playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 newFrase = true;
@@ -187,17 +164,18 @@ public class GameOver implements Screen {
             }
         });
 
-        menu.addListener(new ClickListener() {
+        menuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 newFrase = true;
                 best = Score.getBestScore();
+                game.activePlay = true;
                 game.setScreen(game.mainMenuScreen);
                 game.gameOver.pause();
             }
         });
 
-        exit.addListener(new ClickListener() {
+        exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 newFrase = true;
@@ -206,17 +184,11 @@ public class GameOver implements Screen {
             }
         });
 
-        stage.addActor(play);
-        stage.addActor(menu);
-        stage.addActor(exit);
+        stage.addActor(playButton);
+        stage.addActor(menuButton);
+        stage.addActor(exitButton);
         Gdx.input.setInputProcessor(stage);
 
-        //currencySprite.setSize(199*0.125f, 300*0.125f);
-        //currencySprite.setScale(0.125f);
-        //currencySprite.setPosition(256 - currencySprite.getWidth()/2 - 20, 0 + 80 - currencySprite.getY()/4);//205 - 24 -15 + 15
-
-        //currencyTexture = new Texture(Gdx.files.internal("textures/currency.png"), true);
-        //currencyTexture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Nearest);
         currency = new Sprite(game.currencyTexture);
         float scale = 0.12f;
         currency.setSize(199*scale, 300*scale);
@@ -225,17 +197,43 @@ public class GameOver implements Screen {
         createNewFrase();
 
         deathFont = new BitmapFont();
-        switch (Application.gameSkin){
-            case 0: deathFont = game.death0;
-                break;
-            case 1: deathFont = game.death1;
-                break;
-            case 2: deathFont = game.death2;
-                break;
-            case 3: deathFont = game.death3;
-                break;
-            case 4: deathFont = game.death4;
-                break;
+        deathFontRU = new BitmapFont();
+        if(game.en) {
+            switch (Application.gameSkin) {
+                case 0:
+                    deathFont = game.death0;
+                    break;
+                case 1:
+                    deathFont = game.death1;
+                    break;
+                case 2:
+                    deathFont = game.death2;
+                    break;
+                case 3:
+                    deathFont = game.death3;
+                    break;
+                case 4:
+                    deathFont = game.death4;
+                    break;
+            }
+        }else if(game.ru){
+            switch (Application.gameSkin) {
+                case 0:
+                    deathFontRU = game.death0RU;
+                    break;
+                case 1:
+                    deathFontRU = game.death1RU;
+                    break;
+                case 2:
+                    deathFontRU = game.death2RU;
+                    break;
+                case 3:
+                    deathFontRU = game.death3RU;
+                    break;
+                case 4:
+                    deathFontRU = game.death4RU;
+                    break;
+            }
         }
 
         game.gameScreen.dispose();
@@ -266,36 +264,46 @@ public class GameOver implements Screen {
         game.batch.begin();
 
         game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 80*2, 15*2 );
-        glyphLayout.setText(deathFont, death , Color.WHITE,512*2, Align.center, true);
-        deathFont.draw(game.batch, glyphLayout, 0, (310-10)*2);
+        if(game.en) {
+            glyphLayout.setText(deathFont, death, Color.WHITE, 512 * 2, Align.center, true);
+            deathFont.draw(game.batch, glyphLayout, 0, (310 - 10) * 2);
+        } else if(game.ru){
+            glyphLayout.setText(deathFontRU, death, Color.WHITE, 512 * 2, Align.center, true);
+            deathFontRU.draw(game.batch, glyphLayout, 0, (310 - 10) * 2);
+        }
         glyphLayout.setText(game.font30white,"" +Currency.Money,Color.WHITE,512*2, Align.center, true);
 
-        //game.batch.end();
-        //game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        //game.shapeRenderer.rect(256 -glyphLayout.width/4, 200,glyphLayout.width/2,glyphLayout.height/2);
-        //game.shapeRenderer.end();
-        //game.batch.begin();
         game.font30white.draw(game.batch,glyphLayout , 0+10, currency.getY()*2 + glyphLayout.height + 10);
         moneyX = 256- currency.getWidth()-glyphLayout.width/4;
-        //currency.setPosition(512/2 - glyphLayout.width/2 - glyphLayout.width/4 -5, 200);
-        currency.setPosition(moneyX, 210);
 
+        currency.setPosition(moneyX, 210);
 
         if(Score.getGameScore() > best){
             Score.makeBestScore();
-            glyphLayout.setText(game.font,"New record!", Color.WHITE,512*2, Align.center, true);
-            game.font.draw(game.batch,glyphLayout, 0, (205 -10) *2);
-            glyphLayout.setText(game.smallWhiteFont, "Score: "+ Score.getGameScore() , Color.WHITE,512*2, Align.center, true);
-            game.smallWhiteFont.draw(game.batch,glyphLayout, 0,(205 - 24 -15)*2);
+            if(game.en) {
+                glyphLayout.setText(game.font, "New record!", Color.WHITE, 512 * 2, Align.center, true);
+                game.font.draw(game.batch, glyphLayout, 0, (205 - 10) * 2);
+                glyphLayout.setText(game.smallWhiteFont, "Score: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                game.smallWhiteFont.draw(game.batch, glyphLayout, 0, (205 - 24 - 15) * 2);
+            } else if(game.ru){
+                glyphLayout.setText(game.fontRU, "Новый рекорд!", Color.WHITE, 512 * 2, Align.center, true);
+                game.fontRU.draw(game.batch, glyphLayout, 0, (205 - 10) * 2);
+                glyphLayout.setText(game.smallWhiteFontRU, "Счет: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                game.smallWhiteFontRU.draw(game.batch, glyphLayout, 0, (205 - 24 - 15) * 2);
+            }
         } else {
-            glyphLayout.setText(game.smallWhiteFont, "Score: "+ Score.getGameScore() , Color.WHITE,512*2, Align.center, true);
-            game.smallWhiteFont.draw(game.batch,glyphLayout, 0,(205 -((24+15)/2) -6) *2);
+            if(game.en) {
+                glyphLayout.setText(game.smallWhiteFont, "Score: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                game.smallWhiteFont.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
+            } else if(game.ru){
+                glyphLayout.setText(game.smallWhiteFontRU, "Счет: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                game.smallWhiteFontRU.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
+            }
         }
 
         spriteCamera.update();
         game.batch.setProjectionMatrix(spriteCamera.combined);
 
-        //currencySprite.draw(game.batch);
         currency.draw(game.batch);
 
         game.batch.end();
@@ -306,36 +314,86 @@ public class GameOver implements Screen {
 
     private void createNewFrase(){
         if(newFrase) {
-            frase = random.nextInt(12) + 1;
-            switch (frase) {
-                case 1:death = "Game Over";
-                    break;
-                case 2:death = "Failed...";
-                    break;
-                case 3:death = "Dead End";
-                    break;
-                case 4:death = "HA-HA";
-                    break;
-                case 5:death = "R.I.P.";
-                    break;
-                case 6:death = "REKT";
-                    break;
-                case 7:death = "You got so far";
-                    break;
-                case 8:death = "Next time";
-                    break;
-                case 9:death = "What? Already?!";
-                    break;
-                case 10:death = "Good Luck";
-                    break;
-                case 11:death = "Bye.";
-                    break;
-                case 12:death = "Tears won't help";
-                    break;
-                //case 13:death = "Son, I am disappointed";
-                //    break;
+            frase = random.nextInt(11) + 1;
+            if (game.ru) {
+                switch (frase) {
+                    case 1:
+                        death = "Конец игры";
+                        break;
+                    case 2:
+                        death = "Ты пытался";
+                        break;
+                    case 3:
+                        death = "Тупик";
+                        break;
+                    case 4:
+                        death = "ХА-ХА";
+                        break;
+                    case 5:
+                        death = "Мертв";
+                        break;
+                    case 6:
+                        death = "Сломан";
+                        break;
+                    case 7:
+                        death = "В следующий раз";
+                        break;
+                    case 8:
+                        death = "Что? Уже?!";
+                        break;
+                    case 9:
+                        death = "Удачи";
+                        break;
+                    case 10:
+                        death = "Привет!";
+                        break;
+                    case 11:
+                        death = "Слезы не помогут";
+                        break;
+                    //case 13:death = "Son, I am disappointed";
+                    //    break;
+                }
+            } else if (game.en) {
+                switch (frase) {
+                    case 1:
+                        death = "Game Over";
+                        break;
+                    case 2:
+                        death = "Failed...";
+                        break;
+                    case 3:
+                        death = "Dead End";
+                        break;
+                    case 4:
+                        death = "HA-HA";
+                        break;
+                    case 5:
+                        death = "R.I.P.";
+                        break;
+                    case 6:
+                        death = "REKT";
+                        break;
+                    case 7:
+                        death = "You got so far";
+                        break;
+                    case 8:
+                        death = "Next time";
+                        break;
+                    case 9:
+                        death = "What? Already?!";
+                        break;
+                    case 10:
+                        death = "Good Luck";
+                        break;
+                    case 11:
+                        death = "Bye.";
+                        break;
+                    case 12:
+                        death = "Tears won't help";
+                        break;
+                }
+                newFrase = false;
             }
-            newFrase = false;
         }
     }
 
@@ -346,15 +404,6 @@ public class GameOver implements Screen {
 
         spriteViewport.update(width,height);
         spriteCamera.position.set(camera.viewportWidth/2 - 256,camera.viewportHeight /2 - 155,0);
-    }
-
-    private int getLengh(int X){
-        int number = X;
-        if(number >= 10) {
-            int amount = (int) Math.log10(number) + 1;
-            return amount;
-        }
-        return 0;
     }
 
     @Override

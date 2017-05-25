@@ -29,7 +29,7 @@ public class LoadingScreen implements Screen {
     private float timer = TimeUtils.nanoTime();
     private float time = 0;
 
-    private boolean fontsLoaded = false, screensCreated = false, texturesLoaded= false;
+    private boolean fontsLoaded = false, screensCreated = false, texturesLoaded= false, assetsLoaded = false;
 
     public LoadingScreen(Application game){
         //System.out.println("GameScreen");
@@ -43,7 +43,6 @@ public class LoadingScreen implements Screen {
         paw = new Sprite(pawTexture);
         paw.setSize(512,310);
         paw.setPosition(512/2 - paw.getWidth()/2, 310/2 - paw.getHeight()/2);
-
     }
 
     @Override
@@ -61,68 +60,73 @@ public class LoadingScreen implements Screen {
         game.batch.begin();
         paw.draw(game.batch);
         game.batch.end();
-
-        if(!texturesLoaded){
+        if(!assetsLoaded) {
             game.assetManager.update();
             game.loadTextures();
             game.assetManager.finishLoading();
+        }
+        if(!texturesLoaded){
             texturesLoaded = true;
-
+            //Animation
             game.playerSkin0 = game.assetManager.get("textures/animation/playerAnim.png");
             game.playerSkin1 = game.assetManager.get("textures/animation/playerAnim1.png");
             game.playerSkin2 = game.assetManager.get("textures/animation/playerAnim2.png");
             game.playerSkin3 = game.assetManager.get("textures/animation/playerAnim3.png");
             game.playerSkin4 = game.assetManager.get("textures/animation/playerAnim4.png");
 
-            game.circleAtlas = game.assetManager.get("textures/circle.atlas");
-
-            game.circlesSkin = new TextureRegion[5];
-            game.circlesSkin[0] = new TextureRegion(game.circleAtlas.findRegion("circle"));
-            game.circlesSkin[1] = new TextureRegion(game.circleAtlas.findRegion("circle1"));
-            game.circlesSkin[2] = new TextureRegion(game.circleAtlas.findRegion("circle2"));
-            game.circlesSkin[3] = new TextureRegion(game.circleAtlas.findRegion("circle3"));
-            game.circlesSkin[4] = new TextureRegion(game.circleAtlas.findRegion("circle4"));
-
             game.snipersSkin = new Texture[2];
             game.snipersSkin[0] = game.assetManager.get("textures/animation/sniper.png");
             game.snipersSkin[1] = game.assetManager.get("textures/animation/sniper2.png");
 
-            game.bigArrowAtlas = game.assetManager.get("textures/big_arrow.atlas");
+            //Atlas
+            game.fullA1 = game.assetManager.get("textures/FullA1.atlas"); //buttons
+            game.fullA2 = game.assetManager.get("textures/FullA2.atlas"); //objects
+            game.fullA3 = game.assetManager.get("textures/FullA3.atlas");
 
-            game.bigArrowSkin = new TextureRegion[5];
-            game.bigArrowSkin[0] = new TextureRegion(game.bigArrowAtlas.findRegion("big_arrow"));
-            game.bigArrowSkin[1] = new TextureRegion(game.bigArrowAtlas.findRegion("big_arrow1"));
-            game.bigArrowSkin[2] = new TextureRegion(game.bigArrowAtlas.findRegion("big_arrow2"));
-            game.bigArrowSkin[3] = new TextureRegion(game.bigArrowAtlas.findRegion("big_arrow3"));
-            game.bigArrowSkin[4] = new TextureRegion(game.bigArrowAtlas.findRegion("big_arrow4"));
-            //m.out.println("Textures Loaded");
+            game.circlesSkin = new TextureRegion[game.skinsAmount];
 
-            game.laserAtlas = game.assetManager.get("textures/laser.atlas");
+            game.circlesSkin[0] = new TextureRegion(game.fullA2.findRegion("circle"));
+            game.circlesSkin[1] = new TextureRegion(game.fullA2.findRegion("circle1"));
+            game.circlesSkin[2] = new TextureRegion(game.fullA2.findRegion("circle2"));
+            game.circlesSkin[3] = new TextureRegion(game.fullA2.findRegion("circle3"));
+            game.circlesSkin[4] = new TextureRegion(game.fullA2.findRegion("circle4"));
 
-            game.laserSkin = new TextureRegion[5];
-            game.laserSkin[0] = new TextureRegion(game.laserAtlas.findRegion("laser"));
-            game.laserSkin[1] = new TextureRegion(game.laserAtlas.findRegion("laser1"));
-            game.laserSkin[2] = new TextureRegion(game.laserAtlas.findRegion("laser2"));
-            game.laserSkin[3] = new TextureRegion(game.laserAtlas.findRegion("laser3"));
-            game.laserSkin[4] = new TextureRegion(game.laserAtlas.findRegion("laser4"));
+            game.bigArrowSkin = new TextureRegion[game.skinsAmount];
+            game.bigArrowSkin[0] = new TextureRegion(game.fullA2.findRegion("big_arrow"));
+            game.bigArrowSkin[1] = new TextureRegion(game.fullA2.findRegion("big_arrow2"));
+            game.bigArrowSkin[2] = new TextureRegion(game.fullA2.findRegion("big_arrow3"));
+            game.bigArrowSkin[3] = new TextureRegion(game.fullA2.findRegion("big_arrow4"));
+            game.bigArrowSkin[4] = new TextureRegion(game.fullA2.findRegion("big_arrow5"));
 
-            game.flipLaserSkin = new TextureRegion[5];
-            game.flipLaserSkin[0] = new TextureRegion(game.laserAtlas.findRegion("laser"));
+            game.laserSkin = new TextureRegion[game.skinsAmount];
+            game.laserSkin[0] = new TextureRegion(game.fullA2.findRegion("laser"));
+            game.laserSkin[1] = new TextureRegion(game.fullA2.findRegion("laser1"));
+            game.laserSkin[2] = new TextureRegion(game.fullA2.findRegion("laser2"));
+            game.laserSkin[3] = new TextureRegion(game.fullA2.findRegion("laser3"));
+            game.laserSkin[4] = new TextureRegion(game.fullA2.findRegion("laser4"));
+
+            game.flipLaserSkin = new TextureRegion[game.skinsAmount];
+            game.flipLaserSkin[0] = new TextureRegion(game.fullA2.findRegion("laser"));
+            game.flipLaserSkin[1] = new TextureRegion(game.fullA2.findRegion("laser1"));
+            game.flipLaserSkin[2] = new TextureRegion(game.fullA2.findRegion("laser2"));
+            game.flipLaserSkin[3] = new TextureRegion(game.fullA2.findRegion("laser3"));
+
+            game.flipLaserSkin[4] = new TextureRegion(game.fullA2.findRegion("laser4"));
             game.flipLaserSkin[0].flip(false, true);
-            game.flipLaserSkin[1] = new TextureRegion(game.laserAtlas.findRegion("laser1"));
             game.flipLaserSkin[1].flip(false, true);
-            game.flipLaserSkin[2] = new TextureRegion(game.laserAtlas.findRegion("laser2"));
             game.flipLaserSkin[2].flip(false, true);
-            game.flipLaserSkin[3] = new TextureRegion(game.laserAtlas.findRegion("laser3"));
             game.flipLaserSkin[3].flip(false, true);
-            game.flipLaserSkin[4] = new TextureRegion(game.laserAtlas.findRegion("laser4"));
             game.flipLaserSkin[4].flip(false, true);
 
-            game.currencyTexture= new Texture(Gdx.files.internal("textures/currency.png"), true);
-            game.currencyTexture.setFilter(Texture.TextureFilter.MipMapLinearNearest, Texture.TextureFilter.Nearest);
+            game.currencyTexture = game.fullA2.findRegion("Currency");
 
+            game.skinPrewTex = new TextureRegion[game.skinsAmount];
 
+            for(int i=0; i < game.skinPrewTex.length; i++){
+                game.skinPrewTex[i] = new TextureRegion(game.fullA2.findRegion("Skinprew" +i));
+            }
 
+            createMainMenuTexures();
         }
 
         if(!screensCreated && texturesLoaded && progress >= game.assetManager.getProgress() - 0.001f) {
@@ -138,6 +142,7 @@ public class LoadingScreen implements Screen {
             game.initFonts();
             game.initDeathFonts();
             game.initMenuFonts();
+            game.initRuFonts();
 
             fontsLoaded = true;
             //System.out.println("Fonts created");
@@ -151,11 +156,73 @@ public class LoadingScreen implements Screen {
 
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         game.shapeRenderer.setColor(62/255f,181/255f,241/255f,1f);
-        game.shapeRenderer.rect(0,0 , progress * 512, 8);
+        game.shapeRenderer.rect(0,0 , progress * 512+1, 8);
+
         game.shapeRenderer.end();
 
         time += (TimeUtils.nanoTime() - timer);
         timer = TimeUtils.nanoTime();
+
+    }
+    private void createMainMenuTexures(){
+        game.mplayTex = new TextureRegion[game.skinsAmount];
+        game.mplayPressedTex = new TextureRegion[game.skinsAmount];
+
+        game.mworldTex = new TextureRegion[game.skinsAmount];
+        game.mworldPressedTex = new TextureRegion[game.skinsAmount];
+
+        game.mplayerTex = new TextureRegion[game.skinsAmount];
+        game.mplayerPressedTex = new TextureRegion[game.skinsAmount];
+
+        game.msettingsTex = new TextureRegion[game.skinsAmount];
+        game.msettingsPressedTex = new TextureRegion[game.skinsAmount];
+
+        for(int i=0; i < game.skinsAmount; i++) {
+            game.mplayTex[i] = new TextureRegion(game.fullA1.findRegion("mplay"+i));
+            game.mplayPressedTex[i] = new TextureRegion(game.fullA1.findRegion("mplay"+i+"pressed"));
+
+            game.mworldTex[i] = new TextureRegion(game.fullA1.findRegion("mworld"+i));
+            game.mworldPressedTex[i] = new TextureRegion(game.fullA1.findRegion("mworld"+i+"pressed"));
+
+            game.mplayerTex[i] = new TextureRegion(game.fullA1.findRegion("mplayer"+i));
+            game.mplayerPressedTex[i] = new TextureRegion(game.fullA1.findRegion("mplayer"+i+"pressed"));
+
+            game.msettingsTex[i] = new TextureRegion(game.fullA1.findRegion("msettings"+i));
+            game.msettingsPressedTex[i] = new TextureRegion(game.fullA1.findRegion("msettings"+i+"pressed"));
+        }
+        game.arrowRightTex = new TextureRegion[game.skinsAmount];
+
+        game.arrowRightTex[0] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 1"));
+        game.arrowRightTex[1] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 2"));
+        game.arrowRightTex[2] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 3"));
+        game.arrowRightTex[3] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 4"));
+        game.arrowRightTex[4] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 5"));
+
+        game.arrowRightPressedTex = new TextureRegion[game.skinsAmount];
+        game.arrowRightPressedTex[0] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 1pressed"));
+        game.arrowRightPressedTex[1] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 2pressed"));
+        game.arrowRightPressedTex[2] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 3pressed"));
+        game.arrowRightPressedTex[3] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 4pressed"));
+        game.arrowRightPressedTex[4] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 5pressed"));
+
+
+        game.arrowLeftTex = new TextureRegion[game.skinsAmount];
+        game.arrowLeftTex[0] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 1"));
+        game.arrowLeftTex[1] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 2"));
+        game.arrowLeftTex[2] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 3"));
+        game.arrowLeftTex[3] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 4"));
+        game.arrowLeftTex[4] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 5"));
+
+        game.arrowLeftPressedTex = new TextureRegion[game.skinsAmount];
+        game.arrowLeftPressedTex[0] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 1pressed"));
+        game.arrowLeftPressedTex[1] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 2pressed"));
+        game.arrowLeftPressedTex[2] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 3pressed"));
+        game.arrowLeftPressedTex[3] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 4pressed"));
+        game.arrowLeftPressedTex[4] = new TextureRegion(game.fullA2.findRegion("Arrow R OI 5pressed"));
+        for(int i=0; i< game.skinsAmount; i++) {
+            game.arrowLeftTex[i].flip(true,false);
+            game.arrowLeftPressedTex[i].flip(true,false);
+        }
 
     }
 

@@ -1,0 +1,26 @@
+FullA3.png
+size: 512, 512
+format: RGBA8888
+filter: MipMapLinearNearest,Nearest
+repeat: none
+achieve
+  rotate: false
+  xy: 2, 2
+  size: 251, 251
+  orig: 251, 251
+  offset: 0, 0
+  index: -1
+records
+  rotate: false
+  xy: 2, 256
+  size: 251, 251
+  orig: 251, 251
+  offset: 0, 0
+  index: -1
+saves
+  rotate: false
+  xy: 256, 2
+  size: 251, 251
+  orig: 251, 251
+  offset: 0, 0
+  index: -1

@@ -132,6 +132,8 @@ public class BigArrow {
         playEffect = true;
         playEffect2 = true;
         secondStart = false;
+
+        isScored = false;
     }
     private void setSkin(Application game){
         switch(Application.gameSkin) {

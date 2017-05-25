@@ -76,8 +76,6 @@ public class GameScreen implements Screen, InputProcessor {
 
     int nextZoneRandom;
     // for platform switch
-    private boolean android = false;
-    private boolean desktop = true;
 
     private boolean circleCreated = false, laserCreated = false, sniperCreated = false, smallArrowCreated = false,
     bigArrowCreated = false;
@@ -124,9 +122,10 @@ public class GameScreen implements Screen, InputProcessor {
         resetZoneCreator(); // Reset boolean values
 
         game.mainMenuScreen.pause();
-        game.gameOver.pause();
+        game.mainMenuScreen.dispose();
+        game.gameOver.dispose();
 
-        Application.gameSkin = random.nextInt(5);
+        //Application.gameSkin = random.nextInt(5);
 
         //create objects
         whiteSides = new WhiteSides();
@@ -171,7 +170,6 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        //GLProfiler.enable();
         spriteCamera.update();
         game.batch.setProjectionMatrix(spriteCamera.combined);
 
@@ -192,29 +190,9 @@ public class GameScreen implements Screen, InputProcessor {
             case 4: Gdx.gl.glClearColor(252/255f, 214/255f, 225/255f, 1f);
                 break;
         }
-        /*
-        if(test) {
-            time += (TimeUtils.nanoTime() - timer);
-            timer = TimeUtils.nanoTime();
-            if ((time / 1000000000) >= 0.995) {
-                System.out.println(
-                        "Drawcalls: " + GLProfiler.drawCalls +
-                                ", Calls: " + GLProfiler.calls +
-                                ", TextureBindings:" + GLProfiler.textureBindings +
-                                ", ShaderSwitches: " + GLProfiler.shaderSwitches +
-                                ",vertexCount: " + GLProfiler.vertexCount.value);
-                GLProfiler.reset();
-                time = 0;
-                calls = game.batch.totalRenderCalls;
-                System.out.println("batch: " + calls);
-                calls = 0;
-            }
-        }
-        */
+
         update(delta);
 
-        //stage.act(delta);
-        //stage.draw();
 
         // SPRITES
         game.batch.begin();
@@ -250,27 +228,6 @@ public class GameScreen implements Screen, InputProcessor {
         if(snipersStart) {
             sniperZone.drawSniperBlock(game.shapeRenderer, (int) player.getPlayerRectangle().getY() + 16);
         }
-        // DRAW LINE(Input.DoubleTap)
-        /*
-        if(desktop) {
-            // onLine Player Position
-            if (Gdx.input.isKeyPressed(Input.Keys.X)) {
-                player.onLine();
-                player.drawPlayerLine(game.shapeRenderer);
-            } else {
-                player.onRelease();
-            }
-        } */
-        /*
-        if(android) {
-            if(Gdx.input.isTouched(1)){
-                player.onLine();
-                player.drawPlayerLine(game.shapeRenderer);
-            } else {
-                player.onRelease();
-            }
-        }
-        */
 
         game.shapeRenderer.end();
 
@@ -299,7 +256,9 @@ public class GameScreen implements Screen, InputProcessor {
         player.drawPlayerCube(game.shapeRenderer); //draw PlayerCube
         if(onLine) {
             player.drawPlayerLine(game.shapeRenderer);
+            player.Jump = false;
         }
+
         game.shapeRenderer.end();
 
         zoneCreator();
@@ -307,7 +266,6 @@ public class GameScreen implements Screen, InputProcessor {
         //COLLISION
         collisionCheck();
         //collisionDebug();
-        //GLProfiler.enable();
     }
 
     public void update(float delta) {
@@ -356,7 +314,6 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
-        player.dispose();
     }
 
     private int zoneCreate;
