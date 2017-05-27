@@ -12,5 +12,8 @@ public class AndroidLauncher extends AndroidApplication {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new Application(), config);
+
+		//private GameHelper gameHelper;
+		//private final static int requestCode = 1;
 	}
 }

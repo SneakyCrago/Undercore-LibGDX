@@ -2,5 +2,7 @@
 <resources>
 
     <string name="app_name">Underecore</string>
-
+    <string name="app_id">225165321819</string>
+    <string name="achievement">CgkI28yY58YGEAIQAQ</string>
+    <string name="leaderboard_normal">CgkI28yY58YGEAIQAA</string>
 </resources>

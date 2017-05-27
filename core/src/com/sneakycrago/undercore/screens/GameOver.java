@@ -171,6 +171,7 @@ public class GameOver implements Screen {
                 best = Score.getBestScore();
                 game.activePlay = true;
                 game.setScreen(game.mainMenuScreen);
+                game.mainMenuScreen.show();
                 game.gameOver.pause();
             }
         });

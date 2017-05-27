@@ -156,6 +156,8 @@ public class GameScreen implements Screen, InputProcessor {
         blocksNumber = 0;
         Currency.resetMoney();
 
+        deathSound = false;
+
         //test
         test = true;
     }
@@ -264,8 +266,13 @@ public class GameScreen implements Screen, InputProcessor {
         zoneCreator();
 
         //COLLISION
-        collisionCheck();
+        //collisionCheck();
         //collisionDebug();
+        game.ambientSound.setVolume(Application.volume);
+        game.ambientSound.play();
+        if(!Application.playerAlive){
+            game.ambientSound.stop();
+        }
     }
 
     public void update(float delta) {
@@ -757,26 +764,26 @@ public class GameScreen implements Screen, InputProcessor {
     private void collisionCheck(){
         //WHITE SIDES
         if(player.sidesCollision()) {
-            playerDeath();
+            playerWallDeath();
         }
         if(startZoneStart) {
             //WALL
             for (int i = 0; i < wall.getMassiveRect().length; i++) {
                 if (player.getPlayerRectangle().overlaps(wall.getMassiveRect()[i]) ||
                         player.getPlayerRectangle().overlaps(wall.getMassiveRect2()[i]) && player.alive) {
-                    playerDeath();
+                    playerWallDeath();
                 }
             }
             //CORRIDOR
             for(int i=0; i< corridor.getTopLeftRects().length; i++) { //between corridor top
                 if (player.getPlayerRectangle().overlaps(corridor.getTopLeftRects()[i]) ||
                         player.getPlayerRectangle().overlaps(corridor.getTopRightRects()[i]) && player.alive){
-                    playerDeath();
+                    playerWallDeath();
                 }
             }
             for(int i=0; i < corridor.getBottomRets().length;i++) {
                 if(player.getPlayerRectangle().overlaps(corridor.getBottomRets()[i]) && player.alive) { // between corridor bottom
-                    playerDeath();
+                    playerWallDeath();
                 }
             }
         }
@@ -848,10 +855,24 @@ public class GameScreen implements Screen, InputProcessor {
         }
     }
 
+    private boolean deathSound = false;
     private void playerDeath(){
         player.alive = false;
         Application.playerAlive = false;
         player.deathAnimation();
+        if(!deathSound) {
+            game.deathAllSound.play(Application.volume);
+            deathSound = true;
+        }
+    }
+    private void playerWallDeath(){
+        player.alive = false;
+        Application.playerAlive = false;
+        player.deathAnimation();
+        if(!deathSound) {
+            game.deathWallSound.play(Application.volume);
+            deathSound = true;
+        }
     }
 
     boolean bigArrowEnd = false;
@@ -944,6 +965,7 @@ public class GameScreen implements Screen, InputProcessor {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if(pointer == 0) {
             player.onClick();
+            game.jumpSound.play(Application.volume);
         } else if(pointer == 1){
             player.onLine();
             onLine = true;

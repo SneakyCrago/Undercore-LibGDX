@@ -52,6 +52,7 @@ public class SniperZone {
         //} else {
         //    texture =  game.snipersSkin[0];
         //}
+        deathSound = false;
     }
 
     public void init(int START, Application game){
@@ -98,6 +99,8 @@ public class SniperZone {
                 sniper2[i].init(x + SPACE * i, 8 + randomHeight2 * 32 + randomHeight2 * 8);
             }
         }
+
+        deathSound = false;
 
         startZone.set(posBlock.x, posBlock.y, 1,288);
         endZone.set(posBlock.x + BLOCK_SIZE, posBlock.y,1,288);
@@ -163,6 +166,7 @@ public class SniperZone {
             amountOfWave = 1;
         }
     }
+    private boolean deathSound = false;
 
     public void collisionDebug(ShapeRenderer shapeRenderer){
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -192,6 +196,10 @@ public class SniperZone {
                 pl.alive = false;
                 Application.playerAlive = false;
                 pl.deathAnimation();
+                if(!deathSound) {
+                    game.deathAllSound.play(Application.volume);
+                    deathSound = true;
+                }
                 //System.out.println("Collision: SNIPERS");
             }
             if(Intersector.overlaps(sniper[i].getCircle(), player) && pl.alive){
@@ -199,6 +207,10 @@ public class SniperZone {
                 Application.playerAlive = false;
                 pl.deathAnimation();
                 //System.out.println("Collision: SNIPERS");
+                if(!deathSound) {
+                    game.deathAllSound.play(Application.volume);
+                    deathSound = true;
+                }
             }
         }
 
@@ -209,12 +221,20 @@ public class SniperZone {
                     Application.playerAlive = false;
                     pl.deathAnimation();
                     //System.out.println("Collision: SNIPERS");
+                    if(!deathSound) {
+                        game.deathAllSound.play(Application.volume);
+                        deathSound = true;
+                    }
                 }
                 if(Intersector.overlaps(sniper2[i].getCircle(), player) && pl.alive){
                     pl.alive = false;
                     Application.playerAlive = false;
                     pl.deathAnimation();
                     //System.out.println("Collision: SNIPERS");
+                    if(!deathSound) {
+                        game.deathAllSound.play(Application.volume);
+                        deathSound = true;
+                    }
                 }
             }
         }

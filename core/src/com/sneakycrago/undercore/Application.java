@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -49,7 +51,8 @@ public class Application extends Game {
     public TextureRegion[] circlesSkin, bigArrowSkin, laserSkin, flipLaserSkin, skinPrewTex;
 	public TextureRegion[] mplayTex,mplayPressedTex, mworldTex,mworldPressedTex,
 			mplayerTex,mplayerPressedTex, msettingsTex, msettingsPressedTex,
-		arrowLeftTex, arrowRightTex, arrowLeftPressedTex, arrowRightPressedTex;
+			arrowLeftTex, arrowRightTex, arrowLeftPressedTex, arrowRightPressedTex,
+			playRoundTex, playRoundPressedTex;
     public Texture[] snipersSkin;
 
 	public GameScreen gameScreen;
@@ -57,6 +60,9 @@ public class Application extends Game {
 	public LoadingScreen loadingScreen;
 	public MainMenuScreen mainMenuScreen;
 	public TutorialScreen tutorialScreen;
+
+	public Sound jumpSound, deathAllSound, deathWallSound;
+	public Music ambientSound;
 
 	public AssetManager assetManager= new AssetManager();
 
@@ -72,11 +78,13 @@ public class Application extends Game {
 	public static boolean[] skinLocked;
 	public static boolean goTutorial;
 	public static boolean ru, en;
-	public static boolean skin1bought = false, skin2bought = false, skin3bought = false, skin4bought = false;
+	public static float volume;
 
 	public String FONT_CHARS = "";
 
 	public static int skinsAmount = 5;
+
+
 	@Override
 	public void create () {
 
@@ -101,8 +109,9 @@ public class Application extends Game {
 			en = true;
 		}
 
-
 		price = 500;
+
+		volume = 1f;
 
 		skinLocked = new boolean[skinsAmount];
 		skinLocked[0] = false;
@@ -143,6 +152,7 @@ public class Application extends Game {
 
 	@Override
 	public void dispose () {
+
 		batch.dispose();
 		shapeRenderer.dispose();
 
@@ -389,5 +399,11 @@ public class Application extends Game {
 		//Test
 	}
 
+	public void loadSounds(){
+		assetManager.load("sounds/jump.wav", Sound.class);
+		assetManager.load("sounds/ambient_game.mp3", Music.class);
+		assetManager.load("sounds/death_all.wav", Sound.class);
+		assetManager.load("sounds/wall_death.mp3", Sound.class);
+	}
 
 }

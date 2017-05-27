@@ -1,18 +1,25 @@
 package com.sneakycrago.undercore.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
+import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -36,14 +43,16 @@ public class MainMenuScreen implements Screen {
     private Stage[] buttonsStage;
     //private Stage stage;
 
-    private Button[] play , gameSkin, plSkin, settings,plusButton;
+    private Button[] play, gameSkin, plSkin, settings,plusButton, changeMode;
     private Button[] arrowLeft, arrowRight, records,achieve,saves;
-    private TextButton[] enButton, ruButton, priceButton;
+    private TextButton[] enButton, ruButton;
+    private Button[] priceButton;
+    private Slider[] volumeSlider;
 
     //private TextureRegion arrowPressedTex,flipArrowPressedTex, flipArrowTex;
     private TextureRegion plusWhiteTex,recordsTex, achieveTex, savesTex ;
 
-    private Sprite skull, currency, currencyPrice, lockPrice, skullUp, skullDown;
+    private Sprite skull, currency, currencyPrice, lockPrice, skullUp, skullDown, plusSprite, volumeSprite;
     private Sprite[] skinPrew, skullInsane;
 
     private GlyphLayout glyphLayout;
@@ -66,8 +75,8 @@ public class MainMenuScreen implements Screen {
     private boolean drawPlSkin, drawPlNew;
     private boolean normalMode =true, hardMode = false;
 
-    private boolean[] skinBought;
 
+    Texture tex = new Texture(Gdx.files.internal("textures/bar.png"));
 
     public MainMenuScreen(Application game) {
         this.game = game;
@@ -130,15 +139,19 @@ public class MainMenuScreen implements Screen {
 
         plusWhiteTex = game.fullA2.findRegion("PlusWhite");
 
+        plusSprite = new Sprite(game.fullA2.findRegion("PlusWhite"));
+        plusSprite.setSize(16, 16);
+
+        volumeSprite = new Sprite(game.fullA2.findRegion("Volume"));
+        volumeSprite.setSize(96,96);
+
         skinPrew = new Sprite[5];
         for(int i=0; i < skinPrew.length; i++){
             skinPrew[i] = new Sprite(game.skinPrewTex[i]);
             skinPrew[i].setPosition((384 + 32) / 2 - squardWidth / 2 + line, 310 / 2 - squardHeight / 2 + up + line);
         }
-        skinBought = new boolean[4];
-        for(int i=0; i< skinBought.length; i++){
-            skinBought[i] = false;
-        }
+
+        //test
     }
 
     @Override
@@ -151,12 +164,13 @@ public class MainMenuScreen implements Screen {
         activePlayerSkin = false;
         activeSettings = false;
 
+
         createButtons();
         createSkinButtons();
         createTextButtons();
+        createSlider();
+
         //Gdx.input.setInputProcessor(buttonsStage[Application.gameSkin]);
-
-
 
         switch (Application.gameSkin){
             case 0: Gdx.input.setInputProcessor(buttonsStage[0]);
@@ -172,33 +186,59 @@ public class MainMenuScreen implements Screen {
         }
         game.loadingScreen.dispose();
 
-        for(int i=1; i < Application.skinLocked.length; i++) {
-            if(Application.skinLocked[i]){
-                priceButton[i-1].setVisible(true);
-            }else if(!Application.skinLocked[i]){
-                priceButton[i-1].setVisible(false);
-            }
-        }
-        if(activePlay){
-            for(int i =0;i < arrowLeft.length; i++){
-                arrowLeft[i].setVisible(false);
-                arrowRight[i].setVisible(false);
-            }
 
+        if(activePlay){
             for(int i=0; i< enButton.length; i++){
                 enButton[i].setVisible(false);
                 ruButton[i].setVisible(false);
             }
         }
+        if(activeWorld || activePlayerSkin && normalMode){
+            for(int i =0;i < arrowLeft.length; i++){
+                arrowLeft[i].setVisible(true);
+                arrowRight[i].setVisible(true);
+            }
+        } else if(activePlay || activeSettings && normalMode) {
+            for (int i = 0; i < arrowLeft.length; i++) {
+                arrowLeft[i].setVisible(false);
+                arrowRight[i].setVisible(false);
+            }
+        }
+        volumeSlider[0].setValue(Application.volume);
+        volumeSlider[1].setValue(Application.volume);
+        volumeSlider[2].setValue(Application.volume);
+        volumeSlider[3].setValue(Application.volume);
+        volumeSlider[4].setValue(Application.volume);
+
+        normalMode =true;
+        hardMode = false;
     }
 
-
+    int langY = 40;
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(18/255f,25/255f,26/255f,1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        switch (Application.gameSkin){
+            case 0: Gdx.input.setInputProcessor(buttonsStage[0]);
+                break;
+            case 1: Gdx.input.setInputProcessor(buttonsStage[1]);
+                break;
+            case 2: Gdx.input.setInputProcessor(buttonsStage[2]);
+                break;
+            case 3: Gdx.input.setInputProcessor(buttonsStage[3]);
+                break;
+            case 4: Gdx.input.setInputProcessor(buttonsStage[4]);
+                break;
+        }
+        Application.volume = volumeSlider[Application.gameSkin].getValue();
+        for(int i=0; i < volumeSlider.length; i++) {
+            volumeSlider[i].setPosition(volumeSprite.getX() + volumeSprite.getWidth(),
+                    volumeSprite.getY() + volumeSprite.getHeight() / 2 - volumeSlider[i].getHeight() / 2);
+        }
         spriteCamera.update();
+
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
@@ -214,20 +254,50 @@ public class MainMenuScreen implements Screen {
         game.shapeRenderer.rect((384 + 32)/2 - squardWidth/2 + line, 310/2 - squardHeight/2  + up + line,
                 squardWidth -line*2, squardHeight- line*2);
 
+        if(activeSettings){
+            //Slider
+            game.shapeRenderer.setColor(Color.BLACK);
+            game.shapeRenderer.rect(volumeSlider[Application.gameSkin].getX() / 2 - 10, volumeSlider[Application.gameSkin].getY() / 2,
+                    volumeSlider[Application.gameSkin].getWidth() / 2 + 10, volumeSlider[Application.gameSkin].getHeight() / 2);
+            game.shapeRenderer.circle(volumeSlider[Application.gameSkin].getX() / 2 + volumeSlider[Application.gameSkin].getWidth() / 2 + 10 - volumeSlider[Application.gameSkin].getHeight() / 4,
+                    volumeSlider[Application.gameSkin].getY() / 2 + volumeSlider[Application.gameSkin].getHeight() / 4,
+                    volumeSlider[Application.gameSkin].getHeight() / 4, 64);
+            switch (Application.gameSkin) {
+                case 0:
+                    game.shapeRenderer.setColor(Globals.SidesColor);
+                    break;
+                case 1:
+                    game.shapeRenderer.setColor(Globals.Background1Color);
+                    break;
+                case 2:
+                    game.shapeRenderer.setColor(Globals.Inner2Color);
+                    break;
+                case 3:
+                    game.shapeRenderer.setColor(Globals.Background3Color);
+                    break;
+                case 4:
+                    game.shapeRenderer.setColor(Globals.Background4Color);
+                    break;
+            }
+            game.shapeRenderer.rect(volumeSlider[Application.gameSkin].getX() / 2 - 10, volumeSlider[Application.gameSkin].getY() / 2 + 3,
+                    10, volumeSlider[Application.gameSkin].getHeight() / 2 - 6);
+            game.shapeRenderer.rect(volumeSlider[Application.gameSkin].getX() / 2, volumeSlider[Application.gameSkin].getY() / 2 + 3,
+                    Application.volume * (volumeSlider[Application.gameSkin].getWidth() / 2), volumeSlider[Application.gameSkin].getHeight() / 2 - 6);
+
+            game.shapeRenderer.circle(volumeSlider[Application.gameSkin].getX() / 2 + Application.volume * (volumeSlider[Application.gameSkin].getWidth() / 2),
+                    volumeSlider[Application.gameSkin].getY() / 2 + volumeSlider[Application.gameSkin].getHeight() / 4,
+                    volumeSlider[Application.gameSkin].getHeight() / 4 - 3, 64);
+
+        }
 
         if(activePlay){
-            for(int i =0;i < arrowLeft.length; i++){
-                arrowLeft[i].setVisible(false);
-                arrowRight[i].setVisible(false);
-            }
-
             for(int i=0; i< enButton.length; i++){
                 enButton[i].setVisible(false);
                 ruButton[i].setVisible(false);
             }
         }
 
-        if(activePlayerSkin && drawPlSkin){
+        if(activePlayerSkin && drawPlSkin && normalMode){
             switch (Application.gameSkin){
                 case 0: game.shapeRenderer.setColor(Color.BLACK);
                     break;
@@ -241,19 +311,11 @@ public class MainMenuScreen implements Screen {
                     break;
             }
             game.shapeRenderer.circle(player.getPlayerRectangle().getX()+ 16, player.getPlayerRectangle().getY() + 16, 48, 64);
-            //game.shapeRenderer.rect((384 + 32)/2 - squardWidth/2 + line, 310/2 - squardHeight/2  + up + line,
-            //        squardWidth -line*2, squardHeight- line*2);
         }
-        // Currency BottomLeft Version
-        //game.shapeRenderer.rect((384 + 32)/2 - 38, moneyY/2 + 1,76, 12);
-        // Currency Center Version
-        //game.shapeRenderer.rect(currency.getX() + currency.getWidth()/2,currency.getY(),
-        //        currency.getWidth() + moneyWidth/2, 16);
-        //game.shapeRenderer.rect(currency.getX() + currency.getWidth()/2, currency.getY(), 100, 16);
         game.shapeRenderer.setColor(15/255f, 16/255f, 16/255f,1f);
-        game.shapeRenderer.rect(moneyX/2 -2 +3,moneyY/2 +3,currency.getWidth()/2 + moneyWidth/2 + 7 + plusButton[0].getWidth()/2 +4,16);
+        game.shapeRenderer.rect(moneyX/2 -2 +3,moneyY/2 +3,currency.getWidth()/2 + moneyWidth/2 + 7 + plusSprite.getWidth()/2 +4,16);
 
-        if(activePlayerSkin && drawPlSkin){
+        if(activePlayerSkin && drawPlSkin && normalMode){
             player.drawPlayerCube(game.shapeRenderer);
         }
 
@@ -261,15 +323,16 @@ public class MainMenuScreen implements Screen {
         game.batch.setProjectionMatrix(spriteCamera.combined);
         game.batch.begin();
 
-        if(activeWorld || activePlay){
+        if(activeWorld || activePlay && normalMode){
             skinPrew[Application.gameSkin].draw(game.batch);
         }
-        if(activePlayerSkin && drawPlSkin){
+
+        if(activePlayerSkin && drawPlSkin && normalMode){
             player.inMenuAnimation(game.batch, delta, game);
         }
         game.batch.end();
 
-        if(activeWorld || activePlay) {
+        if(activeWorld && normalMode) {
             if(Application.skinLocked[Application.gameSkin]) {
                 Gdx.gl.glEnable(GL20.GL_BLEND);
                 Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -285,25 +348,10 @@ public class MainMenuScreen implements Screen {
 
         }
 
-        //stage.act(delta);
-        //stage.draw();
-        switch (Application.gameSkin){
-            case 0: Gdx.input.setInputProcessor(buttonsStage[0]);
-                break;
-            case 1: Gdx.input.setInputProcessor(buttonsStage[1]);
-                break;
-            case 2: Gdx.input.setInputProcessor(buttonsStage[2]);
-                break;
-            case 3: Gdx.input.setInputProcessor(buttonsStage[3]);
-                break;
-            case 4: Gdx.input.setInputProcessor(buttonsStage[4]);
-                break;
-        }
 
-        if(Application.gameSkin !=5) {
-            buttonsStage[Application.gameSkin].act(delta);
-            buttonsStage[Application.gameSkin].draw();
-        }
+        buttonsStage[Application.gameSkin].act(delta);
+        buttonsStage[Application.gameSkin].draw();
+
         game.batch.begin();
         if(normalMode) {
             skull.draw(game.batch);
@@ -314,53 +362,62 @@ public class MainMenuScreen implements Screen {
                 skullInsane[i].draw(game.batch);
             }
         }
-        if(activeWorld || activePlay) {
+        if(activeWorld || activePlay && normalMode) {
             glyphLayout.setText(game.menuScoreFont, "" + Score.getBestScore(), Color.WHITE, (squardWidth - line * 2) * 2, Align.center, true);
             game.menuScoreFont.draw(game.batch, glyphLayout, scoreX, scoreY -20);
-                for(int i=0; i < priceButton.length; i++)
-                    priceButton[i].setVisible(false);
-                if (Application.skinLocked[Application.gameSkin]) {
-                   priceButton[Application.gameSkin - 1].setVisible(true);
-                }
-        }
-        else{
+        } else{
             for(int i=0; i < priceButton.length; i++) {
                 priceButton[i].setVisible(false);
             }
         }
-        System.out.println(Application.skinLocked[1]);
-        if(activeSettings) {
-                enButton[Application.gameSkin].setVisible(true);
-                ruButton[Application.gameSkin].setVisible(true);
+        if(activeWorld || activePlayerSkin && normalMode){
+            for(int i =0;i < arrowLeft.length; i++){
+                arrowLeft[i].setVisible(true);
+                arrowRight[i].setVisible(true);
+            }
+        } else if(hardMode){
             for(int i =0;i < arrowLeft.length; i++){
                 arrowLeft[i].setVisible(false);
                 arrowRight[i].setVisible(false);
             }
+        }
+        if(activePlay || activeSettings){
+            for(int i =0;i < arrowLeft.length; i++){
+                arrowLeft[i].setVisible(false);
+                arrowRight[i].setVisible(false);
+            }
+        }
+
+        if(activeSettings) {
+                enButton[Application.gameSkin].setVisible(true);
+                ruButton[Application.gameSkin].setVisible(true);
+
+            volumeSlider[Application.gameSkin].setVisible(true);
             if(game.en ) {
                 glyphLayout.setText(game.menuBig, "Settings", Color.WHITE, (384 + 32) * 2, Align.center, true);
                 game.menuBig.draw(game.batch, glyphLayout, 0, 310 * 2 - 20);
+                glyphLayout.setText(game.tutFont, "Language", Color.WHITE, squardWidth * 2, Align.center, true);
+                game.tutFont.draw(game.batch, glyphLayout, (384 + 32) - squardWidth,
+                        310 + squardHeight / 2 + up * 2 - glyphLayout.height / 2 -langY);
             } else if(game.ru && activeSettings){
                 glyphLayout.setText(game.menuBigRu, "Настройки", Color.WHITE, (384 + 32) * 2, Align.center, true);
                 game.menuBigRu.draw(game.batch, glyphLayout, 0, 310 * 2 - 20);
+
+                glyphLayout.setText(game.tutFontRu, "Язык", Color.WHITE, squardWidth * 2, Align.center, true);
+                game.tutFontRu.draw(game.batch, glyphLayout, (384 + 32) - squardWidth,
+                        310 + squardHeight / 2 + up * 2 - glyphLayout.height / 2 -langY);
             }
-            glyphLayout.setText(game.tutFont, "Language", Color.WHITE, squardWidth * 2, Align.center, true);
-            game.tutFont.draw(game.batch, glyphLayout, (384 + 32) - squardWidth,
-                    310 + squardHeight / 2 + up * 2 - glyphLayout.height / 2);
+
+
 
         } else {
             enButton[Application.gameSkin].setVisible(false);
             ruButton[Application.gameSkin].setVisible(false);
 
-            for(int i =0;i < arrowLeft.length; i++){
-                arrowLeft[i].setVisible(true);
-                arrowRight[i].setVisible(true);
-            }
+            volumeSlider[Application.gameSkin].setVisible(false);
             if(game.en) {
                 if(normalMode) {
                     glyphLayout.setText(game.menuBig, "Normal", Color.WHITE, (384 + 32) * 2, Align.center, true);
-                    game.menuBig.draw(game.batch, glyphLayout, 0, 310 * 2 - 20);
-                } else if(hardMode){
-                    glyphLayout.setText(game.menuBig, "Hard", Color.WHITE, (384 + 32) * 2, Align.center, true);
                     game.menuBig.draw(game.batch, glyphLayout, 0, 310 * 2 - 20);
                 }
                 languageGlyphHeight = glyphLayout.height;
@@ -368,14 +425,28 @@ public class MainMenuScreen implements Screen {
                 if(normalMode){
                     glyphLayout.setText(game.menuBigRu, "Обычный", Color.WHITE, (384 + 32) * 2, Align.center, true);
                     game.menuBigRu.draw(game.batch, glyphLayout, 0, 310 * 2 - 20);
-                } else if(hardMode) {
-                    glyphLayout.setText(game.menuBigRu, "Сложный", Color.WHITE, (384 + 32) * 2, Align.center, true);
-                    game.menuBigRu.draw(game.batch, glyphLayout, 0, 310 * 2 - 20);
                 }
                 languageGlyphHeight = glyphLayout.height;
             }
         }
-        if(activePlayerSkin){
+
+        if(hardMode && !activeSettings){
+            if(game.en) {
+                glyphLayout.setText(game.menuBig, "Hard", Color.WHITE, (384 + 32) * 2, Align.center, true);
+                game.menuBig.draw(game.batch, glyphLayout, 0, 310 * 2 - 20);
+
+                glyphLayout.setText(game.tutFont, "Winter is coming", Color.WHITE, squardWidth * 2, Align.center, true);
+                game.tutFont.draw(game.batch, glyphLayout, (384 + 32) - squardWidth, 310 + up * 2 + glyphLayout.height / 2);
+            }
+            if(game.ru) {
+                glyphLayout.setText(game.menuBigRu, "Сложный", Color.WHITE, (384 + 32) * 2, Align.center, true);
+                game.menuBigRu.draw(game.batch, glyphLayout, 0, 310 * 2 - 20);
+
+                glyphLayout.setText(game.tutFontRu, "Зима близко...", Color.WHITE, squardWidth * 2, Align.center, true);
+                game.tutFontRu.draw(game.batch, glyphLayout, (384 + 32) - squardWidth, 310 + up * 2 + glyphLayout.height / 2);
+            }
+        }
+        if(activePlayerSkin && normalMode){
             if(drawPlNew) {
                 if(game.en) {
                     glyphLayout.setText(game.tutFont, "New skins will be available soon", Color.WHITE, squardWidth * 2, Align.center, true);
@@ -386,7 +457,6 @@ public class MainMenuScreen implements Screen {
                 }
             }
         }
-
         //Buttons Text
         if(game.en) {
             glyphLayout.setText(game.menu0Font, "Play", Color.WHITE, 85, Align.bottomLeft, true);
@@ -416,56 +486,31 @@ public class MainMenuScreen implements Screen {
                     settings[0].getY() + settings[0].getHeight() / 2 + glyphLayout.height / 2);
         }
 
-        // Currency BottomLeft Version
-        //glyphLayout.setText(game.menu0Font, ""+Currency.currency, Color.WHITE, (384 + 32)* 2, Align.bottomLeft, true);
-        //moneyX = (384 + 32) - 40*2;
-        //moneyY = 310*2 - 20 -60-currency.getHeight()/2 - glyphLayout.height/2 - minusLesha*2;
-        //moneyWidth = glyphLayout.height;
-        //game.menu0Font.draw(game.batch, glyphLayout, (384 + 32) - 38*2 + currency.getWidth(), 310*2 - 20 -60- minusLesha*2);
-        // Currency Center Version
         glyphLayout.setText(game.menu0Font, ""+Currency.currency, Color.WHITE, (384 + 32)* 2, Align.center, true);
         moneyX = (384 + 32) -currency.getWidth() - glyphLayout.width/2 - 4 -3;
         moneyY = 310*2 - 20 -60-currency.getHeight()/2 - glyphLayout.height/2 - minusLesha*2;
         moneyWidth = glyphLayout.width;
-        //game.menu0Font.draw(game.batch, glyphLayout, (384 + 32) - 38*2 + currency.getWidth(), 310*2 - 20 -60- minusLesha*2);
         game.menu0Font.draw(game.batch, glyphLayout, 0, 310*2 - 20 -60- minusLesha*2);
 
         game.batch.end();
 
         // Spites
         game.batch.begin();
-
-
-
         currency.setPosition(moneyX, moneyY);
         currency.draw(game.batch);
-        //(384 + 32)/2 - 38
-        //Currency Center Version
-        for(int i=0; i < plusButton.length; i++) {
-            plusButton[i].setPosition((384 + 32) + glyphLayout.width / 2 + 4 + 3 + 4,
-                    310 * 2 - 20 - 60 - glyphLayout.height / 2 - 16 / 2 - minusLesha * 2);
-        }
 
-        for(int i=0; i < plusButton.length; i++){
-            plusButton[i].setVisible(false);
-            plusButton[Application.gameSkin].setVisible(true);
-        }
 
-        if(activeWorld || activePlay) {
-                /*
-            switch (Application.gameSkin){
-                case 1:price = 500+ 100* (Application.gameSkin-1);
-                    break;
-                case 2:price = 500+ 100* (Application.gameSkin-1);
-                    break;
-                case 3:price = 500+ 100* (Application.gameSkin-1);
-                    break;
-                case 4:price = 500+ 100* (Application.gameSkin-1);
-                    break;
-            } */
+        plusSprite.setPosition(moneyX+ moneyWidth + 45,moneyY +6 + 16 - plusSprite.getHeight()/2);
+        plusSprite.draw(game.batch);
+
+        if(activeWorld && normalMode) {
             glyphLayout.setText(game.menu0Font, "" + Application.price, Color.WHITE, (384 + 32) * 2, Align.center, true);
-            //game.menu0Font.draw(game.batch, glyphLayout, 0,
-            //        310 - squardHeight + up * 2 + glyphLayout.height + line * 2 + 16 - glyphLayout.height / 2);
+            if(Application.gameSkin != 0) {
+                if(Application.skinLocked[Application.gameSkin]) {
+                    game.menu0Font.draw(game.batch, glyphLayout, 0,
+                            310 - squardHeight + up * 2 + line * 2 + glyphLayout.height + 8);//+ up+ line*2 + 8
+                }
+            }
             priceX= (384 + 32);
             priceY = 310 - squardHeight + up * 2 + glyphLayout.height + line * 2 + 16 - glyphLayout.height / 2;
 
@@ -475,25 +520,32 @@ public class MainMenuScreen implements Screen {
             lockPrice.setPosition((384 + 32) + glyphLayout.width / 2 + 4,
                     310 - squardHeight + up * 2 + line * 2 + 6);
             if(Application.gameSkin == 1 || Application.gameSkin == 2 || Application.gameSkin ==3|| Application.gameSkin ==4 ) {
-                if(Application.skinLocked[Application.gameSkin]) {
+                if(Application.skinLocked[Application.gameSkin] && normalMode) {
                     currencyPrice.draw(game.batch);
                     lockPrice.draw(game.batch);
                 }
             }
         }
+
+        if(activeSettings){
+            volumeSprite.setPosition((384 + 32) - squardWidth + 64,
+                    310 + squardHeight/2 + up*2 - volumeSprite.getHeight()/2);
+            volumeSprite.draw(game.batch);
+        }
         game.batch.end();
-
-
-
+        //test
+        for(int i=0; i< plusButton.length; i++) {
+            plusButton[i].setSize(currency.getWidth() + moneyWidth + 14 + plusSprite.getWidth() +8 , 32);
+            plusButton[i].setPosition(moneyX +4,moneyY +6);
+        }
+        if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)){
+            game.mainMenuScreen.show();
+        }
     }
     private float priceX, priceY;
 
-    private void createButtons(){
-        play = new Button[Application.skinsAmount];
-        gameSkin = new Button[Application.skinsAmount];
-        plSkin = new Button[Application.skinsAmount];
-        settings = new Button[Application.skinsAmount];
 
+    private void createButtons(){
         plusButton = new Button[Application.skinsAmount];
 
         achieve = new Button[Application.skinsAmount];
@@ -502,11 +554,11 @@ public class MainMenuScreen implements Screen {
         arrowLeft = new Button[Application.skinsAmount];
         arrowRight = new Button[Application.skinsAmount];
 
+        achieveTex = new TextureRegion(game.fullA3.findRegion("achieve"));
+        recordsTex = new TextureRegion(game.fullA3.findRegion("records"));
+        savesTex = new TextureRegion(game.fullA3.findRegion("saves"));
         for(int i=0; i<buttonsStage.length; i++){
-            play[i] = new Button();
-            gameSkin[i] = new Button();
-            plSkin[i] = new Button();
-            settings[i] = new Button();
+
 
             plusButton[i] = new Button();
 
@@ -515,12 +567,8 @@ public class MainMenuScreen implements Screen {
             saves[i] = new Button();
             arrowLeft[i] = new Button();
             arrowRight[i] = new Button();
-        }
-        achieveTex = new TextureRegion(game.fullA3.findRegion("achieve"));
-        recordsTex = new TextureRegion(game.fullA3.findRegion("records"));
-        savesTex = new TextureRegion(game.fullA3.findRegion("saves"));
-        for(int i=0; i<buttonsStage.length; i++) {
-            plusButton[i] = new Button(new TextureRegionDrawable(plusWhiteTex));
+
+            plusButton[i] = new Button(new BaseDrawable());
 
             arrowLeft[i] = new Button(new TextureRegionDrawable(game.arrowLeftTex[i]),
                     new TextureRegionDrawable(game.arrowLeftPressedTex[i]),
@@ -540,103 +588,69 @@ public class MainMenuScreen implements Screen {
 
                 }
             });
+
+            plusButton[i].setBounds(moneyX +4,moneyY +6, currency.getWidth() + moneyWidth + 14 + plusSprite.getWidth() +8 , 32);
+            plusButton[i].setSize(currency.getWidth() + moneyWidth + 14 + plusSprite.getWidth() +8 , 32);
+            plusButton[i].setPosition(moneyX +4,moneyY +6);
+
             arrowLeft[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    if(activePlayerSkin) {
-                        activePlayerSkin = true;
 
-                        activePlay = false;
-                        activeSettings = false;
-                        activeWorld = false;
-                    } else if(activePlay){
-                        activePlay = true;
-
-                        activePlayerSkin = false;
-                        activeSettings = false;
-                        activeWorld = false;
-                    } else if(activeWorld){
-                        activeWorld = true;
-
-                        activePlay = false;
-                        activePlayerSkin = false;
-                        activeSettings = false;
-                    } else if(activeSettings) {
-                        activeSettings = true;
-
-                        activeWorld = false;
-                        activePlay = false;
-                        activePlayerSkin = false;
-                    }
-                    if(activePlay || activeWorld) {
+                    if(activeWorld && normalMode) {
                         Application.gameSkin -= 1;
                         if (Application.gameSkin <= -1) {
                             Application.gameSkin = 4;
                         }
 
                     }
-                    if(activePlayerSkin && drawPlSkin){
+                    if(activePlayerSkin && drawPlSkin && normalMode){
                         drawPlSkin = true;
                         drawPlNew = false;
                     }
-                    if(activePlayerSkin && drawPlNew){
+                    if(activePlayerSkin && drawPlNew && normalMode){
                         drawPlSkin = true;
                         drawPlNew = false;
                     }
+
+                    volumeSlider[0].setValue(Application.volume);
+                    volumeSlider[1].setValue(Application.volume);
+                    volumeSlider[2].setValue(Application.volume);
+                    volumeSlider[3].setValue(Application.volume);
+                    volumeSlider[4].setValue(Application.volume);
+
                 }
             });
             arrowRight[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    if(activePlayerSkin) {
-                        activePlayerSkin = true;
-
-                        activePlay = false;
-                        activeSettings = false;
-                        activeWorld = false;
-                    } else if(activePlay){
-                        activePlay = true;
-
-                        activePlayerSkin = false;
-                        activeSettings = false;
-                        activeWorld = false;
-                    } else if(activeWorld){
-                        activeWorld = true;
-
-                        activePlay = false;
-                        activePlayerSkin = false;
-                        activeSettings = false;
-                    } else if(activeSettings) {
-                        activeSettings = true;
-
-                        activeWorld = false;
-                        activePlay = false;
-                        activePlayerSkin = false;
-                    }
-                    if(activePlay || activeWorld) {
+                    if(activeWorld && normalMode) {
                         Application.gameSkin += 1;
                         if (Application.gameSkin >= 5) {
                             Application.gameSkin = 0;
                         }
                     }
-                    if(activePlayerSkin  && drawPlSkin){
+                    if(activePlayerSkin  && drawPlSkin && normalMode){
                         drawPlSkin = false;
                         drawPlNew = true;
                     }
-                    if(activePlayerSkin && drawPlNew){
+                    if(activePlayerSkin && drawPlNew && normalMode){
                         drawPlSkin = false;
                         drawPlNew = true;
                     }
+                    volumeSlider[0].setValue(Application.volume);
+                    volumeSlider[1].setValue(Application.volume);
+                    volumeSlider[2].setValue(Application.volume);
+                    volumeSlider[3].setValue(Application.volume);
+                    volumeSlider[4].setValue(Application.volume);
                 }
             });
 
-            plusButton[i].setSize(16, 16);
 
             achieve[i].setSize(64, 64);
             records[i].setSize(64, 64);
             saves[i].setSize(64, 64);
-            plusButton[i].setPosition((384 + 32) + glyphLayout.width / 2 + 4 + 3 + 4,
-                    310 * 2 - 20 - 60 - glyphLayout.height / 2 - 16 / 2 - minusLesha * 2);
+
             float scaleArrow = 0.6f;
             arrowLeft[i].setSize(111 * scaleArrow, 159 * scaleArrow);
             arrowRight[i].setSize(111 * scaleArrow, 159 * scaleArrow);
@@ -655,9 +669,13 @@ public class MainMenuScreen implements Screen {
             buttonsStage[i].addActor(records[i]);
             buttonsStage[i].addActor(saves[i]);
         }
-
     }
     public void createSkinButtons(){
+        play = new Button[Application.skinsAmount];
+        gameSkin = new Button[Application.skinsAmount];
+        plSkin = new Button[Application.skinsAmount];
+        settings = new Button[Application.skinsAmount];
+
         for(int i=0; i<buttonsStage.length; i++) {
             play[i] = new Button(new TextureRegionDrawable(game.mplayTex[i]),
                     new TextureRegionDrawable(game.mplayPressedTex[i]),
@@ -678,32 +696,37 @@ public class MainMenuScreen implements Screen {
             play[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    if(!Application.skinLocked[Application.gameSkin]) {
-                        if (game.goTutorial) {
-                            game.setScreen(game.tutorialScreen);
-                        } else {
-                            game.setScreen(game.gameScreen);
-                        }
-                        game.mainMenuScreen.pause();
-                    }
                     activePlay = true;
-
+                    for (int i = 0; i < arrowLeft.length; i++) {
+                        arrowLeft[i].setVisible(false);
+                        arrowRight[i].setVisible(false);
+                    }
+                    if(normalMode) {
+                        if (!Application.skinLocked[Application.gameSkin] && !activeSettings) {
+                            if (game.goTutorial) {
+                                game.setScreen(game.tutorialScreen);
+                            } else {
+                                game.setScreen(game.gameScreen);
+                            }
+                            game.mainMenuScreen.pause();
+                        }
+                    }
                     activeSettings = false;
                     activeWorld = false;
                     activePlayerSkin = false;
                 }
             });
+
             gameSkin[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    activeWorld = true;
+                        activeWorld = true;
 
-                    activePlay = false;
-                    activePlayerSkin = false;
-                    activeSettings = false;
+                        activePlay = false;
+                        activePlayerSkin = false;
+                        activeSettings = false;
                 }
             });
-
             plSkin[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -715,9 +738,10 @@ public class MainMenuScreen implements Screen {
 
                     drawPlSkin= true;
                     drawPlNew = false;
+
+
                 }
             });
-
             settings[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -726,9 +750,9 @@ public class MainMenuScreen implements Screen {
                     activePlay = false;
                     activeWorld = false;
                     activePlayerSkin = false;
+
                 }
             });
-
 
 
             play[i].setSize(155, 80);
@@ -746,13 +770,16 @@ public class MainMenuScreen implements Screen {
             buttonsStage[i].addActor(gameSkin[i]);
             buttonsStage[i].addActor(plSkin[i]);
             buttonsStage[i].addActor(settings[i]);
+
         }
     }
     private void createTextButtons(){
         enButton = new TextButton[Application.skinsAmount];
         ruButton = new TextButton[Application.skinsAmount];
 
-        priceButton = new TextButton[Application.skinsAmount-1];
+        changeMode = new Button[Application.skinsAmount];
+
+        priceButton = new Button[Application.skinsAmount-1];
 
         //TextButton.TextButtonStyle = new textButtonStyle;
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
@@ -765,76 +792,24 @@ public class MainMenuScreen implements Screen {
         }
 
         for(int i=0; i < priceButton.length; i++) {
-            priceButton[i] = new TextButton("" + Application.price, textButtonStyle);
-            priceButton[i].setPosition((384 + 32) -priceButton[i].getWidth()/2,
-                    310  - squardHeight + up+ line*2 + 8);
+            priceButton[i] = new Button(new BaseDrawable());
+            priceButton[i].setPosition((384 + 32) - squardWidth + line * 2, 310 - squardHeight + up * 2 + line * 2 );
+            priceButton[i].setSize(squardWidth * 2 - line * 4, (squardHeight * 2 - line * 4)/10);
+            priceButton[i].addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (Currency.currency >= Application.price && Application.skinLocked[Application.gameSkin]) {
+                        Currency.currency -= Application.price;
+                        Application.skinLocked[Application.gameSkin] = false;
+                        priceClicked();
+                    }
+                }
+            });
         }
-        priceButton[0].addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (Currency.currency >= Application.price && Application.skinLocked[1]) {
-                    Currency.currency -= Application.price;
-                    Application.skinLocked[1] = false;
-                    priceClicked();
-                    priceButton[0].setVisible(false);
-
-                    priceButton[1].setText("" + Application.price);
-                    priceButton[2].setText("" + Application.price);
-                    priceButton[3].setText("" + Application.price);
-                }
-            }
-        });
-        priceButton[1].addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (Currency.currency >= Application.price && Application.skinLocked[2]) {
-                    Currency.currency -= Application.price;
-                    Application.skinLocked[2] = false;
-                    priceClicked();
-                    priceButton[1].setVisible(false);
-
-                    priceButton[0].setText("" + Application.price);
-                    priceButton[2].setText("" + Application.price);
-                    priceButton[3].setText("" + Application.price);
-                }
-            }
-        });
-        priceButton[2].addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (Currency.currency >= Application.price && Application.skinLocked[3]) {
-                    Currency.currency -= Application.price;
-                    Application.skinLocked[3] = false;
-                    priceClicked();
-                    priceButton[2].setVisible(false);
-
-                    priceButton[1].setText("" + Application.price);
-                    priceButton[0].setText("" + Application.price);
-                    priceButton[3].setText("" + Application.price);
-                }
-            }
-        });
-        priceButton[3].addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (Currency.currency >= Application.price && Application.skinLocked[4]) {
-                    Currency.currency -= Application.price;
-                    Application.skinLocked[4] = false;
-                    priceClicked();
-                    priceButton[3].setVisible(false);
-
-                    priceButton[1].setText("" + Application.price);
-                    priceButton[2].setText("" + Application.price);
-                    priceButton[0].setText("" + Application.price);
-                }
-            }
-        });
-
-
         textButtonStyle.font = game.menu0FontRu;
         for(int i = 0; i < Application.skinsAmount; i++) {
             ruButton[i] = new TextButton("Русский", textButtonStyle);
-        enButton[i].addListener(new ClickListener() {
+            enButton[i].addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.en = true;
@@ -859,8 +834,8 @@ public class MainMenuScreen implements Screen {
                 game.preferences.flush();
             }
         });
-        enButton[i].setPosition((384 + 32) - squardWidth/2 -40+2, 310 -15- languageGlyphHeight/ 2);
-        ruButton[i].setPosition((384 + 32) + squardWidth/2 -40-4, 310 -15- languageGlyphHeight/ 2);
+        enButton[i].setPosition((384 + 32) - squardWidth/2 -40+2, 310 -15- languageGlyphHeight/ 2 -langY);
+        ruButton[i].setPosition((384 + 32) + squardWidth/2 -40-4, 310 -15- languageGlyphHeight/ 2 -langY);
         buttonsStage[i].addActor(enButton[i]);
         buttonsStage[i].addActor(ruButton[i]);
         enButton[i].setVisible(false);
@@ -869,7 +844,51 @@ public class MainMenuScreen implements Screen {
         for(int i=0; i< priceButton.length; i++){
             buttonsStage[i+1].addActor(priceButton[i]);
         }
+        for(int i=0; i< changeMode.length; i++) {
 
+            changeMode[i] = new Button(new BaseDrawable());
+
+            changeMode[i].setSize(96 * 2, 310 * 2);
+            changeMode[i].setPosition((384 + 32) * 2, 0);
+
+            changeMode[i].addListener(new ActorGestureListener() {
+                public void fling(InputEvent event, float velocityX, float velocityY, int button) {
+                    if(normalMode) {
+                        if (velocityX > velocityY) {
+                            normalMode = false;
+                            hardMode = true;
+                        }
+                    }
+                    if(hardMode) {
+                        if (velocityX < velocityY) {
+                            normalMode = true;
+                            hardMode = false;
+                        }
+                    }
+                }
+            });
+
+            buttonsStage[i].addActor(changeMode[i]);
+        }
+    }
+    private void createSlider() {
+        Slider.SliderStyle sliderStyle = new Slider.SliderStyle(new BaseDrawable(), new BaseDrawable());
+
+        volumeSlider = new Slider[Application.skinsAmount];
+        for(int i =0; i < volumeSlider.length; i++) {
+            volumeSlider[i] = new Slider(0, 1, 0.01f, false, sliderStyle);
+            volumeSlider[i].setSize(594 / 2, 69 / 2);
+            volumeSlider[i].setPosition(volumeSprite.getX() + volumeSprite.getWidth(),
+                    volumeSprite.getY() + volumeSprite.getHeight() / 2 - volumeSlider[i].getHeight() / 2);
+            //volumeSlider.setDebug(true);
+            volumeSlider[i].addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    Application.volume = volumeSlider[Application.gameSkin].getValue();
+                }
+            });
+            buttonsStage[i].addActor(volumeSlider[i]);
+        }
     }
 
     private void priceClicked(){

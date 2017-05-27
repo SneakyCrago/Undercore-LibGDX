@@ -1,7 +1,9 @@
 package com.sneakycrago.undercore.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -16,7 +18,7 @@ import com.sneakycrago.undercore.Application;
  * Created by Sneaky Crago on 13.05.2017.
  */
 
-public class LoadingScreen implements Screen {
+public class LoadingScreen implements Screen, InputProcessor {
     Application game;
 
     private OrthographicCamera camera;
@@ -43,11 +45,11 @@ public class LoadingScreen implements Screen {
         paw = new Sprite(pawTexture);
         paw.setSize(512,310);
         paw.setPosition(512/2 - paw.getWidth()/2, 310/2 - paw.getHeight()/2);
+        Gdx.input.setInputProcessor(this);
     }
 
     @Override
     public void show() {
-
 
         this.progress = 0;
     }
@@ -63,6 +65,7 @@ public class LoadingScreen implements Screen {
         if(!assetsLoaded) {
             game.assetManager.update();
             game.loadTextures();
+            game.loadSounds();
             game.assetManager.finishLoading();
         }
         if(!texturesLoaded){
@@ -127,6 +130,11 @@ public class LoadingScreen implements Screen {
             }
 
             createMainMenuTexures();
+
+            game.jumpSound = game.assetManager.get("sounds/jump.wav");
+            game.deathAllSound = game.assetManager.get("sounds/death_all.wav");
+            game.deathWallSound = game.assetManager.get("sounds/wall_death.mp3");
+            game.ambientSound = game.assetManager.get("sounds/ambient_game.mp3");
         }
 
         if(!screensCreated && texturesLoaded && progress >= game.assetManager.getProgress() - 0.001f) {
@@ -223,6 +231,19 @@ public class LoadingScreen implements Screen {
             game.arrowLeftTex[i].flip(true,false);
             game.arrowLeftPressedTex[i].flip(true,false);
         }
+        game.playRoundTex = new TextureRegion[game.skinsAmount];
+        game.playRoundTex[0] = new TextureRegion(game.fullA1.findRegion("play0"));
+        game.playRoundTex[1] = new TextureRegion(game.fullA1.findRegion("play1"));
+        game.playRoundTex[2] = new TextureRegion(game.fullA1.findRegion("play2"));
+        game.playRoundTex[3] = new TextureRegion(game.fullA1.findRegion("play3"));
+        game.playRoundTex[4] = new TextureRegion(game.fullA1.findRegion("play4"));
+
+        game.playRoundPressedTex = new TextureRegion[game.skinsAmount];
+        game.playRoundPressedTex[0] = new TextureRegion(game.fullA1.findRegion("play0pressed"));
+        game.playRoundPressedTex[1] = new TextureRegion(game.fullA1.findRegion("play1pressed"));
+        game.playRoundPressedTex[2] = new TextureRegion(game.fullA1.findRegion("play2pressed"));
+        game.playRoundPressedTex[3] = new TextureRegion(game.fullA1.findRegion("play3pressed"));
+        game.playRoundPressedTex[4] = new TextureRegion(game.fullA1.findRegion("play4pressed"));
 
     }
 
@@ -249,5 +270,45 @@ public class LoadingScreen implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }

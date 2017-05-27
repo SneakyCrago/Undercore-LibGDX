@@ -46,7 +46,7 @@ public class SmallArrowZone {
         startZone = new Rectangle();
         endZone = new Rectangle();
 
-
+        deathSound = false;
     }
     public void init(int start){
         x = start;
@@ -81,6 +81,8 @@ public class SmallArrowZone {
         }
         startZone.set(posBlock.x, posBlock.y, 1, 288);
         endZone.set(posBlock.x + BLOCK_SIZE, posBlock.y, 1, 288);
+
+        deathSound = false;
     }
 
     private void createMassive(){
@@ -183,6 +185,8 @@ public class SmallArrowZone {
         shapeRenderer.rect(endZone.getX(),endZone.getY(), endZone.getWidth(), endZone.getHeight());
         shapeRenderer.end();
     }
+    private boolean deathSound = false;
+
     public void checkCollision(Rectangle player, Application game, Player pl){
 
         for(int i =0; i < massive.length; i++) {
@@ -192,7 +196,10 @@ public class SmallArrowZone {
                         pl.alive = false;
                         Application.playerAlive = false;
                         pl.deathAnimation();
-                        System.out.println("Collision: SMALL ARROW");
+                        if(!deathSound) {
+                            game.deathAllSound.play(Application.volume);
+                            deathSound = true;
+                        }
                     }
                 }
             }
@@ -202,7 +209,10 @@ public class SmallArrowZone {
                         pl.alive = false;
                         Application.playerAlive = false;
                         pl.deathAnimation();
-                        System.out.println("Collision: SMALL ARROW");
+                        if(!deathSound) {
+                            game.deathAllSound.play(Application.volume);
+                            deathSound = true;
+                        }
                     }
                 }
             }
@@ -212,7 +222,10 @@ public class SmallArrowZone {
                         pl.alive = false;
                         Application.playerAlive = false;
                         pl.deathAnimation();
-                        System.out.println("Collision: SMALL ARROW");
+                        if(!deathSound) {
+                            game.deathAllSound.play(Application.volume);
+                            deathSound = true;
+                        }
                     }
                 }
             }
