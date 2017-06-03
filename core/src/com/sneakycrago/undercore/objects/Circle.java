@@ -164,7 +164,6 @@ public class Circle {
     }
 
     private void createBlock(){
-
         for(int i=0; i < circleTop.length; i++) {
             switch (Application.gameSkin){
                 case 0: circleTop[i] = new Sprite(skins[0]);

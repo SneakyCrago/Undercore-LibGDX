@@ -54,6 +54,7 @@ public class MainMenuScreen implements Screen {
 
     private Sprite skull, currency, currencyPrice, lockPrice, skullUp, skullDown, plusSprite, volumeSprite;
     private Sprite[] skinPrew, skullInsane;
+    private Sprite blackLock;
 
     private GlyphLayout glyphLayout;
 
@@ -75,8 +76,6 @@ public class MainMenuScreen implements Screen {
     private boolean drawPlSkin, drawPlNew;
     private boolean normalMode =true, hardMode = false;
 
-
-    Texture tex = new Texture(Gdx.files.internal("textures/bar.png"));
 
     public MainMenuScreen(Application game) {
         this.game = game;
@@ -144,6 +143,10 @@ public class MainMenuScreen implements Screen {
 
         volumeSprite = new Sprite(game.fullA2.findRegion("Volume"));
         volumeSprite.setSize(96,96);
+
+        blackLock = new Sprite(game.fullA2.findRegion("LockBlack"));
+        blackLock.setSize(96,96);
+        blackLock.setPosition((384 + 32)/2 - blackLock.getWidth()/2, 310/2 - blackLock.getHeight()/2);
 
         skinPrew = new Sprite[5];
         for(int i=0; i < skinPrew.length; i++){
@@ -323,10 +326,15 @@ public class MainMenuScreen implements Screen {
         game.batch.setProjectionMatrix(spriteCamera.combined);
         game.batch.begin();
 
-        if(activeWorld || activePlay && normalMode){
+        if(activePlay && normalMode){
             skinPrew[Application.gameSkin].draw(game.batch);
         }
-
+        if(activeWorld&& normalMode){
+            skinPrew[Application.gameSkin].draw(game.batch);
+        }
+        if(game.skinLocked[Application.gameSkin] && activePlay) {
+                blackLock.draw(game.batch);
+        }
         if(activePlayerSkin && drawPlSkin && normalMode){
             player.inMenuAnimation(game.batch, delta, game);
         }
@@ -362,7 +370,7 @@ public class MainMenuScreen implements Screen {
                 skullInsane[i].draw(game.batch);
             }
         }
-        if(activeWorld || activePlay && normalMode) {
+        if(activePlay && normalMode) {
             glyphLayout.setText(game.menuScoreFont, "" + Score.getBestScore(), Color.WHITE, (squardWidth - line * 2) * 2, Align.center, true);
             game.menuScoreFont.draw(game.batch, glyphLayout, scoreX, scoreY -20);
         } else{
@@ -370,15 +378,29 @@ public class MainMenuScreen implements Screen {
                 priceButton[i].setVisible(false);
             }
         }
-        if(activeWorld || activePlayerSkin && normalMode){
+        if(activeWorld&& normalMode) {
+            glyphLayout.setText(game.menuScoreFont, "" + Score.getBestScore(), Color.WHITE, (squardWidth - line * 2) * 2, Align.center, true);
+            game.menuScoreFont.draw(game.batch, glyphLayout, scoreX, scoreY -20);
+        } else{
+            for(int i=0; i < priceButton.length; i++) {
+                priceButton[i].setVisible(false);
+            }
+        }
+        if(activeWorld&& normalMode){
             for(int i =0;i < arrowLeft.length; i++){
                 arrowLeft[i].setVisible(true);
                 arrowRight[i].setVisible(true);
             }
-        } else if(hardMode){
+        } else if(activeWorld&& hardMode) {
             for(int i =0;i < arrowLeft.length; i++){
                 arrowLeft[i].setVisible(false);
                 arrowRight[i].setVisible(false);
+            }
+        }
+        if(activePlayerSkin && normalMode){
+            for(int i =0;i < arrowLeft.length; i++){
+                arrowLeft[i].setVisible(true);
+                arrowRight[i].setVisible(true);
             }
         }
         if(activePlay || activeSettings){
@@ -793,8 +815,9 @@ public class MainMenuScreen implements Screen {
 
         for(int i=0; i < priceButton.length; i++) {
             priceButton[i] = new Button(new BaseDrawable());
+            priceButton[i].setDebug(true);
             priceButton[i].setPosition((384 + 32) - squardWidth + line * 2, 310 - squardHeight + up * 2 + line * 2 );
-            priceButton[i].setSize(squardWidth * 2 - line * 4, (squardHeight * 2 - line * 4)/10);
+            priceButton[i].setSize(squardWidth * 2 - line * 4, (squardHeight * 4 - line * 4)/10);
             priceButton[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -802,6 +825,19 @@ public class MainMenuScreen implements Screen {
                         Currency.currency -= Application.price;
                         Application.skinLocked[Application.gameSkin] = false;
                         priceClicked();
+
+                        game.preferences.putInteger("currency", Currency.currency);
+                        game.preferences.flush();
+                        game.preferences.putInteger("price",Application.price);
+                        game.preferences.flush();
+                        game.preferences.putBoolean("skinLocked1", Application.skinLocked[1]);
+                        game.preferences.flush();
+                        game.preferences.putBoolean("skinLocked2", Application.skinLocked[2]);
+                        game.preferences.flush();
+                        game.preferences.putBoolean("skinLocked3", Application.skinLocked[3]);
+                        game.preferences.flush();
+                        game.preferences.putBoolean("skinLocked4", Application.skinLocked[4]);
+                        game.preferences.flush();
                     }
                 }
             });
@@ -853,17 +889,19 @@ public class MainMenuScreen implements Screen {
 
             changeMode[i].addListener(new ActorGestureListener() {
                 public void fling(InputEvent event, float velocityX, float velocityY, int button) {
-                    if(normalMode) {
-                        if (velocityX > velocityY) {
-                            normalMode = false;
-                            hardMode = true;
-                        }
-                    }
                     if(hardMode) {
-                        if (velocityX < velocityY) {
+                        if (velocityX > velocityY) {
                             normalMode = true;
                             hardMode = false;
                         }
+
+                    }
+                    if(normalMode) {
+                        if (velocityX < velocityY) {
+                            normalMode = false;
+                            hardMode = true;
+                        }
+
                     }
                 }
             });
@@ -885,6 +923,9 @@ public class MainMenuScreen implements Screen {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
                     Application.volume = volumeSlider[Application.gameSkin].getValue();
+
+                    game.preferences.putFloat("volume", Application.volume);
+                    game.preferences.flush();
                 }
             });
             buttonsStage[i].addActor(volumeSlider[i]);
@@ -893,6 +934,8 @@ public class MainMenuScreen implements Screen {
 
     private void priceClicked(){
         Application.skinsBought +=1;
+        game.preferences.putInteger("skinsBought", Application.skinsBought);
+        game.preferences.flush();
         Application.price = 500+ Application.skinsBought *100;
     }
 

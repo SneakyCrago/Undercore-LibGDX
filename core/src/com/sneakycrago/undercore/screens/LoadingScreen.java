@@ -3,7 +3,6 @@ package com.sneakycrago.undercore.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -133,15 +132,19 @@ public class LoadingScreen implements Screen, InputProcessor {
 
             game.jumpSound = game.assetManager.get("sounds/jump.wav");
             game.deathAllSound = game.assetManager.get("sounds/death_all.wav");
-            game.deathWallSound = game.assetManager.get("sounds/wall_death.mp3");
-            game.ambientSound = game.assetManager.get("sounds/ambient_game.mp3");
+
+            //game.ambientSound = game.assetManager.get("sounds/ambient_game.mp3");
+            game.ambientSound = game.assetManager.get("sounds/background.mp3");
+
+            game.ambientSound.setLooping(true);
+
         }
 
         if(!screensCreated && texturesLoaded && progress >= game.assetManager.getProgress() - 0.001f) {
-            game.gameScreen = new GameScreen(game);
-            game.gameOver = new GameOver(game);
             game.mainMenuScreen = new MainMenuScreen(game);
             game.tutorialScreen = new TutorialScreen(game);
+            game.gameScreen = new GameScreen(game);
+            game.gameOver = new GameOver(game);
             screensCreated = true;
             //System.out.println("Screens created");
         }

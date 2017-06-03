@@ -81,6 +81,13 @@ public class Player {
         spriteAnim.setSize(32,32);
         spriteAnim.setPosition(position.x - 32, position.y);
     }
+    public void secondChance(int x, int y){
+        position.set(x,y);
+        velocity.set(0, 0);
+        playerCubeRectangle.setPosition(position.x, position.y);
+        playerPolygon.setPosition(position.x, position.y);
+        alive = true;
+    }
 
     public void update(float delta) {
         velocity.add(0, GRAVITY);
@@ -256,10 +263,10 @@ public class Player {
     }
 
     private boolean isJumped = false;
-    private boolean deathPlayed = false;
+    public boolean deathPlayed = false;
 
     public void deathAnimation(){
-        if(!alive && !deathPlayed) {
+        if(!deathPlayed) {
             velocity.y = 300;
             GRAVITY = -30; //15
             isJumped = true;

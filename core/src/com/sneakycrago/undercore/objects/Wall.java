@@ -68,6 +68,10 @@ public class Wall {
 
         createRects(x);
     }
+    public void secondChance(){
+        posBlock.set(0, 11);
+        velocity.set(0,0);
+    }
 
 
     // movement

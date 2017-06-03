@@ -79,7 +79,7 @@ public class TutorialScreen implements Screen {
                 } else if(drawSecond){
                     drawSecond = false;
                     game.goTutorial = false;
-                    game.preferences.putBoolean("goTutorial", game.goTutorial);
+                    game.preferences.putBoolean("goTutorial", false);
                     game.preferences.flush();
                     //System.out.println(game.goTutorial + " prefs: " + game.preferences.getBoolean("goTutorial"));
                     game.setScreen(game.gameScreen);

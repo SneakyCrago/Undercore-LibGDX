@@ -6,7 +6,7 @@ package com.sneakycrago.undercore.utils;
 
 public class Score {
 
-    private static int gameScore;
+    public static int gameScore;
     public static int bestScore;
 
     public Score() {

@@ -38,10 +38,10 @@ public class Application extends Game {
 
 	public BitmapFont font, font30,font30white, font10, borderFont, smallWhiteFont, font40white,
 	death0, death1,death2,death3,death4, menu0Font,tutFont, menu1Font,menu2Font,menu3Font,menu4Font, menuBig,
-			menuScoreFont;
+			menuScoreFont, bigNumbers, fontNope;
 
 	public BitmapFont menu0FontRu, menuBigRu, tutFontRu, tutFont2RU, settingsFontRU,
-			death0RU,death1RU,death2RU,death3RU,death4RU, fontRU, smallWhiteFontRU;
+			death0RU,death1RU,death2RU,death3RU,death4RU, fontRU, smallWhiteFontRU, borderFontRU, fontNopeRu;
 
 	public Texture playerSkin0,playerSkin1,playerSkin2,playerSkin3,playerSkin4;
 	public TextureRegion currencyTexture;
@@ -61,7 +61,7 @@ public class Application extends Game {
 	public MainMenuScreen mainMenuScreen;
 	public TutorialScreen tutorialScreen;
 
-	public Sound jumpSound, deathAllSound, deathWallSound;
+	public Sound jumpSound, deathAllSound;
 	public Music ambientSound;
 
 	public AssetManager assetManager= new AssetManager();
@@ -73,16 +73,17 @@ public class Application extends Game {
 	public static int gameSkin = 0; // 0 - standard
 	public static boolean playerAlive;
 
-	public static int price;
-	public static int skinsBought;
-	public static boolean[] skinLocked;
-	public static boolean goTutorial;
-	public static boolean ru, en;
-	public static float volume;
+	public static int skinsAmount = 5;
+
+	public static int price = 500;
+	public static int skinsBought = 0;
+	public static boolean[] skinLocked = new boolean[skinsAmount];
+	public static boolean goTutorial = true;
+	public static boolean ru = false, en = true;
+	public static float volume = 1f;
 
 	public String FONT_CHARS = "";
 
-	public static int skinsAmount = 5;
 
 
 	@Override
@@ -99,42 +100,46 @@ public class Application extends Game {
 
 		loadingScreen = new LoadingScreen(this);
 
-		//LANGUAGE
-		//en = false;
-		//ru = !en;
 
 		getPrefs();
 
-		if(!en && !ru){
-			en = true;
-		}
 
-		price = 500;
-
-		volume = 1f;
-
-		skinLocked = new boolean[skinsAmount];
 		skinLocked[0] = false;
 		for(int i=1; i < skinLocked.length; i++){
 			skinLocked[i] = true;
 		}
 
+
 		for(int i = 32; i < 127; i++) FONT_CHARS += (char)i;
 		for(int i = 1024; i < 1104; i++) FONT_CHARS += (char)i;
+
 		if(loadPrefs){
 			if(preferences.contains("bestScore")) Score.bestScore = preferences.getInteger("bestScore");
 			if(preferences.contains("currency")) Currency.currency = preferences.getInteger("currency");
 
-			goTutorial = preferences.getBoolean("goTutorial",true);
-			ru = preferences.getBoolean("ru", true);
-			en = preferences.getBoolean("en",false);
-			//System.out.println(goTutorial + " loadedPref: " + preferences.getBoolean("goTutorial"));
+			if(preferences.contains("goTutorial"))goTutorial = preferences.getBoolean("goTutorial");
+			if(preferences.contains("ru")) ru = preferences.getBoolean("ru");
+			if(preferences.contains("en")) en = preferences.getBoolean("en");
+
+			// volume, price, skinLocked
+			if(preferences.contains("volume")) volume = preferences.getFloat("volume");
+
+			if(preferences.contains("price")) price = preferences.getInteger("price", price);
+
+			if(preferences.contains("skinLocked1")) skinLocked[1] = preferences.getBoolean("skinLocked1");
+			if(preferences.contains("skinLocked2")) skinLocked[2] = preferences.getBoolean("skinLocked2");
+			if(preferences.contains("skinLocked3")) skinLocked[3] = preferences.getBoolean("skinLocked3");
+			if(preferences.contains("skinLocked4")) skinLocked[4] = preferences.getBoolean("skinLocked4");
+
+			if(preferences.contains("skinsBought")) skinsBought = preferences.getInteger("skinsBought");
+
+
 		} else{ //RESET SAVES TO ZERO
 			Score.bestScore = 0;
 			Currency.currency = 0;
 			goTutorial = true;
-			en = false;
-			ru = true;
+			en = true;
+			ru = false;
 
 			preferences.putInteger("bestScore",Score.bestScore);
 			preferences.flush();
@@ -147,6 +152,7 @@ public class Application extends Game {
 			preferences.putBoolean("ru", ru);
 			preferences.flush();
 		}
+
 		setScreen(loadingScreen);
 	}
 
@@ -273,13 +279,24 @@ public class Application extends Game {
 		params.size = 60;
 		menuBig = generator.generateFont(params);
 
+		params.size = 24;
+		fontNope = generator.generateFont(params);
+
 		params.size = 40;
 		tutFont = generator.generateFont(params);
+
+		params.size = 100;
+		bigNumbers = generator.generateFont(params);
+
+		params.size = 24*2;
+
 
 		params.size = 15*2;
 		params.borderColor = Color.BLACK;
 		params.borderWidth = gameBorderSize;
 		menuScoreFont = generator.generateFont(params);
+
+
 	}
 	public void initRuFonts(){
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/font.ttf"));
@@ -311,11 +328,20 @@ public class Application extends Game {
 		paramsRu.size = 15*2;
 		smallWhiteFontRU = generator.generateFont(paramsRu);
 
+		paramsRu.size = 24;
+		fontNopeRu = generator.generateFont(paramsRu);
+
 		paramsRu.size = 40*2;
 		paramsRu.color = Globals.Text0Color;
 		paramsRu.borderColor = Color.BLACK;
 		paramsRu.borderWidth = gameBorderSize;
 		death0RU = generator.generateFont(paramsRu);
+
+		paramsRu.size = 18*2;
+		paramsRu.color = Color.WHITE;
+		paramsRu.borderColor = Color.BLACK;
+		paramsRu.borderWidth = gameBorderSize;
+		borderFontRU = generator.generateFont(paramsRu);
 
 		paramsRu.color = Globals.Text1Color;
 		death1RU = generator.generateFont(paramsRu);
@@ -361,8 +387,6 @@ public class Application extends Game {
 	protected Preferences getPrefs() {
 		if(preferences==null){
 			preferences = Gdx.app.getPreferences("saves");
-			//preferences.putBoolean("goTutorial", true);
-			//preferences.putBoolean("en", true);
 		}
 		return preferences;
 	}
@@ -401,9 +425,9 @@ public class Application extends Game {
 
 	public void loadSounds(){
 		assetManager.load("sounds/jump.wav", Sound.class);
-		assetManager.load("sounds/ambient_game.mp3", Music.class);
+		//assetManager.load("sounds/ambient_game.mp3", Music.class);
+		assetManager.load("sounds/background.mp3", Music.class);
 		assetManager.load("sounds/death_all.wav", Sound.class);
-		assetManager.load("sounds/wall_death.mp3", Sound.class);
 	}
 
 }
