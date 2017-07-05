@@ -104,6 +104,22 @@ public class Laser{
             isScored[i] = false;
         }
     }
+    public void secondChange(float START){
+        x = (int) START;
+
+        posBlock.set(0, 11); // 0,11
+        velocity.set(0,0);
+
+        createRects();
+
+        for (int i = 0; i < massive.length; i++) {
+            size[i] = 0;
+        }
+
+        for (int i = 0; i < isScored.length; i++) {
+            isScored[i] = false;
+        }
+    }
 
     public void setSkin(Application game){
         switch (Application.gameSkin) {

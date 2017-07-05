@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -17,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -65,8 +63,6 @@ public class GameScreen implements Screen, InputProcessor {
     private final int SPAWN = 512;
     int start_corridor;
 
-
-
     //BIG ARROW LOGIC
     private int amountOfBigArrows;
     private int bigArrowsCount = 0;
@@ -100,9 +96,15 @@ public class GameScreen implements Screen, InputProcessor {
     private boolean secondChance;
     private boolean secondDeath;
 
+    private boolean deathWall = false, deathBigArrow = false, deathCircle  = false,
+            deathLaser = false;
+    private int sidesDeath; // 1 - START 2 - LASER 3 - BIG_ARROW 4 - CIRCLE 5 - SMALL_ARROW 6 - SNIPERS
+
+    private boolean startAfterDeath;
+
+    private boolean startPlay;
+
     public GameScreen(Application game) {
-        //System.out.println();
-        //System.out.println("GameScreen");
         this.game = game;
         this.camera = game.camera;
 
@@ -157,10 +159,10 @@ public class GameScreen implements Screen, InputProcessor {
         bigArrow = new BigArrow(game);
         circle = new Circle(game);
         smallArrowZone = new SmallArrowZone();
-
         sniperZone = new SniperZone();
 
         amountOfBigArrows = random.nextInt(3) + 3;
+
         //System.out.println("Big Arrows: " + amountOfBigArrows);
 
         //Обнуляем счет
@@ -173,6 +175,9 @@ public class GameScreen implements Screen, InputProcessor {
         //test
         test = true;
 
+        //makeSmallArrow(SPAWN);
+        //startZoneStart = false;
+
         game.ambientSound.setVolume(Application.volume/2);
         game.ambientSound.play();
 
@@ -181,6 +186,21 @@ public class GameScreen implements Screen, InputProcessor {
 
         secondChance = false;
         secondDeath = false;
+
+        deathWall = false;
+        deathBigArrow = false;
+        deathCircle  = false;
+        deathLaser = false;
+        game.deathSmallArow = false;
+        game.deathSnipers = false;
+
+        blockCounter = 7;
+        counterCheked = false;
+        sidesDeath = 1; // Считает смерть от белых сторон, цифра - зона в которой умер игрок
+
+        startAfterDeath = false;
+
+        startPlay = true;
     }
 
     private boolean test = false;
@@ -192,6 +212,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
+        game.adTimer();
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         spriteCamera.update();
         game.batch.setProjectionMatrix(spriteCamera.combined);
@@ -200,7 +221,9 @@ public class GameScreen implements Screen, InputProcessor {
             nopeButton.setVisible(false);
             watchButton.setVisible(false);
         }
-
+        if(test && Gdx.input.isKeyPressed(Input.Keys.Q)) {
+                collisionCheck(delta);
+        }
         if(Application.gameSkin == 0) {
             Gdx.gl.glClearColor(0f, 0f, 0f, 1);
         } else if(Application.gameSkin == 1) {
@@ -230,6 +253,10 @@ public class GameScreen implements Screen, InputProcessor {
         }
         if(laserZoneStart) {
          laser.drawLaserGun(game.batch);
+        }
+
+        if(startAfterDeath || startPlay){
+            player.inMenuAnimation(game.batch,delta,game);
         }
 
         game.batch.end();
@@ -265,14 +292,38 @@ public class GameScreen implements Screen, InputProcessor {
 
         game.batch.begin();
         //game info
-        game.font10.draw(game.batch, "fps:" + Gdx.graphics.getFramesPerSecond(), 0, (288 - 24)*2);
-        game.font10.draw(game.batch, "blocks:" + blocksNumber, 0, (288 - 24 - 12)*2);
-        game.font10.draw(game.batch, "money:" + Currency.Money, 0, (288 - 24 - 12 * 2)*2);
-        game.font10.draw(game.batch, "counter:" + blockCounter, 0, (288 - 24 - 12 * 3)*2);
-
+        if(test) {
+            game.font10.draw(game.batch, "fps:" + Gdx.graphics.getFramesPerSecond(), 0, (288 - 24) * 2);
+            game.font10.draw(game.batch, "blocks:" + blocksNumber, 0, (288 - 24 - 12) * 2);
+            game.font10.draw(game.batch, "money:" + Currency.Money, 0, (288 - 24 - 12 * 2) * 2);
+            game.font10.draw(game.batch, "counter:" + blockCounter, 0, (288 - 24 - 12 * 3) * 2);
+            game.font10.draw(game.batch, "loadedReborn:" + Application.loadedReborn, 0, (288 - 24 - 12 * 4) * 2);
+            game.font10.draw(game.batch, "Award(reborn):" + Application.reborn, 0, (288 - 24 - 12 * 5) * 2);
+            game.font10.draw(game.batch, "secondChance:" + secondChance, 0, (288 - 24 - 12 * 6) * 2);
+            game.font10.draw(game.batch, "afterDeath:" + startAfterDeath, 0, (288 - 24 - 12 * 7) * 2);
+        }
         glyphLayout.setText(game.borderFont, ""+ Score.getGameScore() , Color.WHITE,512*2, Align.center, true);
         game.borderFont.draw(game.batch, glyphLayout, 0, (11 + 288 - 4)*2);
 
+        if(startAfterDeath) {
+            if(game.en) {
+                glyphLayout.setText(game.startEN, "TAP TO CONTINUE", Color.WHITE, 512 * 2, Align.center, true);
+                game.startEN.draw(game.batch, glyphLayout, 0, 310 + glyphLayout.height / 2);
+            } else if(game.ru) {
+                glyphLayout.setText(game.startRU, "НАЖМИТЕ ЧТО БЫ ПРОДОЛЖИТЬ", Color.WHITE, 512 * 2, Align.center, true);
+                game.startRU.draw(game.batch, glyphLayout, 0 + 40, 310 + glyphLayout.height / 2);
+            }
+        }
+
+        if(startPlay) {
+            if(game.en) {
+                glyphLayout.setText(game.startEN, "TAP TO START", Color.WHITE, 512 * 2, Align.center, true);
+                game.startEN.draw(game.batch, glyphLayout, 0, 310 + glyphLayout.height / 2);
+            } else if(game.ru) {
+                glyphLayout.setText(game.start40RU, "НАЖМИТЕ ЧТО БЫ НАЧАТЬ", Color.WHITE, 512 * 2, Align.center, true);
+                game.start40RU.draw(game.batch, glyphLayout, 0+ 40, 310 + glyphLayout.height / 2);
+            }
+        }
 
         spriteCamera.update();
         game.batch.setProjectionMatrix(spriteCamera.combined);
@@ -302,6 +353,8 @@ public class GameScreen implements Screen, InputProcessor {
         //COLLISION
         collisionCheck(delta);
         //collisionDebug();
+
+        //SECOND CHANCE
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
 
@@ -309,8 +362,97 @@ public class GameScreen implements Screen, InputProcessor {
         stage.draw();
         watchButton.setPosition(buttonX*2,buttonY*2);
         nopeButton.setPosition(buttonX*2,buttonY*2 - buttonHeight*2 - 8*2);
-    }
 
+        if(secondChance){
+           Gdx.input.setInputProcessor(this);
+        }
+        if(blockCounter >8){
+            blockCounter = 8;
+        }
+        rebornHelper();
+        makeReborn();
+        if(game.android) {
+            game.adsController.isRewardedRebornLoaded();
+        }
+
+    }
+    private int counterHelper;
+    private boolean counterCheked =  false;
+    private void counterCheck() {
+        if(blockCounter != 0 && !counterCheked) {
+            counterHelper = blockCounter - 1;
+            blockCounter = counterHelper;
+            counterCheked = true;
+        }
+    }
+    private void rebornHelper(){
+        if(deathWall) {
+            snipersStart = false;
+            laserZoneStart = false;
+            circlesStart = false;
+            smallArrowStart = false;
+            bigArrowBlockStart = false;
+        }
+
+        if(deathLaser) {
+            circlesStart = false;
+            snipersStart = false;
+            smallArrowStart = false;
+            startZoneStart = false;
+
+            counterCheck();
+
+            laserZoneOverlaped = false;
+        }
+
+        if(deathBigArrow) {
+            laserZoneStart = false;
+            circlesStart = false;
+            snipersStart = false;
+            smallArrowStart = false;
+            startZoneStart = false;
+
+        }
+
+        if(deathCircle) {
+            laserZoneStart = false;
+            snipersStart = false;
+            smallArrowStart = false;
+            startZoneStart = false;
+
+            counterCheck();
+
+            circleZoneOverlaped = false;
+        }
+        if(game.deathSmallArow) {
+            laserZoneStart = false;
+            circlesStart = false;
+            snipersStart = false;
+            startZoneStart = false;
+
+            counterCheck();
+
+            smallArrowZoneOverlaped = false;
+        }
+        if(game.deathSnipers){
+            laserZoneStart = false;
+            circlesStart = false;
+            smallArrowStart = false;
+            startZoneStart = false;
+
+            counterCheck();
+
+            snipersZoneOverlaped = false;
+        }
+        if(secondChance) {
+            deathWall = false;
+            deathLaser = false;
+            deathBigArrow = false;
+            deathCircle = false;
+            game.deathSmallArow = false;
+            game.deathSnipers = false;
+        }
+    }
     private int squardWidth = 160+16 +8;
     private int squardHeight = 256-32;
     private int line = 3;
@@ -319,73 +461,135 @@ public class GameScreen implements Screen, InputProcessor {
     private int buttonWidth = squardWidth - 64-16;
     private int buttonHeight = 32;
 
-    private void showAd(){
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        game.shapeRenderer.setColor(19 / 255f, 22 / 255f, 22 / 255f, 0.6f);
-        game.shapeRenderer.rect(0,0, Application.V_WIDTH, Application.V_HEIGHT);
-        game.shapeRenderer.end();
-        Gdx.gl.glDisable(GL20.GL_BLEND);
+    private void makeReborn(){
+        if (Application.reborn) {
+            secondChance = true;
+            nopeButton.setVisible(false);
+            watchButton.setVisible(false);
+            if(startAfterDeath) {
+                player.alive = true;
+                Application.playerAlive = true;
 
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        switchButtonColor();
-        game.shapeRenderer.rect(512/2 - squardWidth/2, 310/2 - squardHeight/2, squardWidth, squardHeight);
-        game.shapeRenderer.setColor(Globals.GreyBackgroundColor);
-        game.shapeRenderer.rect(512/2 - squardWidth/2 + line, 310/2 - squardHeight/2 + line,
-                squardWidth - line*2, squardHeight - line*2);
-        //Buttons
-        switchButtonColor();
-        game.shapeRenderer.rect(512/2 - squardWidth/2 + (squardWidth-buttonWidth)/2, 310/2 - squardHeight/2 + 24,
-                buttonWidth, buttonHeight);
+                deathSound = false;
+                player.deathPlayed = false;
+            }
+                if (deathWall) {
+                    wall.secondChance(SPAWN);
+                    corridor.init(start_corridor);
+                }
+                if (deathBigArrow) {
+                    makeBigArrow();
+                }
+                if (deathCircle) {
+                    makeCircle(SPAWN);
+                }
+                if (deathLaser) {
+                    //makeLaser(SPAWN);
+                    laser.secondChange(SPAWN);
+                    //deathLaser = false;
+                }
+                if (game.deathSmallArow) {
+                    //makeSmallArrow(SPAWN);
+                    smallArrowZone.secondChance(SPAWN + 64);
+                }
+                if (game.deathSnipers) {
+                    //makeSniper(SPAWN);
+                    sniperZone.secondChance(SPAWN, game);
+                }
 
-        game.shapeRenderer.rect(512/2 - squardWidth/2 + (squardWidth-buttonWidth)/2, 310/2 - squardHeight/2 + 24 + buttonHeight+8,
-                buttonWidth, buttonHeight);
+                //Gdx.input.setInputProcessor(this);
 
-        game.shapeRenderer.setColor(Color.BLACK);
-        game.shapeRenderer.rect(512/2 - squardWidth/2 + (squardWidth-buttonWidth)/2 + btnLine, 310/2 - squardHeight/2 + 24 + btnLine,
-                buttonWidth -btnLine*2, buttonHeight - btnLine*2);
+                //player = new Player(96,139,game);
+                player.secondChance(96, 139);
+                Application.reborn = false;
 
-        game.shapeRenderer.rect(512/2 - squardWidth/2 + (squardWidth-buttonWidth)/2 + btnLine, 310/2 - squardHeight/2
-                        + buttonHeight+8+ 24 + btnLine,
-                buttonWidth -btnLine*2, buttonHeight - btnLine*2);
-
-        buttonX = 512/2 - squardWidth/2 + (squardWidth-buttonWidth)/2 ;
-        buttonY = 310/2 - squardHeight/2 + buttonHeight+8+ 24 ;
-        game.shapeRenderer.end();
-
-        camera.update();
-        game.batch.setProjectionMatrix(camera.combined);
-
-        game.batch.begin();
-        glyphLayout.setText(game.bigNumbers, "" + counter, Color.WHITE, squardWidth * 2, Align.center, true);
-        game.bigNumbers.draw(game.batch, glyphLayout, 512 - squardWidth, 310 + glyphLayout.height);
-        if(game.en) {
-            glyphLayout.setText(game.borderFont, "WATCH AD", Color.WHITE, squardWidth * 2, Align.center, true); // Посмотри рекламу
-            game.borderFont.draw(game.batch, glyphLayout, 512 - squardWidth, 310 + squardHeight - glyphLayout.height);
-
-            glyphLayout.setText(game.menu0Font, "FOR SECOND CHANCE", Color.WHITE, squardWidth * 2, Align.center, true); //b
-            game.menu0Font.draw(game.batch, glyphLayout, 512 - squardWidth, 310 + squardHeight / 2 + glyphLayout.height);
-
-
-            glyphLayout.setText(game.tutFont, "WATCH", Color.WHITE, buttonWidth * 2, Align.center, true);
-            game.tutFont.draw(game.batch, glyphLayout, buttonX * 2, buttonY * 2 + buttonHeight * 2 - line * 2 - glyphLayout.height / 2);
-
-            glyphLayout.setText(game.fontNope, "Nope.", Color.WHITE, buttonWidth * 2, Align.center, true);
-            game.fontNope.draw(game.batch, glyphLayout, buttonX * 2, buttonY * 2 - glyphLayout.height - line * 2 - glyphLayout.height);
-        } else if(game.ru){
-            glyphLayout.setText(game.borderFontRU, "Смотри рекламу", Color.WHITE, squardWidth * 2, Align.center, true); // Посмотри рекламу
-            game.borderFontRU.draw(game.batch, glyphLayout, 512 - squardWidth, 310 + squardHeight - glyphLayout.height);
-
-            glyphLayout.setText(game.menu0FontRu, "И ПОЛУЧИ ВТОРОЙ ШАНС", Color.WHITE, squardWidth * 2, Align.center, true); //b
-            game.menu0FontRu.draw(game.batch, glyphLayout, 512 - squardWidth, 310 + squardHeight / 2 + glyphLayout.height);
-            glyphLayout.setText(game.tutFont2RU, "Смотреть", Color.WHITE, buttonWidth * 2, Align.center, true);
-            game.tutFont2RU.draw(game.batch, glyphLayout, buttonX * 2, buttonY * 2 + buttonHeight * 2 - line * 2 - glyphLayout.height / 2);
-
-            glyphLayout.setText(game.fontNopeRu, "Неа.", Color.WHITE, buttonWidth * 2, Align.center, true);
-            game.fontNopeRu.draw(game.batch, glyphLayout, buttonX * 2, buttonY * 2 - glyphLayout.height - line * 2 - glyphLayout.height);
         }
-        game.batch.end();
     }
+    private void showAd(){
+        if(!game.android) {
+           Application.loadedReborn = true;
+        }
+        if(Application.loadedReborn) {
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            game.shapeRenderer.setColor(19 / 255f, 22 / 255f, 22 / 255f, 0.6f);
+            game.shapeRenderer.rect(0, 0, Application.V_WIDTH, Application.V_HEIGHT);
+            game.shapeRenderer.end();
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+
+            game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            switchButtonColor();
+            game.shapeRenderer.rect(512 / 2 - squardWidth / 2, 310 / 2 - squardHeight / 2, squardWidth, squardHeight);
+            game.shapeRenderer.setColor(Globals.GreyBackgroundColor);
+            game.shapeRenderer.rect(512 / 2 - squardWidth / 2 + line, 310 / 2 - squardHeight / 2 + line,
+                    squardWidth - line * 2, squardHeight - line * 2);
+            //Buttons
+            switchButtonColor();
+            game.shapeRenderer.rect(512 / 2 - squardWidth / 2 + (squardWidth - buttonWidth) / 2, 310 / 2 - squardHeight / 2 + 24,
+                    buttonWidth, buttonHeight);
+
+            game.shapeRenderer.rect(512 / 2 - squardWidth / 2 + (squardWidth - buttonWidth) / 2, 310 / 2 - squardHeight / 2 + 24 + buttonHeight + 8,
+                    buttonWidth, buttonHeight);
+
+            game.shapeRenderer.setColor(Color.BLACK);
+            game.shapeRenderer.rect(512 / 2 - squardWidth / 2 + (squardWidth - buttonWidth) / 2 + btnLine, 310 / 2 - squardHeight / 2 + 24 + btnLine,
+                    buttonWidth - btnLine * 2, buttonHeight - btnLine * 2);
+
+            game.shapeRenderer.rect(512 / 2 - squardWidth / 2 + (squardWidth - buttonWidth) / 2 + btnLine, 310 / 2 - squardHeight / 2
+                            + buttonHeight + 8 + 24 + btnLine,
+                    buttonWidth - btnLine * 2, buttonHeight - btnLine * 2);
+
+            buttonX = 512 / 2 - squardWidth / 2 + (squardWidth - buttonWidth) / 2;
+            buttonY = 310 / 2 - squardHeight / 2 + buttonHeight + 8 + 24;
+            game.shapeRenderer.end();
+
+            camera.update();
+            game.batch.setProjectionMatrix(camera.combined);
+
+            game.batch.begin();
+            glyphLayout.setText(game.bigNumbers, "" + counter, Color.WHITE, squardWidth * 2, Align.center, true);
+            game.bigNumbers.draw(game.batch, glyphLayout, 512 - squardWidth, 310 + glyphLayout.height);
+            if (game.en) {
+                glyphLayout.setText(game.borderFont, "WATCH AD", Color.WHITE, squardWidth * 2, Align.center, true); // Посмотри рекламу
+                game.borderFont.draw(game.batch, glyphLayout, 512 - squardWidth, 310 + squardHeight - glyphLayout.height);
+
+                glyphLayout.setText(game.menu0Font, "FOR SECOND CHANCE", Color.WHITE, squardWidth * 2, Align.center, true); //b
+                game.menu0Font.draw(game.batch, glyphLayout, 512 - squardWidth, 310 + squardHeight / 2 + glyphLayout.height);
+
+
+                glyphLayout.setText(game.tutFont, "WATCH", Color.WHITE, buttonWidth * 2, Align.center, true);
+                game.tutFont.draw(game.batch, glyphLayout, buttonX * 2, buttonY * 2 + buttonHeight * 2 - line * 2 - glyphLayout.height / 2);
+
+                glyphLayout.setText(game.fontNope, "Nope.", Color.WHITE, buttonWidth * 2, Align.center, true);
+                game.fontNope.draw(game.batch, glyphLayout, buttonX * 2, buttonY * 2 - glyphLayout.height - line - glyphLayout.height);
+            } else if (game.ru) {
+                glyphLayout.setText(game.borderFontRU, "Смотри рекламу", Color.WHITE, squardWidth * 2, Align.center, true); // Посмотри рекламу
+                game.borderFontRU.draw(game.batch, glyphLayout, 512 - squardWidth, 310 + squardHeight - glyphLayout.height);
+
+                glyphLayout.setText(game.menu0FontRu, "И ПОЛУЧИ ВТОРОЙ ШАНС", Color.WHITE, squardWidth * 2, Align.center, true); //b
+                game.menu0FontRu.draw(game.batch, glyphLayout, 512 - squardWidth, 310 + squardHeight / 2 + glyphLayout.height);
+                glyphLayout.setText(game.tutFont2RU, "Смотреть", Color.WHITE, buttonWidth * 2, Align.center, true);
+                game.tutFont2RU.draw(game.batch, glyphLayout, buttonX * 2, buttonY * 2 + buttonHeight * 2 - line * 2 - glyphLayout.height / 2);
+
+                glyphLayout.setText(game.fontNopeRu, "Неа.", Color.WHITE, buttonWidth * 2, Align.center, true);
+                game.fontNopeRu.draw(game.batch, glyphLayout, buttonX * 2, buttonY * 2 - glyphLayout.height - line - glyphLayout.height);
+            }
+            game.batch.end();
+
+        }
+    }
+    private void showRewardedRebornAd(){
+        if (game.android) {
+            game.adsController.showRewardedReborn(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("RewardedVideo for reborn app closed");
+                }
+            });
+        }
+    }
+
 
     private void createButtons(){
         watchButton = new Button(new BaseDrawable());
@@ -394,15 +598,15 @@ public class GameScreen implements Screen, InputProcessor {
         //watchButton.setPosition(buttonX*2, buttonY*2);
         watchButton.setSize(buttonWidth*2, buttonHeight*2);
 
+
         watchButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-
-                secondChance = true;
-                player.alive = true;
-                Application.playerAlive = true;
-                deathSound = false;
-                player.deathPlayed = false;
+                showRewardedRebornAd();
+                if(!game.android){
+                    Application.reborn = true;
+                }
+                startAfterDeath = true;
             }
         });
 
@@ -412,45 +616,48 @@ public class GameScreen implements Screen, InputProcessor {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(game.gameOver);
+
+                showInterstitialAd();
             }
         });
         stage.addActor(watchButton);
         stage.addActor(nopeButton);
     }
-
     private void switchButtonColor(){
         switch (Application.gameSkin) {
-            case 0: game.shapeRenderer.setColor(Globals.SidesColor);
+            case 0:game.shapeRenderer.setColor(Globals.SidesColor);
                 break;
-            case 1: game.shapeRenderer.setColor(Globals.Sides1Color);
+            case 1:game.shapeRenderer.setColor(Globals.Background1Color);
                 break;
-            case 2: game.shapeRenderer.setColor(Globals.Sides2Color);
+            case 2:game.shapeRenderer.setColor(Globals.Inner2Color);
                 break;
-            case 3: game.shapeRenderer.setColor(Globals.Sides2Color);
+            case 3:game.shapeRenderer.setColor(Globals.Background3Color);
                 break;
-            case 4: game.shapeRenderer.setColor(Globals.Sides2Color);
+            case 4:game.shapeRenderer.setColor(Globals.Background4Color);
                 break;
         }
     }
 
 
     public void update(float delta) {
-        player.update(delta);
-        if(startZoneStart) {
-            wall.update(delta);
-            corridor.update(delta);
-        }
-        if(laserZoneStart) {
-            laser.update(delta);
-        }
-        if(circlesStart) {
-            circle.update(delta);
-        }
-        if(snipersStart) {
-            sniperZone.update(delta);
-        }
-        if(smallArrowStart) {
-            smallArrowZone.update(delta);
+        if(!startAfterDeath && !startPlay) {
+            player.update(delta);
+            if (startZoneStart) {
+                wall.update(delta);
+                corridor.update(delta);
+            }
+            if (laserZoneStart) {
+                laser.update(delta);
+            }
+            if (circlesStart) {
+                circle.update(delta);
+            }
+            if (snipersStart) {
+                sniperZone.update(delta);
+            }
+            if (smallArrowStart) {
+                smallArrowZone.update(delta);
+            }
         }
     }
 
@@ -470,7 +677,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void resume() {
-
+        //game.setScreen(game.mainMenuScreen);
     }
 
     @Override
@@ -480,6 +687,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
+
     }
 
     private int zoneCreate;
@@ -491,12 +699,26 @@ public class GameScreen implements Screen, InputProcessor {
     private boolean startEndCheck = false, laserEndCheck = false, circleEndCheck = false, snipersEndCheck = false,
     smallArrowEndCheck = false;
 
+
     private void zoneCreator(){
         if(player.alive) {
             if (player.getPlayerRectangle().overlaps(corridor.getEndZone()) && !startEndCheck) {
                 countMoney();
+                // 1 - START 2 - LASER 3 - BIG_ARROW 4 - CIRCLE 5 - SMALL_ARROW 6 - SNIPERS
                 if (nextZoneRandom == 1) {
                     makeBigArrow();
+                }
+                switch (nextZoneRandom) {
+                    case 1: sidesDeath = 3;
+                        break;
+                    case 2: sidesDeath = 2;
+                        break;
+                    case 3: sidesDeath = 4;
+                        break;
+                    case 4: sidesDeath = 6;
+                        break;
+                    case 5: sidesDeath = 5;
+                        break;
                 }
                 startEndCheck = true;
                 startOverlaped = false;
@@ -526,15 +748,23 @@ public class GameScreen implements Screen, InputProcessor {
                     //System.out.println("NEXT ZONE: BIG ARROWS");
                 } else if (nextZoneRandom == 2) {
                     //System.out.println("NEXT ZONE: LASERS");
+                    //if(secondChance) makeLaser(start_corridor + corridor.BLOCK_SIZE + 512);
+                    //else
                     makeLaser(start_corridor + corridor.BLOCK_SIZE - 96);
                 } else if (nextZoneRandom == 3) {
                     //System.out.println("NEXT ZONE: CIRCLES");
+                    //if(secondChance) makeCircle(start_corridor + corridor.BLOCK_SIZE +512);
+                    //else
                     makeCircle(start_corridor + corridor.BLOCK_SIZE - 96);
                 } else if (nextZoneRandom == 4) {
                     //System.out.println("NEXT ZONE: SNIPERS");
+                    //if(secondChance) makeSniper(start_corridor + corridor.BLOCK_SIZE + 512);
+                    //else
                     makeSniper(start_corridor + corridor.BLOCK_SIZE - 96);
                 } else if (nextZoneRandom == 5) {
                     //System.out.println("NEXT ZONE: SMALL ARROWS");
+                    //if(secondChance) makeSmallArrow((start_corridor + corridor.BLOCK_SIZE +512) * 2);
+                    //else
                     makeSmallArrow((start_corridor + corridor.BLOCK_SIZE - 96) * 2);
                 }
 
@@ -580,6 +810,18 @@ public class GameScreen implements Screen, InputProcessor {
                 }
             } else if(blockCounter == 8) {
                 makeStart(SPAWN + 64);
+                sidesDeath = 1;
+            }
+            switch (zoneCreate) {
+                // 1 - START 2 - LASER 3 - BIG_ARROW 4 - CIRCLE 5 - SMALL_ARROW 6 - SNIPERS
+                case 1: sidesDeath = 2;
+                    break;
+                case 2: sidesDeath = 4;
+                    break;
+                case 3: sidesDeath = 6;
+                    break;
+                case 4: sidesDeath = 5;
+                    break;
             }
         }
     }
@@ -614,8 +856,10 @@ public class GameScreen implements Screen, InputProcessor {
                     if (zoneCreate == 4) {
                         makeSmallArrow((laser.BLOCK_ZONE + 128 + 256) * 2);
                     }
-                } else if (blockCounter == 8) {
+                }
+                if (blockCounter == 8) {
                     makeStart(laser.BLOCK_ZONE + 128 + 256);
+                    sidesDeath = 1;
                 }
             }
 
@@ -623,6 +867,17 @@ public class GameScreen implements Screen, InputProcessor {
                 if (zoneCreate == 1 && blockCounter != 8) {
                     //System.out.println("BIG ARROW START");
                     makeBigArrow();
+                    switch (zoneCreate) {
+                        // 1 - START 2 - LASER 3 - BIG_ARROW 4 - CIRCLE 5 - SMALL_ARROW 6 - SNIPERS
+                        case 1: sidesDeath = 3;
+                            break;
+                        case 2: sidesDeath = 4;
+                            break;
+                        case 3: sidesDeath = 6;
+                            break;
+                        case 4: sidesDeath = 5;
+                            break;
+                    }
                 }
                 countMoney();
                 laserEndCheck = true;
@@ -662,12 +917,24 @@ public class GameScreen implements Screen, InputProcessor {
                     }
                 } else if (blockCounter == 8) {
                     makeStart(circle.BLOCK_SIZE + 128 + 256);
+                    sidesDeath = 1;
                 }
             }
 
             if (player.getPlayerRectangle().overlaps(circle.getEndZone()) && !circleEndCheck) {
                 if (zoneCreate == 1 && blockCounter != 8) {
                     makeBigArrow();
+                }
+                switch (zoneCreate) {
+                    // 1 - START 2 - LASER 3 - BIG_ARROW 4 - CIRCLE 5 - SMALL_ARROW 6 - SNIPERS
+                    case 1: sidesDeath = 3;
+                        break;
+                    case 2: sidesDeath = 2;
+                        break;
+                    case 3: sidesDeath = 6;
+                        break;
+                    case 4: sidesDeath = 5;
+                        break;
                 }
                 countMoney();
                 circleEndCheck = true;
@@ -707,12 +974,24 @@ public class GameScreen implements Screen, InputProcessor {
                 }
             } else if(blockCounter == 8) {
                 makeStart(sniperZone.BLOCK_SIZE + 128 + 256);
+                sidesDeath = 1;
             }
         }
 
         if(player.getPlayerRectangle().overlaps(sniperZone.getEndZone()) &&!snipersEndCheck){
             if (zoneCreate == 1 && blockCounter != 8) {
                makeBigArrow();
+            }
+            switch (zoneCreate) {
+                // 1 - START 2 - LASER 3 - BIG_ARROW 4 - CIRCLE 5 - SMALL_ARROW 6 - SNIPERS
+                case 1: sidesDeath = 3;
+                    break;
+                case 2: sidesDeath = 2;
+                    break;
+                case 3: sidesDeath = 4;
+                    break;
+                case 4: sidesDeath = 5;
+                    break;
             }
             countMoney();
             snipersEndCheck = true;
@@ -737,7 +1016,6 @@ public class GameScreen implements Screen, InputProcessor {
 
             blockCounter += 1;
 
-
             if(blockCounter != 8) {
                 zoneCreate = random.nextInt(4) + 1;
                 if (zoneCreate == 2) {
@@ -751,11 +1029,23 @@ public class GameScreen implements Screen, InputProcessor {
                 }
             } else if(blockCounter == 8){
                 makeStart(smallArrowZone.BLOCK_SIZE / 2 + 512);
+                sidesDeath = 1;
             }
         }
         if(player.getPlayerRectangle().overlaps(smallArrowZone.getEndZone()) &&!smallArrowEndCheck){
             if (zoneCreate == 1  && blockCounter != 8) {
                 makeBigArrow();
+            }
+            switch (zoneCreate) {
+                // 1 - START 2 - LASER 3 - BIG_ARROW 4 - CIRCLE 5 - SMALL_ARROW 6 - SNIPERS
+                case 1: sidesDeath = 3;
+                    break;
+                case 2: sidesDeath = 2;
+                    break;
+                case 3: sidesDeath = 4;
+                    break;
+                case 4: sidesDeath = 6;
+                    break;
             }
             // Money
             countMoney();
@@ -924,6 +1214,21 @@ public class GameScreen implements Screen, InputProcessor {
         //WHITE SIDES
         if(player.sidesCollision()) {
             playerDeath();
+            // 1 - START 2 - LASER 3 - BIG_ARROW 4 - CIRCLE 5 - SMALL_ARROW 6 - SNIPERS
+            switch (sidesDeath) {
+                case 1: deathWall = true;
+                    break;
+                case 2: deathLaser = true;
+                    break;
+                case 3: deathBigArrow = true;
+                    break;
+                case 4: deathCircle = true;
+                    break;
+                case 5: game.deathSmallArow = true;
+                    break;
+                case 6: game.deathSnipers = true;
+                    break;
+            }
         }
         if(startZoneStart) {
             //WALL
@@ -931,6 +1236,9 @@ public class GameScreen implements Screen, InputProcessor {
                 if (player.getPlayerRectangle().overlaps(wall.getMassiveRect()[i]) ||
                         player.getPlayerRectangle().overlaps(wall.getMassiveRect2()[i]) && player.alive) {
                     playerDeath();
+                    if(!secondChance) {
+                        deathWall = true;
+                    }
                 }
             }
             //CORRIDOR
@@ -938,11 +1246,17 @@ public class GameScreen implements Screen, InputProcessor {
                 if (player.getPlayerRectangle().overlaps(corridor.getTopLeftRects()[i]) ||
                         player.getPlayerRectangle().overlaps(corridor.getTopRightRects()[i]) && player.alive){
                     playerDeath();
+                    if(!secondChance) {
+                        deathWall = true;
+                    }
                 }
             }
             for(int i=0; i < corridor.getBottomRets().length;i++) {
                 if(player.getPlayerRectangle().overlaps(corridor.getBottomRets()[i]) && player.alive) { // between corridor bottom
                     playerDeath();
+                    if(!secondChance) {
+                        deathWall = true;
+                    }
                 }
             }
         }
@@ -951,18 +1265,30 @@ public class GameScreen implements Screen, InputProcessor {
         if(bigArrowBlockStart) {
             if (player.getPlayerRectangle().overlaps(bigArrow.getLineRectangle()) && player.alive) { // between line
                 playerDeath();
+                if(!secondChance) {
+                    deathBigArrow = true;
+                }
                 //System.out.println("Collision: BIG ARROW Line");
             }
             if (player.getPlayerRectangle().overlaps(bigArrow.getLine2Rectangle())&& player.alive) {
                 playerDeath();
+                if(!secondChance) {
+                    deathBigArrow = true;
+                }
                 //System.out.println("Collision: BIG ARROW Line2");
             }
             if (Intersector.overlapConvexPolygons(player.getPlayerPolygon(), bigArrow.getArrowPolygon())&& player.alive) {
                 playerDeath();
+                if(!secondChance) {
+                    deathBigArrow = true;
+                }
                 //System.out.println("Collision: BIG ARROW Polygon");
             }
             if (Intersector.overlapConvexPolygons(player.getPlayerPolygon(), bigArrow.getArrowPolygon2())&& player.alive) {
                 playerDeath();
+                if(!secondChance) {
+                    deathBigArrow = true;
+                }
                 //System.out.println("Collision: BIG ARROW Polygon2");
             }
         }
@@ -972,17 +1298,25 @@ public class GameScreen implements Screen, InputProcessor {
                 if (player.getPlayerRectangle().overlaps(laser.getTopWall()[i]) ||
                         player.getPlayerRectangle().overlaps(laser.getDownWall()[i]) && player.alive) {
                     playerDeath();
-
+                    if(!secondChance) {
+                        deathLaser = true;
+                    }
                     //System.out.println("Collision: LASER WALL");
                 }
                 // проверяем оранжевый лазер, если на линии -> смерть
                 if (player.getPlayerRectangle().overlaps(laser.getOrangeLaserRect()[i]) && player.Line && player.alive) {
                     playerDeath();
+                    if(!secondChance) {
+                        deathLaser = true;
+                    }
                     //System.out.println("Collision: Orange LASER");
                 }
                 // проверяем голубой лазер, если состояние в прыжке -> смерть
                 if (player.getPlayerRectangle().overlaps(laser.getBlueLaserRect()[i]) && player.Jump && player.alive) {
                     playerDeath();
+                    if(!secondChance) {
+                        deathLaser = true;
+                    }
                     //System.out.println("Collision: Blue LASER");
                 }
             }
@@ -992,6 +1326,9 @@ public class GameScreen implements Screen, InputProcessor {
             for (int i = 0; i < circle.getMiddleRect().length; i++) {
                 if (player.getPlayerRectangle().overlaps(circle.getMiddleRect()[i]) && player.alive) {
                     playerDeath();
+                    if(!secondChance) {
+                        deathCircle = true;
+                    }
                     //System.out.println("Collision: Middle CIRCLE");
                 }
             }
@@ -999,6 +1336,9 @@ public class GameScreen implements Screen, InputProcessor {
                 if (player.getPlayerRectangle().overlaps(circle.getTopRect()[i]) ||
                         player.getPlayerRectangle().overlaps(circle.getBotRect()[i]) && player.alive) {
                     playerDeath();
+                    if(!secondChance) {
+                        deathCircle = true;
+                    }
                     //System.out.println("Collision: Botz or Top CIRCLE");
                 }
             }
@@ -1006,39 +1346,58 @@ public class GameScreen implements Screen, InputProcessor {
         //Sniper
         if(snipersStart) {
             sniperZone.checkCollision(player.getPlayerRectangle(), game, player);
+            //if(!secondChance) {
+            //    deathSnipers = true;
+            //}
         }
+        //SmallArrow
         if(smallArrowStart) {
             smallArrowZone.checkCollision(player.getPlayerRectangle(), game, player);
+            //if(!secondChance) {
+            //   deathSmallArow = true;
+            //}
         }
-        if(player.getPosition().y <= -64*2){
-            if(!secondChance) {
-                nopeButton.setVisible(true);
-                watchButton.setVisible(true);
-                Gdx.input.setInputProcessor(stage);
-                showAd();
 
-                time -= delta;
-                if (time >= 2 && time <= 3) {
-                    counter = 3;
-                } else if (time >= 1 && time <= 2) {
-                    counter = 2;
-                } else if (time >= 0 && time <= 1) {
-                    counter = 1;
-                } else {
-                    counter = 0;
+        if(player.getPosition().y <= -64*2){
+                //if(!secondChance && Application.loadedReborn) {
+                if(!secondChance) { // desktop
+                    nopeButton.setVisible(true);
+                    watchButton.setVisible(true);
+                    Gdx.input.setInputProcessor(stage);
+
+                    showAd();
+                    if(Application.loadedReborn) {
+                        time -= delta;
+                        if (time >= 2 && time <= 3) {
+                            counter = 3;
+                        } else if (time >= 1 && time <= 2) {
+                            counter = 2;
+                        } else if (time >= 0 && time <= 1) {
+                            counter = 1;
+                        } else {
+                            counter = 0;
+                            game.setScreen(game.gameOver);
+
+                            showInterstitialAd();
+                        }
+                    } else {
+                        game.setScreen(game.gameOver);
+                    }
+                } else if(secondChance) {
+                    game.gameScreen.pause();
                     game.setScreen(game.gameOver);
+                    showInterstitialAd();
+                    secondChance = false;
                 }
-            } else if(secondChance) {
-                nopeButton.setVisible(false);
-                watchButton.setVisible(false);
-                Gdx.input.setInputProcessor(this);
-                player.alive = true;
-                Application.playerAlive = true;
-                player.secondChance(96, 139);
-            }
-            if(secondDeath){
-                game.setScreen(game.gameOver);
-            }
+                /*
+                if(game.android) {
+                    if (!Application.loadedReborn && !secondChance) {
+                        game.setScreen(game.gameOver);
+                        showInterstitialAd();
+                        game.gameScreen.pause();
+                        secondChance = false;
+                    }
+                } */
             //TODO: uncomment when finish ad logic
             /**if(Score.gameScore > 11) {
                 showAd();
@@ -1058,8 +1417,17 @@ public class GameScreen implements Screen, InputProcessor {
             game.deathAllSound.play(Application.volume);
             deathSound = true;
         }
-        else if(secondChance){
-            secondDeath = true;
+    }
+
+    private void showInterstitialAd(){
+        if(game.showInterstitialAd && game.android) {
+            game.adsController.showInterstitialAd(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Interstitial app closed");
+                }
+            });
+            game.showInterstitialAd = false;
         }
     }
 
@@ -1161,6 +1529,12 @@ public class GameScreen implements Screen, InputProcessor {
             onLine = true;
         } else{
             onLine = false;
+        }
+        if(startAfterDeath) {
+            startAfterDeath = false;
+        }
+        if(startPlay) {
+            startPlay = false;
         }
         return true;
     }

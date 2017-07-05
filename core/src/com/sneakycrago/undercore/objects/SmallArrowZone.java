@@ -85,6 +85,41 @@ public class SmallArrowZone {
         deathSound = false;
     }
 
+    public void secondChance(int start){
+        x = start;
+
+        posBlock.set(x, 11);
+
+        smallArrow = new SmallArrow[massive.length];
+        if(randomHelper == 1) {
+            if(massive[2] == 3) {
+                BLOCK_SIZE = length[2]  + 48; //length[2] - SPACE *2 + 48
+            } else {
+                BLOCK_SIZE = length[2]  + lenghtBig; //length[2]- SPACE *2 + lenghtBig
+            }
+        } else {
+            if(massive[4] == 3) {
+                BLOCK_SIZE = length[4]  + 48; //length[4] - SPACE *2 + 48
+            } else {
+                BLOCK_SIZE = length[4]  + lenghtBig; //length[4] - SPACE *2 + lenghtBig
+            }
+        }
+
+        for(int i =0; i < smallArrow.length; i++){
+            if(massive[i] == 1){
+                smallArrow[i] = new SmallArrow(x + length[i],1);  // up Wave
+            } else if(massive[i] == 2){
+                smallArrow[i] = new SmallArrow(x + length[i],2);  // down Wave
+            } else if(massive[i] == 3){
+                smallArrow[i] = new SmallArrow(x + length[i],3);  // random Wave
+            }
+        }
+        startZone.set(posBlock.x, posBlock.y, 1, 288);
+        endZone.set(posBlock.x + BLOCK_SIZE, posBlock.y, 1, 288);
+
+        deathSound = false;
+    }
+
     private void createMassive(){
         randomHelper = random.nextInt(2) + 1;
         if(randomHelper == 1) {
@@ -196,6 +231,7 @@ public class SmallArrowZone {
                         pl.alive = false;
                         Application.playerAlive = false;
                         pl.deathAnimation();
+                        game.deathSmallArow = true;
                         if(!deathSound) {
                             game.deathAllSound.play(Application.volume);
                             deathSound = true;
@@ -209,6 +245,7 @@ public class SmallArrowZone {
                         pl.alive = false;
                         Application.playerAlive = false;
                         pl.deathAnimation();
+                        game.deathSmallArow = true;
                         if(!deathSound) {
                             game.deathAllSound.play(Application.volume);
                             deathSound = true;
@@ -222,6 +259,7 @@ public class SmallArrowZone {
                         pl.alive = false;
                         Application.playerAlive = false;
                         pl.deathAnimation();
+                        game.deathSmallArow = true;
                         if(!deathSound) {
                             game.deathAllSound.play(Application.volume);
                             deathSound = true;

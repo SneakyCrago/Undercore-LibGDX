@@ -68,9 +68,16 @@ public class Wall {
 
         createRects(x);
     }
-    public void secondChance(){
+    public void secondChance(float START){
+        x =(int) START;
+
         posBlock.set(0, 11);
         velocity.set(0,0);
+
+        for(int i = 0; i < isScored.length; i++) {
+            isScored[i] = false;
+        }
+        createRects(x);
     }
 
 

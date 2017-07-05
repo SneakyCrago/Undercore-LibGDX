@@ -55,6 +55,7 @@ public class LoadingScreen implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
+        game.adTimer();
         Gdx.gl.glClearColor(0f,0f,0f,0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -127,7 +128,7 @@ public class LoadingScreen implements Screen, InputProcessor {
             for(int i=0; i < game.skinPrewTex.length; i++){
                 game.skinPrewTex[i] = new TextureRegion(game.fullA2.findRegion("Skinprew" +i));
             }
-
+            game.skinPrewRandomTex = game.assetManager.get("textures/skinPrewRandom.png");
             createMainMenuTexures();
 
             game.jumpSound = game.assetManager.get("sounds/jump.wav");

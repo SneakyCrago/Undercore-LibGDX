@@ -93,6 +93,7 @@ public class TutorialScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        game.adTimer();
         Gdx.gl.glClearColor(18/255f,25/255f,26/255f,1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

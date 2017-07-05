@@ -93,6 +93,7 @@ public class GameOver implements Screen {
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         switch (Application.gameSkin){
             case 0:
                 playTex = new TextureRegion(game.fullA1.findRegion("play0"));
@@ -161,6 +162,9 @@ public class GameOver implements Screen {
                 //game.setScreen(new GameScreen(game));
                 game.setScreen(game.gameScreen);
                 game.gameOver.pause();
+
+                game.preferences.putInteger("gameSkin", Application.gameSkin);
+                game.preferences.flush();
             }
         });
 
@@ -173,6 +177,8 @@ public class GameOver implements Screen {
                 game.setScreen(game.mainMenuScreen);
                 game.mainMenuScreen.show();
                 game.gameOver.pause();
+                game.preferences.putInteger("gameSkin", Application.gameSkin);
+                game.preferences.flush();
             }
         });
 
@@ -182,13 +188,15 @@ public class GameOver implements Screen {
                 newFrase = true;
                 best = Score.getBestScore();
                 Gdx.app.exit();
+                game.preferences.putInteger("gameSkin", Application.gameSkin);
+                game.preferences.flush();
             }
         });
 
         stage.addActor(playButton);
         stage.addActor(menuButton);
         stage.addActor(exitButton);
-        Gdx.input.setInputProcessor(stage);
+
 
         currency = new Sprite(game.currencyTexture);
         float scale = 0.12f;
@@ -249,10 +257,13 @@ public class GameOver implements Screen {
         game.preferences.flush();
         game.preferences.putInteger("currency", Currency.currency);
         game.preferences.flush();
+
+        Application.reborn = false;
     }
 
     @Override
     public void render(float delta) {
+        game.adTimer();
         Gdx.gl.glClearColor(18/255f,25/255f,26/255f,1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -263,6 +274,9 @@ public class GameOver implements Screen {
         stage.draw();
 
         game.batch.begin();
+
+        game.font.draw(game.batch, ""+game.time, 0, 40);
+        game.font.draw(game.batch, ""+game.showInterstitialAd, 0, 80);
 
         game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 80*2, 15*2 );
         if(game.en) {
@@ -294,11 +308,11 @@ public class GameOver implements Screen {
             }
         } else {
             if(game.en) {
-                glyphLayout.setText(game.smallWhiteFont, "Score: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
-                game.smallWhiteFont.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
+                glyphLayout.setText(game.font40white, "Score: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                game.font40white.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
             } else if(game.ru){
-                glyphLayout.setText(game.smallWhiteFontRU, "Счет: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
-                game.smallWhiteFontRU.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
+                glyphLayout.setText(game.tutFontRu, "Счет: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                game.tutFontRu.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
             }
         }
 

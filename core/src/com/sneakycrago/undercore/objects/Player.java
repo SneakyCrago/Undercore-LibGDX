@@ -81,6 +81,7 @@ public class Player {
         spriteAnim.setSize(32,32);
         spriteAnim.setPosition(position.x - 32, position.y);
     }
+
     public void secondChance(int x, int y){
         position.set(x,y);
         velocity.set(0, 0);

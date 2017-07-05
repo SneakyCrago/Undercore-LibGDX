@@ -2,6 +2,7 @@ package com.sneakycrago.undercore.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -23,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sneakycrago.undercore.Application;
@@ -31,11 +33,13 @@ import com.sneakycrago.undercore.utils.Currency;
 import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
 
+import java.util.Random;
+
 /**
  * Created by Sneaky Crago on 13.05.2017.
  */
 
-public class MainMenuScreen implements Screen {
+public class MainMenuScreen implements Screen, InputProcessor {
     Application game;
 
     private OrthographicCamera camera;
@@ -52,9 +56,9 @@ public class MainMenuScreen implements Screen {
     //private TextureRegion arrowPressedTex,flipArrowPressedTex, flipArrowTex;
     private TextureRegion plusWhiteTex,recordsTex, achieveTex, savesTex ;
 
-    private Sprite skull, currency, currencyPrice, lockPrice, skullUp, skullDown, plusSprite, volumeSprite;
+    private Sprite skull, currency, currencyPrice, lockPrice, skullUp, skullDown, plusSprite, volumeSprite,
+                    skinPrewRandom;
     private Sprite[] skinPrew, skullInsane;
-    private Sprite blackLock;
 
     private GlyphLayout glyphLayout;
 
@@ -76,6 +80,8 @@ public class MainMenuScreen implements Screen {
     private boolean drawPlSkin, drawPlNew;
     private boolean normalMode =true, hardMode = false;
 
+    private boolean showRandom = false;
+    private Random random = new Random();
 
     public MainMenuScreen(Application game) {
         this.game = game;
@@ -144,16 +150,15 @@ public class MainMenuScreen implements Screen {
         volumeSprite = new Sprite(game.fullA2.findRegion("Volume"));
         volumeSprite.setSize(96,96);
 
-        blackLock = new Sprite(game.fullA2.findRegion("LockBlack"));
-        blackLock.setSize(96,96);
-        blackLock.setPosition((384 + 32)/2 - blackLock.getWidth()/2, 310/2 - blackLock.getHeight()/2);
 
         skinPrew = new Sprite[5];
         for(int i=0; i < skinPrew.length; i++){
             skinPrew[i] = new Sprite(game.skinPrewTex[i]);
             skinPrew[i].setPosition((384 + 32) / 2 - squardWidth / 2 + line, 310 / 2 - squardHeight / 2 + up + line);
         }
-
+        skinPrewRandom = new Sprite(game.skinPrewRandomTex);
+        skinPrewRandom.setPosition((384 + 32) / 2 - squardWidth / 2 + line, 310 / 2 - squardHeight / 2 + up + line);
+        skinPrewRandom.setSize(254,158);
         //test
     }
 
@@ -166,6 +171,7 @@ public class MainMenuScreen implements Screen {
         activeWorld = false;
         activePlayerSkin = false;
         activeSettings = false;
+
 
 
         createButtons();
@@ -221,19 +227,29 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        game.adTimer();
         Gdx.gl.glClearColor(18/255f,25/255f,26/255f,1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        switch (Application.gameSkin){
-            case 0: Gdx.input.setInputProcessor(buttonsStage[0]);
-                break;
-            case 1: Gdx.input.setInputProcessor(buttonsStage[1]);
-                break;
-            case 2: Gdx.input.setInputProcessor(buttonsStage[2]);
-                break;
-            case 3: Gdx.input.setInputProcessor(buttonsStage[3]);
-                break;
-            case 4: Gdx.input.setInputProcessor(buttonsStage[4]);
-                break;
+        if(showNoAds) {
+            Gdx.input.setInputProcessor(this);
+        } else {
+            switch (Application.gameSkin) {
+                case 0:
+                    Gdx.input.setInputProcessor(buttonsStage[0]);
+                    break;
+                case 1:
+                    Gdx.input.setInputProcessor(buttonsStage[1]);
+                    break;
+                case 2:
+                    Gdx.input.setInputProcessor(buttonsStage[2]);
+                    break;
+                case 3:
+                    Gdx.input.setInputProcessor(buttonsStage[3]);
+                    break;
+                case 4:
+                    Gdx.input.setInputProcessor(buttonsStage[4]);
+                    break;
+            }
         }
         Application.volume = volumeSlider[Application.gameSkin].getValue();
         for(int i=0; i < volumeSlider.length; i++) {
@@ -321,27 +337,36 @@ public class MainMenuScreen implements Screen {
         if(activePlayerSkin && drawPlSkin && normalMode){
             player.drawPlayerCube(game.shapeRenderer);
         }
-
         game.shapeRenderer.end();
+
+
         game.batch.setProjectionMatrix(spriteCamera.combined);
         game.batch.begin();
 
         if(activePlay && normalMode){
-            skinPrew[Application.gameSkin].draw(game.batch);
+            if(!showRandom) {
+                skinPrew[Application.gameSkin].draw(game.batch);
+            } else if (showRandom) {
+                skinPrewRandom.draw(game.batch);
+            }
         }
         if(activeWorld&& normalMode){
-            skinPrew[Application.gameSkin].draw(game.batch);
+            if(!showRandom) {
+                skinPrew[Application.gameSkin].draw(game.batch);
+            } else if (showRandom) {
+                skinPrewRandom.draw(game.batch);
+            }
         }
-        if(game.skinLocked[Application.gameSkin] && activePlay) {
-                blackLock.draw(game.batch);
-        }
+
         if(activePlayerSkin && drawPlSkin && normalMode){
             player.inMenuAnimation(game.batch, delta, game);
         }
         game.batch.end();
 
+
+
         if(activeWorld && normalMode) {
-            if(Application.skinLocked[Application.gameSkin]) {
+            if(Application.skinLocked[Application.gameSkin] && !showRandom) {
                 Gdx.gl.glEnable(GL20.GL_BLEND);
                 Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
                 // Alpha
@@ -525,7 +550,7 @@ public class MainMenuScreen implements Screen {
         plusSprite.setPosition(moneyX+ moneyWidth + 45,moneyY +6 + 16 - plusSprite.getHeight()/2);
         plusSprite.draw(game.batch);
 
-        if(activeWorld && normalMode) {
+        if(activeWorld && normalMode && !showRandom) {
             glyphLayout.setText(game.menu0Font, "" + Application.price, Color.WHITE, (384 + 32) * 2, Align.center, true);
             if(Application.gameSkin != 0) {
                 if(Application.skinLocked[Application.gameSkin]) {
@@ -542,7 +567,7 @@ public class MainMenuScreen implements Screen {
             lockPrice.setPosition((384 + 32) + glyphLayout.width / 2 + 4,
                     310 - squardHeight + up * 2 + line * 2 + 6);
             if(Application.gameSkin == 1 || Application.gameSkin == 2 || Application.gameSkin ==3|| Application.gameSkin ==4 ) {
-                if(Application.skinLocked[Application.gameSkin] && normalMode) {
+                if(Application.skinLocked[Application.gameSkin] && normalMode && !showRandom) {
                     currencyPrice.draw(game.batch);
                     lockPrice.draw(game.batch);
                 }
@@ -554,18 +579,61 @@ public class MainMenuScreen implements Screen {
                     310 + squardHeight/2 + up*2 - volumeSprite.getHeight()/2);
             volumeSprite.draw(game.batch);
         }
+
+        // test
+        glyphLayout.setText(game.smallWhiteFont,"" + Application.loadedMoney , Color.WHITE, 100, Align.bottomLeft, true);
+        game.smallWhiteFont.draw(game.batch, glyphLayout, 0, 30);
+
         game.batch.end();
         //test
         for(int i=0; i< plusButton.length; i++) {
             plusButton[i].setSize(currency.getWidth() + moneyWidth + 14 + plusSprite.getWidth() +8 , 32);
             plusButton[i].setPosition(moneyX +4,moneyY +6);
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)){
-            game.mainMenuScreen.show();
+        if(showNoAds) {
+            showNoAds();
+        }
+        if(game.android) {
+            game.adsController.isRewardedMoneyLoaded();
         }
     }
+
+    private void showNoAds(){
+        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        game.shapeRenderer.setColor(Color.BLACK);
+        game.shapeRenderer.rect(0,0,512,310);
+        game.shapeRenderer.end();
+
+        game.batch.begin();
+
+        if(game.en) {
+            glyphLayout.setText(game.font40white, "No ads available at the moment", Color.WHITE, 0, Align.center, true);
+            game.font40white.draw(game.batch, glyphLayout, 512, 310 + glyphLayout.height/2);
+            glyphLayout.setText(game.smallWhiteFont, "TAP TO CONTINUE...", Color.WHITE, 0, Align.center, true);
+            game.smallWhiteFont.draw(game.batch, glyphLayout, 512, 50+310/8-glyphLayout.height/2);
+        } else if(game.ru) {
+            glyphLayout.setText(game.tutFontRu, "Нет доступных объявлений", Color.WHITE, 0, Align.center, true);
+            game.tutFontRu.draw(game.batch, glyphLayout, 512, 310 + glyphLayout.height/2);
+            glyphLayout.setText(game.fontNopeRu, "НАЖМИТЕ ЧТО БЫ ПРОДОЛЖИТЬ...", Color.WHITE, 0, Align.center, true);
+            game.fontNopeRu.draw(game.batch, glyphLayout, 512, 50+310/8-glyphLayout.height/2);
+        }
+        game.batch.end();
+    }
+
+    private void showRewardedMoneyAd(){
+        if(game.android) {
+            game.adsController.showRewardedVideo(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("RewardedVideo for money app closed");
+                }
+            });
+        }
+    }
+
     private float priceX, priceY;
 
+    private boolean showNoAds;
 
     private void createButtons(){
         plusButton = new Button[Application.skinsAmount];
@@ -605,9 +673,14 @@ public class MainMenuScreen implements Screen {
             plusButton[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-
-                    Currency.currency += 100;
-
+                    if(Application.loadedMoney) {
+                        showRewardedMoneyAd();
+                    } else {
+                        showNoAds = true;
+                    }
+                    if(!game.android){
+                     Currency.currency += 1000;
+                    }
                 }
             });
 
@@ -619,13 +692,20 @@ public class MainMenuScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
 
-                    if(activeWorld && normalMode) {
+                    if(activeWorld && normalMode && !showRandom) {
                         Application.gameSkin -= 1;
                         if (Application.gameSkin <= -1) {
+
+                            showRandom = true;
                             Application.gameSkin = 4;
                         }
-
+                        if(showRandom) {
+                            Application.gameSkin = 0;
+                        }
+                    } else {
+                        showRandom = false;
                     }
+
                     if(activePlayerSkin && drawPlSkin && normalMode){
                         drawPlSkin = true;
                         drawPlNew = false;
@@ -640,18 +720,27 @@ public class MainMenuScreen implements Screen {
                     volumeSlider[2].setValue(Application.volume);
                     volumeSlider[3].setValue(Application.volume);
                     volumeSlider[4].setValue(Application.volume);
-
+                    game.preferences.putInteger("gameSkin", Application.gameSkin);
+                    game.preferences.flush();
                 }
             });
             arrowRight[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    if(activeWorld && normalMode) {
+                    if(activeWorld && normalMode && !showRandom) {
                         Application.gameSkin += 1;
                         if (Application.gameSkin >= 5) {
+
+                            showRandom = true;
                             Application.gameSkin = 0;
                         }
+                        if(showRandom) {
+                            Application.gameSkin = 0;
+                        }
+                    } else {
+                        showRandom = false;
                     }
+
                     if(activePlayerSkin  && drawPlSkin && normalMode){
                         drawPlSkin = false;
                         drawPlNew = true;
@@ -660,6 +749,8 @@ public class MainMenuScreen implements Screen {
                         drawPlSkin = false;
                         drawPlNew = true;
                     }
+                    game.preferences.putInteger("gameSkin", Application.gameSkin);
+                    game.preferences.flush();
                     volumeSlider[0].setValue(Application.volume);
                     volumeSlider[1].setValue(Application.volume);
                     volumeSlider[2].setValue(Application.volume);
@@ -724,7 +815,7 @@ public class MainMenuScreen implements Screen {
                         arrowRight[i].setVisible(false);
                     }
                     if(normalMode) {
-                        if (!Application.skinLocked[Application.gameSkin] && !activeSettings) {
+                        if (!Application.skinLocked[Application.gameSkin] && !activeSettings && !showRandom) {
                             if (game.goTutorial) {
                                 game.setScreen(game.tutorialScreen);
                             } else {
@@ -733,9 +824,29 @@ public class MainMenuScreen implements Screen {
                             game.mainMenuScreen.pause();
                         }
                     }
+                    if(showRandom) {
+                        Application.gameSkin = game.openedSkins.get(game.randomizeSkins());
+                        System.out.println(game.openedSkins.get(game.randomizeSkins()));
+                        if (!Application.skinLocked[Application.gameSkin]) {
+                            game.setScreen(game.gameScreen);
+                        }
+                    }
+
+                    if(Application.skinLocked[Application.gameSkin] && !showRandom){
+                        Application.gameSkin = 0;
+                        if (game.goTutorial) {
+                            game.setScreen(game.tutorialScreen);
+                        } else {
+                            game.setScreen(game.gameScreen);
+                        }
+                    }
+
                     activeSettings = false;
                     activeWorld = false;
                     activePlayerSkin = false;
+
+                    game.preferences.putInteger("gameSkin", Application.gameSkin);
+                    game.preferences.flush();
                 }
             });
 
@@ -747,6 +858,9 @@ public class MainMenuScreen implements Screen {
                         activePlay = false;
                         activePlayerSkin = false;
                         activeSettings = false;
+
+                    game.preferences.putInteger("gameSkin", Application.gameSkin);
+                    game.preferences.flush();
                 }
             });
             plSkin[i].addListener(new ClickListener() {
@@ -761,6 +875,8 @@ public class MainMenuScreen implements Screen {
                     drawPlSkin= true;
                     drawPlNew = false;
 
+                    game.preferences.putInteger("gameSkin", Application.gameSkin);
+                    game.preferences.flush();
 
                 }
             });
@@ -772,6 +888,9 @@ public class MainMenuScreen implements Screen {
                     activePlay = false;
                     activeWorld = false;
                     activePlayerSkin = false;
+
+                    game.preferences.putInteger("gameSkin", Application.gameSkin);
+                    game.preferences.flush();
 
                 }
             });
@@ -815,7 +934,6 @@ public class MainMenuScreen implements Screen {
 
         for(int i=0; i < priceButton.length; i++) {
             priceButton[i] = new Button(new BaseDrawable());
-            priceButton[i].setDebug(true);
             priceButton[i].setPosition((384 + 32) - squardWidth + line * 2, 310 - squardHeight + up * 2 + line * 2 );
             priceButton[i].setSize(squardWidth * 2 - line * 4, (squardHeight * 4 - line * 4)/10);
             priceButton[i].addListener(new ClickListener() {
@@ -824,6 +942,7 @@ public class MainMenuScreen implements Screen {
                     if (Currency.currency >= Application.price && Application.skinLocked[Application.gameSkin]) {
                         Currency.currency -= Application.price;
                         Application.skinLocked[Application.gameSkin] = false;
+                        game.openedSkins.add(Application.gameSkin);
                         priceClicked();
 
                         game.preferences.putInteger("currency", Currency.currency);
@@ -936,7 +1055,10 @@ public class MainMenuScreen implements Screen {
         Application.skinsBought +=1;
         game.preferences.putInteger("skinsBought", Application.skinsBought);
         game.preferences.flush();
-        Application.price = 500+ Application.skinsBought *100;
+
+        game.preferences.putInteger("gameSkin", Application.gameSkin);
+        game.preferences.flush();
+        Application.price = Application.startPrice+ Application.skinsBought *100;
     }
 
     @Override
@@ -965,5 +1087,48 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+
+        showNoAds = false;
+
+        return true;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }

@@ -106,6 +106,51 @@ public class SniperZone {
         endZone.set(posBlock.x + BLOCK_SIZE, posBlock.y,1,288);
     }
 
+    public void secondChance(int START, Application game){
+        x = START;
+
+        posBlock.set(x,11);
+
+        sniper = new Sniper[amountOfWave];
+        for (int i = 0; i < amountOfWave; i++) {
+            snipersCount = random.nextInt(2) + 1;
+
+            randomHeight = random.nextInt(7);
+            if (snipersCount == 2) {
+                randomHeight2 = random.nextInt(7);
+                while (randomHeight == randomHeight2) {
+                    randomHeight2 = random.nextInt(7);
+                }
+                secondAmount += 1;
+            }
+            if(Application.gameSkin == 2) {
+                sniper[i] = new Sniper(game.snipersSkin[1]);
+            } else {
+                sniper[i] = new Sniper(game.snipersSkin[0]);
+            }
+            sniper[i].init(x + SPACE * i, 8 + randomHeight * 32 + randomHeight * 8);
+
+            BLOCK_SIZE = amountOfWave * 32 + amountOfWave * SPACE;
+        }
+        sniper2 = new Sniper[secondAmount];
+        if(secondAmount != 0) {
+            for (int i = 0; i < secondAmount; i++) {
+                if(Application.gameSkin == 2) {
+                    sniper2[i] = new Sniper(game.snipersSkin[1]);
+                } else {
+                    sniper2[i] = new Sniper(game.snipersSkin[0]);
+                }
+                sniper2[i].init(x + SPACE * i, 8 + randomHeight2 * 32 + randomHeight2 * 8);
+            }
+        }
+
+        deathSound = false;
+
+        startZone.set(posBlock.x, posBlock.y, 1,288);
+        endZone.set(posBlock.x + BLOCK_SIZE, posBlock.y,1,288);
+
+    }
+
     public void update(float delta){
         for(int i =0;i < amountOfWave; i++) {
             sniper[i].update(delta);
@@ -196,6 +241,7 @@ public class SniperZone {
                 pl.alive = false;
                 Application.playerAlive = false;
                 pl.deathAnimation();
+                game.deathSnipers = true;
                 if(!deathSound) {
                     game.deathAllSound.play(Application.volume);
                     deathSound = true;
@@ -206,6 +252,7 @@ public class SniperZone {
                 pl.alive = false;
                 Application.playerAlive = false;
                 pl.deathAnimation();
+                game.deathSnipers = true;
                 //System.out.println("Collision: SNIPERS");
                 if(!deathSound) {
                     game.deathAllSound.play(Application.volume);
@@ -220,6 +267,7 @@ public class SniperZone {
                     pl.alive = false;
                     Application.playerAlive = false;
                     pl.deathAnimation();
+                    game.deathSnipers = true;
                     //System.out.println("Collision: SNIPERS");
                     if(!deathSound) {
                         game.deathAllSound.play(Application.volume);
@@ -230,6 +278,7 @@ public class SniperZone {
                     pl.alive = false;
                     Application.playerAlive = false;
                     pl.deathAnimation();
+                    game.deathSnipers = true;
                     //System.out.println("Collision: SNIPERS");
                     if(!deathSound) {
                         game.deathAllSound.play(Application.volume);

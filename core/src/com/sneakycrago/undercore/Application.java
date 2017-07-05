@@ -16,14 +16,18 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.IntArray;
 import com.sneakycrago.undercore.screens.GameOver;
 import com.sneakycrago.undercore.screens.GameScreen;
 import com.sneakycrago.undercore.screens.LoadingScreen;
 import com.sneakycrago.undercore.screens.MainMenuScreen;
 import com.sneakycrago.undercore.screens.TutorialScreen;
+import com.sneakycrago.undercore.utils.AdsController;
 import com.sneakycrago.undercore.utils.Currency;
 import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.Score;
+
+import java.util.Random;
 
 public class Application extends Game {
 
@@ -38,12 +42,13 @@ public class Application extends Game {
 
 	public BitmapFont font, font30,font30white, font10, borderFont, smallWhiteFont, font40white,
 	death0, death1,death2,death3,death4, menu0Font,tutFont, menu1Font,menu2Font,menu3Font,menu4Font, menuBig,
-			menuScoreFont, bigNumbers, fontNope;
+			menuScoreFont, bigNumbers, fontNope, startEN;
 
 	public BitmapFont menu0FontRu, menuBigRu, tutFontRu, tutFont2RU, settingsFontRU,
-			death0RU,death1RU,death2RU,death3RU,death4RU, fontRU, smallWhiteFontRU, borderFontRU, fontNopeRu;
+			death0RU,death1RU,death2RU,death3RU,death4RU, fontRU, smallWhiteFontRU, borderFontRU, fontNopeRu,
+    startRU, start40RU;
 
-	public Texture playerSkin0,playerSkin1,playerSkin2,playerSkin3,playerSkin4;
+	public Texture playerSkin0,playerSkin1,playerSkin2,playerSkin3,playerSkin4, skinPrewRandomTex;
 	public TextureRegion currencyTexture;
 
     public TextureAtlas fullA1, fullA2, fullA3;
@@ -68,14 +73,15 @@ public class Application extends Game {
 
 	public boolean activePlay = true;
 
-	public Preferences preferences;
+	public static Preferences preferences;
 	boolean loadPrefs = true; // загружать ли сохранения
 	public static int gameSkin = 0; // 0 - standard
 	public static boolean playerAlive;
 
 	public static int skinsAmount = 5;
 
-	public static int price = 500;
+	public static int price = 200;
+	public static int startPrice = 200;
 	public static int skinsBought = 0;
 	public static boolean[] skinLocked = new boolean[skinsAmount];
 	public static boolean goTutorial = true;
@@ -84,11 +90,30 @@ public class Application extends Game {
 
 	public String FONT_CHARS = "";
 
+	public AdsController adsController;
 
+	public IntArray openedSkins;
+
+	public float time = 0;
+	public static boolean showInterstitialAd = false;
+
+	public boolean android;
+
+	public static boolean reborn = false; // Awarded Boolean
+
+	public Application(AdsController adsController){
+		this.adsController = adsController;
+		android = true;
+	}
+
+	private Random random = new Random();
+
+	public boolean deathSmallArow = false, deathSnipers = false;
+
+	public static boolean loadedMoney, loadedReborn;
 
 	@Override
 	public void create () {
-
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, V_WIDTH, V_HEIGHT);
 		batch = new SpriteBatch();
@@ -99,7 +124,6 @@ public class Application extends Game {
 		assetManager = new AssetManager();
 
 		loadingScreen = new LoadingScreen(this);
-
 
 		getPrefs();
 
@@ -133,7 +157,7 @@ public class Application extends Game {
 
 			if(preferences.contains("skinsBought")) skinsBought = preferences.getInteger("skinsBought");
 
-
+			if(preferences.contains("gameSkin")) gameSkin = preferences.getInteger("gameSkin");
 		} else{ //RESET SAVES TO ZERO
 			Score.bestScore = 0;
 			Currency.currency = 0;
@@ -152,8 +176,32 @@ public class Application extends Game {
 			preferences.putBoolean("ru", ru);
 			preferences.flush();
 		}
+		adTimer();
+
+		openedSkins = new IntArray();
+
+		for(int i=0; i < skinLocked.length; i++) {
+			if(!skinLocked[i]) {
+				openedSkins.add(i);
+			}
+		}
+
 
 		setScreen(loadingScreen);
+	}
+	public float AD_TIME = 300;
+	public void adTimer(){
+		time +=Gdx.graphics.getDeltaTime();
+		if(time >= AD_TIME) {
+			showInterstitialAd = true;
+			time = 0;
+			//System.out.println(showInterstitialAd);
+		}
+		//System.out.println(time);
+	}
+
+	public int randomizeSkins(){
+		return random.nextInt(openedSkins.size);
 	}
 
 	@Override
@@ -296,6 +344,10 @@ public class Application extends Game {
 		params.borderWidth = gameBorderSize;
 		menuScoreFont = generator.generateFont(params);
 
+        params.size =  40;
+        params.borderColor = Color.BLACK;
+        params.borderWidth = gameBorderSize;
+        startEN = generator.generateFont(params);
 
 	}
 	public void initRuFonts(){
@@ -337,11 +389,6 @@ public class Application extends Game {
 		paramsRu.borderWidth = gameBorderSize;
 		death0RU = generator.generateFont(paramsRu);
 
-		paramsRu.size = 18*2;
-		paramsRu.color = Color.WHITE;
-		paramsRu.borderColor = Color.BLACK;
-		paramsRu.borderWidth = gameBorderSize;
-		borderFontRU = generator.generateFont(paramsRu);
 
 		paramsRu.color = Globals.Text1Color;
 		death1RU = generator.generateFont(paramsRu);
@@ -354,6 +401,23 @@ public class Application extends Game {
 
 		paramsRu.color = Globals.Text4Color;
 		death4RU = generator.generateFont(paramsRu);
+
+		paramsRu.size = 18*2;
+		paramsRu.color = Color.WHITE;
+		paramsRu.borderColor = Color.BLACK;
+		paramsRu.borderWidth = gameBorderSize;
+		borderFontRU = generator.generateFont(paramsRu);
+
+        paramsRu.size =  30;
+        paramsRu.borderColor = Color.BLACK;
+        paramsRu.borderWidth = gameBorderSize;
+        startRU = generator.generateFont(paramsRu);
+
+		paramsRu.size =  40;
+		paramsRu.borderColor = Color.BLACK;
+		paramsRu.borderWidth = gameBorderSize;
+		start40RU = generator.generateFont(paramsRu);
+
 
 	}
 	public void initDeathFonts(){
@@ -419,6 +483,8 @@ public class Application extends Game {
 		assetManager.load("textures/animation/playerAnim4.png", Texture.class);
 		assetManager.load("textures/animation/sniper.png", Texture.class);
 		assetManager.load("textures/animation/sniper2.png", Texture.class);
+
+		assetManager.load("textures/skinPrewRandom.png", Texture.class);
 
 		//Test
 	}
