@@ -7,6 +7,7 @@
 
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19" />
 
+    <meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/app_id" />
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET"/>

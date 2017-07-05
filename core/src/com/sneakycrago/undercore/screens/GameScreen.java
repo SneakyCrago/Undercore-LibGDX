@@ -168,6 +168,9 @@ public class GameScreen implements Screen, InputProcessor {
         //Обнуляем счет
         Score.setGameScore(0);
         blocksNumber = 0;
+        if(test) {
+            blocksNumber = 30;
+        }
         Currency.resetMoney();
 
         deathSound = false;
@@ -201,6 +204,8 @@ public class GameScreen implements Screen, InputProcessor {
         startAfterDeath = false;
 
         startPlay = true;
+
+        calculatedDeath = false;
     }
 
     private boolean test = false;
@@ -616,6 +621,7 @@ public class GameScreen implements Screen, InputProcessor {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(game.gameOver);
+                //deathScreen();
 
                 showInterstitialAd();
             }
@@ -661,6 +667,7 @@ public class GameScreen implements Screen, InputProcessor {
         }
     }
 
+
     @Override
     public void resize(int width, int height) {
         viewport.update(width,height);
@@ -689,6 +696,7 @@ public class GameScreen implements Screen, InputProcessor {
     public void dispose() {
 
     }
+
 
     private int zoneCreate;
 
@@ -1120,6 +1128,7 @@ public class GameScreen implements Screen, InputProcessor {
         smallArrowZoneOverlaped = false;
     }
 
+    private boolean calculatedDeath = false;
     // COLLISION
     public void collisionDebug(){
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
@@ -1366,6 +1375,10 @@ public class GameScreen implements Screen, InputProcessor {
                     Gdx.input.setInputProcessor(stage);
 
                     showAd();
+                    if(!calculatedDeath) {
+                        game.countDeathAmount();
+                        calculatedDeath = true;
+                    }
                     if(Application.loadedReborn) {
                         time -= delta;
                         if (time >= 2 && time <= 3) {
@@ -1386,18 +1399,12 @@ public class GameScreen implements Screen, InputProcessor {
                 } else if(secondChance) {
                     game.gameScreen.pause();
                     game.setScreen(game.gameOver);
+                    game.countDeathAmount();
                     showInterstitialAd();
                     secondChance = false;
                 }
-                /*
-                if(game.android) {
-                    if (!Application.loadedReborn && !secondChance) {
-                        game.setScreen(game.gameOver);
-                        showInterstitialAd();
-                        game.gameScreen.pause();
-                        secondChance = false;
-                    }
-                } */
+
+
             //TODO: uncomment when finish ad logic
             /**if(Score.gameScore > 11) {
                 showAd();

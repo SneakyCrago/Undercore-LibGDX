@@ -14,8 +14,8 @@ import java.util.Random;
 
 public class Currency {
 
-    public static int Money = 0;
-    public static int currency = 0;
+    public static int Money = 0; // permanent
+    public static int currency = 0; // all game
 
     private static Random random = new Random();
     private static float  X = 12f;

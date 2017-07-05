@@ -252,6 +252,7 @@ public class GameOver implements Screen {
 
         best = Score.getBestScore();
         Score.makeBestScore();
+        game.countMaxMoney();
         //Save
         game.preferences.putInteger("bestScore", Score.bestScore);
         game.preferences.flush();

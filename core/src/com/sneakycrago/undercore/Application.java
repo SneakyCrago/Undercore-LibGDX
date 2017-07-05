@@ -106,6 +106,9 @@ public class Application extends Game {
 		android = true;
 	}
 
+    public int deathAmount;
+    public int maxMoney;
+
 	private Random random = new Random();
 
 	public boolean deathSmallArow = false, deathSnipers = false;
@@ -133,7 +136,6 @@ public class Application extends Game {
 			skinLocked[i] = true;
 		}
 
-
 		for(int i = 32; i < 127; i++) FONT_CHARS += (char)i;
 		for(int i = 1024; i < 1104; i++) FONT_CHARS += (char)i;
 
@@ -158,6 +160,9 @@ public class Application extends Game {
 			if(preferences.contains("skinsBought")) skinsBought = preferences.getInteger("skinsBought");
 
 			if(preferences.contains("gameSkin")) gameSkin = preferences.getInteger("gameSkin");
+
+            if(preferences.contains("deathAmount")) deathAmount = preferences.getInteger("deathAmount");
+            if(preferences.contains("maxMoney")) maxMoney = preferences.getInteger("maxMoney");
 		} else{ //RESET SAVES TO ZERO
 			Score.bestScore = 0;
 			Currency.currency = 0;
@@ -175,6 +180,14 @@ public class Application extends Game {
 			preferences.flush();
 			preferences.putBoolean("ru", ru);
 			preferences.flush();
+
+            deathAmount = 0;
+            maxMoney = 0;
+
+            preferences.putInteger("deathAmount", deathAmount);
+            preferences.flush();
+            preferences.putInteger("maxMoney", maxMoney);
+            preferences.flush();
 		}
 		adTimer();
 
@@ -199,6 +212,24 @@ public class Application extends Game {
 		}
 		//System.out.println(time);
 	}
+
+	public void countDeathAmount(){
+        deathAmount +=1;
+
+        preferences.putInteger("deathAmount", deathAmount);
+        preferences.flush();
+    }
+
+    public void countMaxMoney(){
+        if(maxMoney < Currency.Money) {
+            maxMoney = Currency.Money;
+
+            preferences.putInteger("maxMoney", maxMoney);
+            preferences.flush();
+        } else {
+			System.out.println("maxMoney: "+maxMoney);
+		}
+    }
 
 	public int randomizeSkins(){
 		return random.nextInt(openedSkins.size);
