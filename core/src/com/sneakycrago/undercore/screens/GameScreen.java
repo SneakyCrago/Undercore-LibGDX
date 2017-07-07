@@ -104,6 +104,8 @@ public class GameScreen implements Screen, InputProcessor {
 
     private boolean startPlay;
 
+    private Currency currency;
+
     public GameScreen(Application game) {
         this.game = game;
         this.camera = game.camera;
@@ -125,6 +127,8 @@ public class GameScreen implements Screen, InputProcessor {
         spriteViewport.apply();
 
         spriteCamera.position.set(camera.viewportWidth/2 - 256,camera.viewportHeight /2 - 155,0);
+
+        currency = new Currency();
     }
 
     //Laser laser;
@@ -206,6 +210,7 @@ public class GameScreen implements Screen, InputProcessor {
         startPlay = true;
 
         calculatedDeath = false;
+
     }
 
     private boolean test = false;
@@ -356,7 +361,7 @@ public class GameScreen implements Screen, InputProcessor {
         }
 
         //COLLISION
-        collisionCheck(delta);
+        //collisionCheck(delta);
         //collisionDebug();
 
         //SECOND CHANCE
@@ -379,7 +384,7 @@ public class GameScreen implements Screen, InputProcessor {
         if(game.android) {
             game.adsController.isRewardedRebornLoaded();
         }
-
+        game.checkScoreAchievements();
     }
     private int counterHelper;
     private boolean counterCheked =  false;
@@ -1479,7 +1484,8 @@ public class GameScreen implements Screen, InputProcessor {
 
     private void countMoney(){
         blocksNumber +=1;
-        Currency.countCurency(blocksNumber);
+
+        currency.countCurency(blocksNumber, game);
 
         //Currency.addMoneyToCurrency();
         //System.out.println("Money: " + Currency.Money);

@@ -670,6 +670,29 @@ public class MainMenuScreen implements Screen, InputProcessor {
             achieve[i] = new Button(new TextureRegionDrawable(achieveTex));
             records[i] = new Button(new TextureRegionDrawable(recordsTex));
             saves[i] = new Button(new TextureRegionDrawable(savesTex));
+
+            records[i].addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if(game.android)
+                    game.gpgsController.showScores();
+                }
+            });
+            achieve[i].addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if(game.android)
+                    game.gpgsController.showAchievements();
+                }
+            });
+            saves[i].addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if(game.android)
+                    game.gpgsController.unlockAchievement(game.achievement_novice_runner);
+                }
+            });
+
             plusButton[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -680,6 +703,8 @@ public class MainMenuScreen implements Screen, InputProcessor {
                     }
                     if(!game.android){
                      Currency.currency += 1000;
+                        game.preferences.putInteger("currency", Currency.currency);
+                        game.preferences.flush();
                     }
                 }
             });

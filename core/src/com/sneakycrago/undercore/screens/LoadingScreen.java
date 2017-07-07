@@ -162,6 +162,9 @@ public class LoadingScreen implements Screen, InputProcessor {
 
         progress = MathUtils.lerp(progress, game.assetManager.getProgress(), .1f);
         if(game.assetManager.update() && screensCreated && fontsLoaded&& progress >= game.assetManager.getProgress() - 0.001f) {
+            //if(game.android) {
+            //    game.gpgsController.signIn();
+            //}
             game.assetManager.finishLoading();
             game.setScreen(game.mainMenuScreen);
         }

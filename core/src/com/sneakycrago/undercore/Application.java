@@ -25,6 +25,7 @@ import com.sneakycrago.undercore.screens.TutorialScreen;
 import com.sneakycrago.undercore.utils.AdsController;
 import com.sneakycrago.undercore.utils.Currency;
 import com.sneakycrago.undercore.utils.Globals;
+import com.sneakycrago.undercore.utils.GpgsController;
 import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
@@ -91,23 +92,36 @@ public class Application extends Game {
 	public String FONT_CHARS = "";
 
 	public AdsController adsController;
+    public GpgsController gpgsController;
 
 	public IntArray openedSkins;
 
 	public float time = 0;
 	public static boolean showInterstitialAd = false;
 
-	public boolean android;
+	public static boolean android = false;
 
 	public static boolean reborn = false; // Awarded Boolean
 
-	public Application(AdsController adsController){
+    public String leaderboard_Highscore = "CgkI28yY58YGEAIQAA";
+
+	public String achievement_novice_runner = "CgkI28yY58YGEAIQAQ"; // Score - 14
+	public String achievement_solid_runner ="CgkI28yY58YGEAIQCA"; // Score - 50
+	public String achievement_like_a_forest ="CgkI28yY58YGEAIQBw"; // Score - 88
+	public String achievement_dead_again ="CgkI28yY58YGEAIQAw"; // Die - 5
+	public String achievement_scrooge_mcduck ="CgkI28yY58YGEAIQBA"; // Collect - 10000
+	public String achievement_big_brooother ="CgkI28yY58YGEAIQBQ"; // Open allSkins
+	public String achievement_hell_1 = "CgkI28yY58YGEAIQBg"; // Unlock new Challenge
+	public String achievement_what_is_that_shiny_thing = "CgkI28yY58YGEAIQDA";
+
+	public Application(AdsController adsController, GpgsController gpgsController){
 		this.adsController = adsController;
+        this.gpgsController = gpgsController;
 		android = true;
 	}
 
+
     public int deathAmount;
-    public int maxMoney;
 
 	private Random random = new Random();
 
@@ -129,7 +143,6 @@ public class Application extends Game {
 		loadingScreen = new LoadingScreen(this);
 
 		getPrefs();
-
 
 		skinLocked[0] = false;
 		for(int i=1; i < skinLocked.length; i++){
@@ -162,7 +175,8 @@ public class Application extends Game {
 			if(preferences.contains("gameSkin")) gameSkin = preferences.getInteger("gameSkin");
 
             if(preferences.contains("deathAmount")) deathAmount = preferences.getInteger("deathAmount");
-            if(preferences.contains("maxMoney")) maxMoney = preferences.getInteger("maxMoney");
+
+			if(preferences.contains("maxMoney")) Currency.maxMoney = preferences.getInteger("maxMoney");
 		} else{ //RESET SAVES TO ZERO
 			Score.bestScore = 0;
 			Currency.currency = 0;
@@ -182,12 +196,14 @@ public class Application extends Game {
 			preferences.flush();
 
             deathAmount = 0;
-            maxMoney = 0;
 
             preferences.putInteger("deathAmount", deathAmount);
             preferences.flush();
-            preferences.putInteger("maxMoney", maxMoney);
-            preferences.flush();
+
+			Currency.maxMoney = 0;
+
+			preferences.putInteger("maxMoney", Currency.maxMoney);
+			preferences.flush();
 		}
 		adTimer();
 
@@ -218,17 +234,6 @@ public class Application extends Game {
 
         preferences.putInteger("deathAmount", deathAmount);
         preferences.flush();
-    }
-
-    public void countMaxMoney(){
-        if(maxMoney < Currency.Money) {
-            maxMoney = Currency.Money;
-
-            preferences.putInteger("maxMoney", maxMoney);
-            preferences.flush();
-        } else {
-			System.out.println("maxMoney: "+maxMoney);
-		}
     }
 
 	public int randomizeSkins(){
@@ -527,4 +532,24 @@ public class Application extends Game {
 		assetManager.load("sounds/death_all.wav", Sound.class);
 	}
 
+	public void checkScoreAchievements(){
+		if(android) {
+			if (Score.gameScore >= 14)
+				gpgsController.unlockAchievement(achievement_novice_runner);
+
+			if (Score.gameScore >= 50)
+				gpgsController.unlockAchievement(achievement_solid_runner);
+
+			if (Score.gameScore >= 88)
+				gpgsController.unlockAchievement(achievement_like_a_forest);
+		}
+	}
+	public void unlockFirstCoin(){
+		if(android)
+			gpgsController.unlockAchievement(achievement_what_is_that_shiny_thing);
+	}
+	public void unlockScroogeAchievment(){
+		if(android)
+			gpgsController.unlockAchievement(achievement_scrooge_mcduck);
+	}
 }
