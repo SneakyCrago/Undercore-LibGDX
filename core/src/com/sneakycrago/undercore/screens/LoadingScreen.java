@@ -165,6 +165,9 @@ public class LoadingScreen implements Screen, InputProcessor {
             //if(game.android) {
             //    game.gpgsController.signIn();
             //}
+            if (!game.gpgsController.isSignedIn()) {
+                game.gpgsController.connect();
+            }
             game.assetManager.finishLoading();
             game.setScreen(game.mainMenuScreen);
         }

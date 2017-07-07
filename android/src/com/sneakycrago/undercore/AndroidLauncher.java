@@ -40,7 +40,7 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	private String id;
 
 	// помощник для работы с игровыми сервисами
-	private GameHelper gameHelper;
+	//private GameHelper gameHelper;
 	// класс нашей игры
 	private Application game;
 
@@ -173,10 +173,10 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 				.build();
 
 		// CLIENT_ALL указывет на использование API всех клиентов
-		gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
+			//gameHelper = new GameHelper(this, GameHelper.CLIENT_GAMES);
 		// выключить автоматический вход при запуске игры
-		gameHelper.setConnectOnStart(false);
-		gameHelper.enableDebugLog(true);
+			//gameHelper.setConnectOnStart(false);
+			//gameHelper.enableDebugLog(true);
 
 
 		game = new Application(this, this);
@@ -184,7 +184,7 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new Application(this, this), config);
 
-		gameHelper.setup(this);
+		//gameHelper.setup(this);
 
 	}
 
@@ -347,7 +347,7 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	@Override
 	protected void onStart() {
 		super.onStart();
-		gameHelper.onStart(this);
+		//gameHelper.onStart(this);
 
 		connect();
 	}
@@ -355,7 +355,7 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	@Override
 	protected void onStop() {
 		super.onStop();
-		gameHelper.onStop();
+		//gameHelper.onStop();
 
 		disconnect();
 	}
@@ -371,11 +371,11 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 		// здесь gameHelper принимает решение о подключении, переподключении или
 		// отключении от игровых сервисов, в зависимости от кода результата
 		// Activity
-		gameHelper.onActivityResult(requestCode, resultCode, data);
+		//gameHelper.onActivityResult(requestCode, resultCode, data);
 
-		if ( requestCode == RC_SIGN_IN ) {
+		if (requestCode == RC_SIGN_IN) {
 			//Log.d( className, "RC_SIGN_IN, responseCode=" + response + ", intent=" + intent );
-			if ( requestCode == RESULT_OK ) {
+			if (requestCode == RESULT_OK) {
 				googleApiClient.connect();
 			}
 		}
@@ -404,49 +404,10 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	}
 
 	@Override
-	public void signIn() {
-		try {
-			runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					// инициировать вход пользователя. Может быть вызван диалог
-					// входа. Выполняется в UI-потоке
-					gameHelper.beginUserInitiatedSignIn();
-
-				}
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-			Gdx.app.log("MainActivity", "Log in failed: " + e.getMessage() + ".");
-		}
-
-		googleApiClient.registerConnectionCallbacks( this );
-		googleApiClient.registerConnectionFailedListener( this );
-		googleApiClient.connect();
-	}
-
-	@Override
-	public void signOut() {
-		try {
-			runOnUiThread(new Runnable() {
-				@Override
-				public void run()
-				{
-					gameHelper.signOut();
-				}
-			});
-		}
-		catch (Exception e) {
-			Gdx.app.log("MainActivity", "Log out failed: " + e.getMessage() + ".");
-		}
-	}
-
-	@Override
 	public void unlockAchievement(String achievementId) {
 		// открыть достижение с ID achievementId
 		if (isSignedIn()) {
-			Games.Achievements.unlock(gameHelper.getApiClient(), achievementId);
+			Games.Achievements.unlock(googleApiClient, achievementId);
 		}
 	}
 
@@ -454,9 +415,9 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	public void submitScore(int highScore) {
 		// отправить игровые очки в конкретную таблицу рекордов с ID
 		if (isSignedIn()) {
-			Games.Leaderboards.submitScore(gameHelper.getApiClient(), game.leaderboard_Highscore , highScore);
+			Games.Leaderboards.submitScore(googleApiClient, game.leaderboard_Highscore , highScore);
 		} else {
-			signIn();
+			connect();
 		}
 	}
 
@@ -465,10 +426,9 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 		if (isSignedIn()) {
 			// вызвать Activity с достижениями
 			startActivityForResult(
-					Games.Achievements.getAchievementsIntent(gameHelper
-							.getApiClient()), 101);
+					Games.Achievements.getAchievementsIntent(googleApiClient), 101);
 		} else {
-			signIn();
+			connect();
 		}
 	}
 
@@ -476,16 +436,15 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	public void showScores() {
 		if (isSignedIn()) {
 			startActivityForResult(
-					Games.Leaderboards.getAllLeaderboardsIntent(gameHelper
-							.getApiClient()), 100);
+					Games.Leaderboards.getAllLeaderboardsIntent(googleApiClient), 100);
 		} else {
-			signIn();
+			connect();
 		}
 	}
 
 	@Override
 	public boolean isSignedIn() {
-		return gameHelper.isSignedIn();
+		return googleApiClient.isConnected();
 	}
 
 	@Override

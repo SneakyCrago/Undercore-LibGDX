@@ -582,7 +582,10 @@ public class MainMenuScreen implements Screen, InputProcessor {
 
         // test
         glyphLayout.setText(game.smallWhiteFont,"" + Application.loadedMoney , Color.WHITE, 100, Align.bottomLeft, true);
+
         game.smallWhiteFont.draw(game.batch, glyphLayout, 0, 30);
+        glyphLayout.setText(game.smallWhiteFont,"GPGS:" + game.gpgsController.isSignedIn(), Color.WHITE, 100, Align.bottomLeft, true);
+        game.smallWhiteFont.draw(game.batch, glyphLayout, 0, 310);
 
         game.batch.end();
         //test
