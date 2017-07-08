@@ -176,13 +176,11 @@ public class GameScreen implements Screen, InputProcessor {
 
         deathSound = false;
 
-        //test
-        test = true;
 
         //makeSmallArrow(SPAWN);
         //startZoneStart = false;
 
-        game.ambientSound.setVolume(Application.volume/2);
+        game.ambientSound.setVolume(Application.volume * 0.1f);
         game.ambientSound.play();
 
         time = 2.99f;
@@ -214,7 +212,6 @@ public class GameScreen implements Screen, InputProcessor {
 
     }
 
-    private boolean test = false;
 
     private float time = 3;
 
@@ -232,7 +229,7 @@ public class GameScreen implements Screen, InputProcessor {
             nopeButton.setVisible(false);
             watchButton.setVisible(false);
         }
-        if(test && Gdx.input.isKeyPressed(Input.Keys.Q)) {
+        if(game.test && Gdx.input.isKeyPressed(Input.Keys.Q)) {
                 collisionCheck(delta);
         }
         if(Application.gameSkin == 0) {
@@ -303,7 +300,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         game.batch.begin();
         //game info
-        if(test) {
+        if(game.test) {
             game.font10.draw(game.batch, "fps:" + Gdx.graphics.getFramesPerSecond(), 0, (288 - 24) * 2);
             game.font10.draw(game.batch, "blocks:" + blocksNumber, 0, (288 - 24 - 12) * 2);
             game.font10.draw(game.batch, "money:" + Currency.Money, 0, (288 - 24 - 12 * 2) * 2);
@@ -478,7 +475,7 @@ public class GameScreen implements Screen, InputProcessor {
         if (Application.reborn) {
             secondChance = true;
 
-            game.ambientSound.setVolume(Application.volume/2);
+            game.ambientSound.setVolume(Application.volume * 0.1f);
             game.ambientSound.play();
 
             nopeButton.setVisible(false);
@@ -1519,13 +1516,13 @@ public class GameScreen implements Screen, InputProcessor {
                 game.setScreen(new GameScreen(game));
                 break;
             case Input.Keys.Z:
-                player.onClick();
+                player.onClick(game);
                 break;
             case Input.Keys.Q:
                 //collisionCheck(delta);
                 break;
             case Input.Keys.X:
-                player.onLine();
+                player.onLine(game);
                 onLine = true;
                 break;
         }
@@ -1551,12 +1548,12 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if(pointer == 0) {
-            player.onClick();
-            if(Application.playerAlive) {
-                game.jumpSound.play(Application.volume);
-            }
+            player.onClick(game);
+            //if(Application.playerAlive) {
+            //    game.jumpSound.play(Application.volume);
+            //}
         } else if(pointer == 1){
-            player.onLine();
+            player.onLine(game);
             onLine = true;
         } else{
             onLine = false;

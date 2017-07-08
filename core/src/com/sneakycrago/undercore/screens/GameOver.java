@@ -160,6 +160,13 @@ public class GameOver implements Screen {
                 newFrase = true;
                 best = Score.getBestScore();
                 //game.setScreen(new GameScreen(game));
+                if(game.showRandom) {
+                    Application.gameSkin = game.openedSkins.get(game.randomizeSkins());
+                    //System.out.println(game.openedSkins.get(game.randomizeSkins()));
+                    if (!Application.skinLocked[Application.gameSkin]) {
+                        game.setScreen(game.gameScreen);
+                    }
+                }
                 game.setScreen(game.gameScreen);
                 game.gameOver.pause();
 
@@ -277,10 +284,13 @@ public class GameOver implements Screen {
 
         game.batch.begin();
 
-        game.font.draw(game.batch, ""+game.time, 0, 40);
-        game.font.draw(game.batch, ""+game.showInterstitialAd, 0, 80);
+        if(game.test) {
+            game.font.draw(game.batch, "" + game.time, 0, 40);
+            game.font.draw(game.batch, "" + game.showInterstitialAd, 0, 80);
 
-        game.font10.draw(game.batch, "fps:"+Gdx.graphics.getFramesPerSecond(), 80*2, 15*2 );
+            game.font10.draw(game.batch, "fps:" + Gdx.graphics.getFramesPerSecond(), 80 * 2, 15 * 2);
+        }
+
         if(game.en) {
             glyphLayout.setText(deathFont, death, Color.WHITE, 512 * 2, Align.center, true);
             deathFont.draw(game.batch, glyphLayout, 0, (310 - 10) * 2);

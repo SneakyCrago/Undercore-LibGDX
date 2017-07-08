@@ -18,6 +18,11 @@ public class GpgsDesktop implements GpgsController {
     }
 
     @Override
+    public void signIn() {
+
+    }
+
+    @Override
     public void unlockAchievement(String achievementId) {
 
     }

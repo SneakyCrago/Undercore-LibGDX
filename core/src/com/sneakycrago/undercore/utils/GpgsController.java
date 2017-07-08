@@ -8,7 +8,7 @@ public interface GpgsController {
     public void connect();
     public void disconnect();
     /** Вход */
-    //public void signIn();
+    public void signIn();
     /** Выход */
     /**
      * Разблокировать достижение

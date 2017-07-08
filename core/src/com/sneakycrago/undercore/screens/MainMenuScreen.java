@@ -80,7 +80,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
     private boolean drawPlSkin, drawPlNew;
     private boolean normalMode =true, hardMode = false;
 
-    private boolean showRandom = false;
+    //private boolean showRandom = false;
     private Random random = new Random();
 
     public MainMenuScreen(Application game) {
@@ -160,6 +160,8 @@ public class MainMenuScreen implements Screen, InputProcessor {
         skinPrewRandom.setPosition((384 + 32) / 2 - squardWidth / 2 + line, 310 / 2 - squardHeight / 2 + up + line);
         skinPrewRandom.setSize(254,158);
         //test
+
+        skinsSwitch = Application.gameSkin;
     }
 
     @Override
@@ -224,6 +226,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
     }
 
     int langY = 40;
+
 
     @Override
     public void render(float delta) {
@@ -344,16 +347,16 @@ public class MainMenuScreen implements Screen, InputProcessor {
         game.batch.begin();
 
         if(activePlay && normalMode){
-            if(!showRandom) {
+            if(!game.showRandom) {
                 skinPrew[Application.gameSkin].draw(game.batch);
-            } else if (showRandom) {
+            } else if (game.showRandom) {
                 skinPrewRandom.draw(game.batch);
             }
         }
         if(activeWorld&& normalMode){
-            if(!showRandom) {
+            if(!game.showRandom) {
                 skinPrew[Application.gameSkin].draw(game.batch);
-            } else if (showRandom) {
+            } else if (game.showRandom) {
                 skinPrewRandom.draw(game.batch);
             }
         }
@@ -366,7 +369,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
 
 
         if(activeWorld && normalMode) {
-            if(Application.skinLocked[Application.gameSkin] && !showRandom) {
+            if(Application.skinLocked[Application.gameSkin] && !game.showRandom) {
                 Gdx.gl.glEnable(GL20.GL_BLEND);
                 Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
                 // Alpha
@@ -550,7 +553,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
         plusSprite.setPosition(moneyX+ moneyWidth + 45,moneyY +6 + 16 - plusSprite.getHeight()/2);
         plusSprite.draw(game.batch);
 
-        if(activeWorld && normalMode && !showRandom) {
+        if(activeWorld && normalMode && !game.showRandom) {
             glyphLayout.setText(game.menu0Font, "" + Application.price, Color.WHITE, (384 + 32) * 2, Align.center, true);
             if(Application.gameSkin != 0) {
                 if(Application.skinLocked[Application.gameSkin]) {
@@ -567,7 +570,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
             lockPrice.setPosition((384 + 32) + glyphLayout.width / 2 + 4,
                     310 - squardHeight + up * 2 + line * 2 + 6);
             if(Application.gameSkin == 1 || Application.gameSkin == 2 || Application.gameSkin ==3|| Application.gameSkin ==4 ) {
-                if(Application.skinLocked[Application.gameSkin] && normalMode && !showRandom) {
+                if(Application.skinLocked[Application.gameSkin] && normalMode && !game.showRandom) {
                     currencyPrice.draw(game.batch);
                     lockPrice.draw(game.batch);
                 }
@@ -581,14 +584,17 @@ public class MainMenuScreen implements Screen, InputProcessor {
         }
 
         // test
-        glyphLayout.setText(game.smallWhiteFont,"" + Application.loadedMoney , Color.WHITE, 100, Align.bottomLeft, true);
 
-        game.smallWhiteFont.draw(game.batch, glyphLayout, 0, 30);
-        glyphLayout.setText(game.smallWhiteFont,"GPGS:" + game.gpgsController.isSignedIn(), Color.WHITE, 300, Align.bottomLeft, true);
-        game.smallWhiteFont.draw(game.batch, glyphLayout, 0, 310*2);
+        if(game.test) {
+            glyphLayout.setText(game.smallWhiteFont, "" + Application.loadedMoney, Color.WHITE, 100, Align.bottomLeft, true);
 
-        glyphLayout.setText(game.smallWhiteFont,"skins:" + game.skinsOpened, Color.WHITE, 300, Align.bottomLeft, true);
-        game.smallWhiteFont.draw(game.batch, glyphLayout, 200, 310*2);
+            game.smallWhiteFont.draw(game.batch, glyphLayout, 0, 30);
+            glyphLayout.setText(game.smallWhiteFont, "GPGS:" + game.gpgsController.isSignedIn(), Color.WHITE, 300, Align.bottomLeft, true);
+            game.smallWhiteFont.draw(game.batch, glyphLayout, 0, 310 * 2);
+
+            glyphLayout.setText(game.smallWhiteFont, "skins:" + game.skinsOpened, Color.WHITE, 300, Align.bottomLeft, true);
+            game.smallWhiteFont.draw(game.batch, glyphLayout, 200, 310 * 2);
+        }
         game.batch.end();
         //test
         for(int i=0; i< plusButton.length; i++) {
@@ -602,6 +608,10 @@ public class MainMenuScreen implements Screen, InputProcessor {
             game.adsController.isRewardedMoneyLoaded();
         }
         game.checkSkinAchievments();
+
+        //if(game.showRandom) {
+        //    Application.gameSkin = 0;
+        //}
     }
 
     private void showNoAds(){
@@ -640,6 +650,9 @@ public class MainMenuScreen implements Screen, InputProcessor {
     private float priceX, priceY;
 
     private boolean showNoAds;
+
+    private int skinsSwitch;
+
 
     private void createButtons(){
         plusButton = new Button[Application.skinsAmount];
@@ -721,20 +734,60 @@ public class MainMenuScreen implements Screen, InputProcessor {
             arrowLeft[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    // 0-0 1-1 2-2 3-3 4-4 5-showRandom
+                    if(activeWorld && normalMode) {
+                        skinsSwitch -= 1;
 
-                    if(activeWorld && normalMode && !showRandom) {
-                        Application.gameSkin -= 1;
-                        if (Application.gameSkin <= -1) {
-
-                            showRandom = true;
-                            Application.gameSkin = 4;
+                        if(skinsSwitch == 0){
+                            Application.gameSkin = 0;
+                            game.showRandom = false;
                         }
-                        if(showRandom) {
+                        if(skinsSwitch == 1){
+                            Application.gameSkin = 1;
+                            game.showRandom = false;
+                        }
+                        if(skinsSwitch == 2){
+                            Application.gameSkin = 2;
+                            game.showRandom = false;
+                        }
+                        if(skinsSwitch == 3){
+                            Application.gameSkin = 3;
+                            game.showRandom = false;
+                        }
+                        if(skinsSwitch == 4){
+                            Application.gameSkin = 4;
+                            game.showRandom = false;
+                        }
+                        if(skinsSwitch == 5){
+                            Application.gameSkin = 0;
+                            game.showRandom = true;
+                        }
+
+                        if(skinsSwitch == -1) {
+                            skinsSwitch = 5;
+                            Application.gameSkin = 0;
+                            game.showRandom = true;
+                        }
+                    } else {
+                        game.showRandom = false;
+                    }
+
+                    /*
+                    if(activeWorld && normalMode) {
+                            Application.gameSkin -= 1;
+
+                        if(game.showRandom) {
+                            Application.gameSkin = 4;
+                            game.showRandom = false;
+                        }
+                        if (Application.gameSkin <= -1) {
+                            game.showRandom = true;
                             Application.gameSkin = 0;
                         }
                     } else {
-                        showRandom = false;
+                        game.showRandom = false;
                     }
+                    */
 
                     if(activePlayerSkin && drawPlSkin && normalMode){
                         drawPlSkin = true;
@@ -757,19 +810,59 @@ public class MainMenuScreen implements Screen, InputProcessor {
             arrowRight[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    if(activeWorld && normalMode && !showRandom) {
-                        Application.gameSkin += 1;
-                        if (Application.gameSkin >= 5) {
+                    if(activeWorld && normalMode) {
+                        skinsSwitch += 1;
 
-                            showRandom = true;
+                        if(skinsSwitch == 0){
                             Application.gameSkin = 0;
+                            game.showRandom = false;
                         }
-                        if(showRandom) {
+                        if(skinsSwitch == 1){
+                            Application.gameSkin = 1;
+                            game.showRandom = false;
+                        }
+                        if(skinsSwitch == 2){
+                            Application.gameSkin = 2;
+                            game.showRandom = false;
+                        }
+                        if(skinsSwitch == 3){
+                            Application.gameSkin = 3;
+                            game.showRandom = false;
+                        }
+                        if(skinsSwitch == 4){
+                            Application.gameSkin = 4;
+                            game.showRandom = false;
+                        }
+                        if(skinsSwitch == 5){
+                            Application.gameSkin = 0;
+                            game.showRandom = true;
+                        }
+
+                        if(skinsSwitch == 6) {
+                            skinsSwitch = 0;
+                            Application.gameSkin = 0;
+                            game.showRandom = false;
+                        }
+                    } else {
+                        game.showRandom = false;
+                    }
+                    /*
+                    if(activeWorld && normalMode && !game.showRandom) {
+                        Application.gameSkin += 1;
+
+                        if(game.showRandom) {
+                            Application.gameSkin = 0;
+                            game.showRandom = false;
+                        }
+
+                        if (Application.gameSkin == 5) {
+                            game.showRandom = true;
                             Application.gameSkin = 0;
                         }
                     } else {
-                        showRandom = false;
+                        //game.showRandom = false;
                     }
+                    */
 
                     if(activePlayerSkin  && drawPlSkin && normalMode){
                         drawPlSkin = false;
@@ -845,7 +938,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
                         arrowRight[i].setVisible(false);
                     }
                     if(normalMode) {
-                        if (!Application.skinLocked[Application.gameSkin] && !activeSettings && !showRandom) {
+                        if (!Application.skinLocked[Application.gameSkin] && !activeSettings && !game.showRandom) {
                             if (game.goTutorial) {
                                 game.setScreen(game.tutorialScreen);
                             } else {
@@ -854,15 +947,15 @@ public class MainMenuScreen implements Screen, InputProcessor {
                             game.mainMenuScreen.pause();
                         }
                     }
-                    if(showRandom) {
+                    if(game.showRandom) {
                         Application.gameSkin = game.openedSkins.get(game.randomizeSkins());
-                        System.out.println(game.openedSkins.get(game.randomizeSkins()));
+                        //System.out.println(game.openedSkins.get(game.randomizeSkins()));
                         if (!Application.skinLocked[Application.gameSkin]) {
                             game.setScreen(game.gameScreen);
                         }
                     }
 
-                    if(Application.skinLocked[Application.gameSkin] && !showRandom){
+                    if(Application.skinLocked[Application.gameSkin] && !game.showRandom){
                         Application.gameSkin = 0;
                         if (game.goTutorial) {
                             game.setScreen(game.tutorialScreen);

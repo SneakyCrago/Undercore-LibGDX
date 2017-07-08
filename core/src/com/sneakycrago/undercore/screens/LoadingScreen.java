@@ -131,11 +131,13 @@ public class LoadingScreen implements Screen, InputProcessor {
             game.skinPrewRandomTex = game.assetManager.get("textures/skinPrewRandom.png");
             createMainMenuTexures();
 
-            game.jumpSound = game.assetManager.get("sounds/jump.wav");
-            game.deathAllSound = game.assetManager.get("sounds/death_all.wav");
+            game.jumpSound = game.assetManager.get("sounds/jump.mp3"); // new
+            game.lineSound = game.assetManager.get("sounds/line.mp3");
 
-            //game.ambientSound = game.assetManager.get("sounds/ambient_game.mp3");
-            game.ambientSound = game.assetManager.get("sounds/background.mp3");
+            game.deathAllSound = game.assetManager.get("sounds/death_all.wav"); // old
+            game.deathAllSound = game.assetManager.get("sounds/death_2.wav"); // new
+
+            game.ambientSound = game.assetManager.get("sounds/background.ogg");
 
             game.ambientSound.setLooping(true);
 

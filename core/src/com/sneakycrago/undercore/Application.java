@@ -67,7 +67,7 @@ public class Application extends Game {
 	public MainMenuScreen mainMenuScreen;
 	public TutorialScreen tutorialScreen;
 
-	public Sound jumpSound, deathAllSound;
+	public Sound jumpSound, lineSound, deathAllSound;
 	public Music ambientSound;
 
 	public AssetManager assetManager= new AssetManager();
@@ -75,7 +75,7 @@ public class Application extends Game {
 	public boolean activePlay = true;
 
 	public static Preferences preferences;
-	boolean loadPrefs = false; // загружать ли сохранения
+	boolean loadPrefs = true; // загружать ли сохранения
 	public static int gameSkin = 0; // 0 - standard
 	public static boolean playerAlive;
 
@@ -127,10 +127,14 @@ public class Application extends Game {
 
 	public String achievement_hell_1 = "CgkI28yY58YGEAIQBg"; // Unlock new Challenge
 
+	public boolean test = false;
+
+	public boolean showRandom = false;
+
 	public Application(AdsController adsController, GpgsController gpgsController){
 		this.adsController = adsController;
         this.gpgsController = gpgsController;
-		android = false;
+		android = true;
 	}
 
 
@@ -547,10 +551,15 @@ public class Application extends Game {
 	}
 
 	public void loadSounds(){
-		assetManager.load("sounds/jump.wav", Sound.class);
-		//assetManager.load("sounds/ambient_game.mp3", Music.class);
-		assetManager.load("sounds/background.mp3", Music.class);
-		assetManager.load("sounds/death_all.wav", Sound.class);
+		assetManager.load("sounds/jump.mp3", Sound.class); // new
+
+		assetManager.load("sounds/background.ogg", Music.class);
+
+
+		assetManager.load("sounds/death_all.wav", Sound.class); // old
+		assetManager.load("sounds/death_2.wav", Sound.class); // new
+
+		assetManager.load("sounds/line.mp3", Sound.class);
 	}
 
 	public void unlockFirstCoin(){

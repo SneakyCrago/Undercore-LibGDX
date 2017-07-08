@@ -123,10 +123,12 @@ public class Player {
     }
 
     // Прыжок
-    public void onClick() {
+    public void onClick(Application game) {
         if(alive && Jump) {
             velocity.y = 300;
             GRAVITY = -15;
+
+            game.jumpSound.play(Application.volume);
 
             Jump = true;   //1
             Line = false;  //0
@@ -134,11 +136,13 @@ public class Player {
         }
     }
     //Состояние: Линия
-    public void onLine() {
+    public void onLine(Application game) {
         if(alive) {
             velocity.y = playerPos;
             position.add(0, playerPos);
             GRAVITY = 0;
+
+            game.lineSound.play(Application.volume);
 
             Jump = false;  //0
             Line = true;   //1
