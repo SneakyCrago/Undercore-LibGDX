@@ -37,17 +37,29 @@ public class Currency {
 
         if(randomNumber <= fraction){
             Money++;
+
             if(maxMoney == 0 && game.android) {
                 game.unlockFirstCoin();
             }
-            if(maxMoney >= scrooge && game.android) {
+            if(maxMoney == scrooge && game.android) {
                 game.unlockScroogeAchievment();
             }
+            if(maxMoney == 100-1) {
+                game.unlockTreasureAchievment();
+            }
+            if(maxMoney == 200-1) {
+                game.unlockNoblemanAchievment();
+            }
+            if(maxMoney == 500-1) {
+                game.unlockFirstCapitalAchievment();
+            }
+            if(maxMoney == 1337-1) {
+                game.unlock1337Achievment();
+            }
+
             maxMoney++;
         }
-        System.out.println(maxMoney);
     }
-
 
     public static void resetMoney(){
         Money = 0;

@@ -37,7 +37,7 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	protected RewardedVideoAd rewardedMoney;
 	protected RewardedVideoAd rewardedReborn;
 
-	private String id;
+	private String id = "";
 
 	// помощник для работы с игровыми сервисами
 	//private GameHelper gameHelper;
@@ -57,7 +57,7 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 		interstitialAd = new InterstitialAd(this);
 		interstitialAd.setAdUnitId("ca-app-pub-3492165730340168/5724211932");
 
-		id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+		//id = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
 		AdRequest.Builder builder = new AdRequest.Builder();
 		AdRequest ad = builder.addTestDevice(id).build();
@@ -446,6 +446,7 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	public boolean isSignedIn() {
 		return googleApiClient.isConnected();
 	}
+
 
 	@Override
 	public void onSignInFailed() {

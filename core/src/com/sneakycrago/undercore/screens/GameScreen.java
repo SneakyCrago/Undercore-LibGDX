@@ -172,9 +172,6 @@ public class GameScreen implements Screen, InputProcessor {
         //Обнуляем счет
         Score.setGameScore(0);
         blocksNumber = 0;
-        if(test) {
-            blocksNumber = 30;
-        }
         Currency.resetMoney();
 
         deathSound = false;
@@ -210,6 +207,10 @@ public class GameScreen implements Screen, InputProcessor {
         startPlay = true;
 
         calculatedDeath = false;
+
+        if(!game.android) {
+            Application.loadedReborn = true;
+        }
 
     }
 
@@ -361,7 +362,7 @@ public class GameScreen implements Screen, InputProcessor {
         }
 
         //COLLISION
-        //collisionCheck(delta);
+        collisionCheck(delta);
         //collisionDebug();
 
         //SECOND CHANCE
@@ -384,7 +385,8 @@ public class GameScreen implements Screen, InputProcessor {
         if(game.android) {
             game.adsController.isRewardedRebornLoaded();
         }
-        game.checkScoreAchievements();
+
+        checkScoreAchievements();
     }
     private int counterHelper;
     private boolean counterCheked =  false;
@@ -461,6 +463,7 @@ public class GameScreen implements Screen, InputProcessor {
             deathCircle = false;
             game.deathSmallArow = false;
             game.deathSnipers = false;
+
         }
     }
     private int squardWidth = 160+16 +8;
@@ -474,6 +477,10 @@ public class GameScreen implements Screen, InputProcessor {
     private void makeReborn(){
         if (Application.reborn) {
             secondChance = true;
+
+            game.ambientSound.setVolume(Application.volume/2);
+            game.ambientSound.play();
+
             nopeButton.setVisible(false);
             watchButton.setVisible(false);
             if(startAfterDeath) {
@@ -516,9 +523,6 @@ public class GameScreen implements Screen, InputProcessor {
         }
     }
     private void showAd(){
-        if(!game.android) {
-           Application.loadedReborn = true;
-        }
         if(Application.loadedReborn) {
             Gdx.gl.glEnable(GL20.GL_BLEND);
             Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -594,12 +598,27 @@ public class GameScreen implements Screen, InputProcessor {
             game.adsController.showRewardedReborn(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("RewardedVideo for reborn app closed");
+                    //System.out.println("RewardedVideo for reborn app closed");
                 }
             });
         }
     }
 
+    public void checkScoreAchievements(){
+        if(game.android) {
+            if (Score.gameScore == 14 && Score.bestScore < 14)
+                game.gpgsController.unlockAchievement(game.achievement_novice_runner);
+
+            if (Score.gameScore == 50 && Score.bestScore < 50)
+                game.gpgsController.unlockAchievement(game.achievement_solid_runner);
+
+            if (Score.gameScore == 88 && Score.bestScore < 88)
+                game.gpgsController.unlockAchievement(game.achievement_like_a_forest);
+        }
+    }
+    public void submitScore(){
+        game.gpgsController.submitScore(Score.gameScore);
+    }
 
     private void createButtons(){
         watchButton = new Button(new BaseDrawable());
@@ -626,6 +645,7 @@ public class GameScreen implements Screen, InputProcessor {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(game.gameOver);
+                submitScore();
                 //deathScreen();
 
                 showInterstitialAd();
@@ -1373,8 +1393,9 @@ public class GameScreen implements Screen, InputProcessor {
         }
 
         if(player.getPosition().y <= -64*2){
-                //if(!secondChance && Application.loadedReborn) {
-                if(!secondChance) { // desktop
+            // android //TODO: uncomment when finish ad logic
+                if(!secondChance && Application.loadedReborn  && Score.gameScore >= 14 ) {
+                //if(!secondChance) { // desktop
                     nopeButton.setVisible(true);
                     watchButton.setVisible(true);
                     Gdx.input.setInputProcessor(stage);
@@ -1395,27 +1416,24 @@ public class GameScreen implements Screen, InputProcessor {
                         } else {
                             counter = 0;
                             game.setScreen(game.gameOver);
-
+                            submitScore();
                             showInterstitialAd();
                         }
                     } else {
                         game.setScreen(game.gameOver);
+                        submitScore();
                     }
                 } else if(secondChance) {
                     game.gameScreen.pause();
                     game.setScreen(game.gameOver);
+                    submitScore();
                     game.countDeathAmount();
                     showInterstitialAd();
                     secondChance = false;
+                } else if(!Application.reborn) {
+                    game.setScreen(game.gameOver);
+                    submitScore();
                 }
-
-
-            //TODO: uncomment when finish ad logic
-            /**if(Score.gameScore > 11) {
-                showAd();
-            } else {
-                game.setScreen(game.gameOver);
-            } **/
         }
     }
 
@@ -1436,7 +1454,7 @@ public class GameScreen implements Screen, InputProcessor {
             game.adsController.showInterstitialAd(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("Interstitial app closed");
+                    //System.out.println("Interstitial app closed");
                 }
             });
             game.showInterstitialAd = false;

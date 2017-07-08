@@ -75,7 +75,7 @@ public class Application extends Game {
 	public boolean activePlay = true;
 
 	public static Preferences preferences;
-	boolean loadPrefs = true; // загружать ли сохранения
+	boolean loadPrefs = false; // загружать ли сохранения
 	public static int gameSkin = 0; // 0 - standard
 	public static boolean playerAlive;
 
@@ -108,16 +108,29 @@ public class Application extends Game {
 	public String achievement_novice_runner = "CgkI28yY58YGEAIQAQ"; // Score - 14
 	public String achievement_solid_runner ="CgkI28yY58YGEAIQCA"; // Score - 50
 	public String achievement_like_a_forest ="CgkI28yY58YGEAIQBw"; // Score - 88
-	public String achievement_dead_again ="CgkI28yY58YGEAIQAw"; // Die - 5
+
+	public String achievement_what_is_that_shiny_thing = "CgkI28yY58YGEAIQDA"; // Collect - 1
+	public String achievement_treasure = "CgkI28yY58YGEAIQDQ"; // Collect - 100
+	public String achievement_nobleman = "CgkI28yY58YGEAIQDg"; // Collect - 200
+	public String achievement_your_first_capital = "CgkI28yY58YGEAIQDw"; // Collect - 500
+	public String achievement_1337 = "CgkI28yY58YGEAIQEA"; // Collect - 1337
 	public String achievement_scrooge_mcduck ="CgkI28yY58YGEAIQBA"; // Collect - 10000
-	public String achievement_big_brooother ="CgkI28yY58YGEAIQBQ"; // Open allSkins
+
+	public String achievement_dead_again ="CgkI28yY58YGEAIQAw"; // Die - 5
+	public String achievement_painful_start = "CgkI28yY58YGEAIQCQ"; // Die - 20
+	public String achievement_mad_huh = "CgkI28yY58YGEAIQCw"; // Die - 50
+	public String achievement_dark_core = "CgkI28yY58YGEAIQCg"; // Die - 200
+
+	public String achievement_open = "CgkI28yY58YGEAIQEQ"; // Open 1 skin
+	public String achievement_3x33 = "CgkI28yY58YGEAIQEg"; // Open 3 skins
+	public String achievement_big_brooother ="CgkI28yY58YGEAIQBQ"; // Open all Skins
+
 	public String achievement_hell_1 = "CgkI28yY58YGEAIQBg"; // Unlock new Challenge
-	public String achievement_what_is_that_shiny_thing = "CgkI28yY58YGEAIQDA";
 
 	public Application(AdsController adsController, GpgsController gpgsController){
 		this.adsController = adsController;
         this.gpgsController = gpgsController;
-		android = true;
+		android = false;
 	}
 
 
@@ -177,6 +190,8 @@ public class Application extends Game {
             if(preferences.contains("deathAmount")) deathAmount = preferences.getInteger("deathAmount");
 
 			if(preferences.contains("maxMoney")) Currency.maxMoney = preferences.getInteger("maxMoney");
+
+            if(preferences.contains("skinsOpened")) skinsOpened = preferences.getInteger("skinsOpened");
 		} else{ //RESET SAVES TO ZERO
 			Score.bestScore = 0;
 			Currency.currency = 0;
@@ -234,6 +249,12 @@ public class Application extends Game {
 
         preferences.putInteger("deathAmount", deathAmount);
         preferences.flush();
+
+		if(deathAmount == 5) gpgsController.unlockAchievement(achievement_dead_again);
+		if(deathAmount == 20) gpgsController.unlockAchievement(achievement_painful_start);
+		if(deathAmount == 50) gpgsController.unlockAchievement(achievement_mad_huh);
+		if(deathAmount == 200) gpgsController.unlockAchievement(achievement_dark_core);
+
     }
 
 	public int randomizeSkins(){
@@ -532,18 +553,6 @@ public class Application extends Game {
 		assetManager.load("sounds/death_all.wav", Sound.class);
 	}
 
-	public void checkScoreAchievements(){
-		if(android) {
-			if (Score.gameScore >= 14)
-				gpgsController.unlockAchievement(achievement_novice_runner);
-
-			if (Score.gameScore >= 50)
-				gpgsController.unlockAchievement(achievement_solid_runner);
-
-			if (Score.gameScore >= 88)
-				gpgsController.unlockAchievement(achievement_like_a_forest);
-		}
-	}
 	public void unlockFirstCoin(){
 		if(android)
 			gpgsController.unlockAchievement(achievement_what_is_that_shiny_thing);
@@ -551,5 +560,31 @@ public class Application extends Game {
 	public void unlockScroogeAchievment(){
 		if(android)
 			gpgsController.unlockAchievement(achievement_scrooge_mcduck);
+	}
+
+	public void unlockTreasureAchievment() {
+		gpgsController.unlockAchievement(achievement_treasure);
+	}
+	public void unlockNoblemanAchievment() {
+		gpgsController.unlockAchievement(achievement_nobleman);
+	}
+	public void unlockFirstCapitalAchievment() {
+		gpgsController.unlockAchievement(achievement_your_first_capital);
+	}
+	public void unlock1337Achievment() {
+		gpgsController.unlockAchievement(achievement_1337);
+	}
+
+	public int skinsOpened = 0;
+
+	public void checkSkinAchievments(){
+		if(skinsOpened == 1)
+			gpgsController.unlockAchievement(achievement_open);
+
+		if(skinsOpened == 3)
+			gpgsController.unlockAchievement(achievement_3x33);
+
+		if(skinsOpened == 4)
+			gpgsController.unlockAchievement(achievement_big_brooother);
 	}
 }

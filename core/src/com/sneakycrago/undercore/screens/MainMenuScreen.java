@@ -584,9 +584,11 @@ public class MainMenuScreen implements Screen, InputProcessor {
         glyphLayout.setText(game.smallWhiteFont,"" + Application.loadedMoney , Color.WHITE, 100, Align.bottomLeft, true);
 
         game.smallWhiteFont.draw(game.batch, glyphLayout, 0, 30);
-        glyphLayout.setText(game.smallWhiteFont,"GPGS:" + game.gpgsController.isSignedIn(), Color.WHITE, 100, Align.bottomLeft, true);
-        game.smallWhiteFont.draw(game.batch, glyphLayout, 0, 310);
+        glyphLayout.setText(game.smallWhiteFont,"GPGS:" + game.gpgsController.isSignedIn(), Color.WHITE, 300, Align.bottomLeft, true);
+        game.smallWhiteFont.draw(game.batch, glyphLayout, 0, 310*2);
 
+        glyphLayout.setText(game.smallWhiteFont,"skins:" + game.skinsOpened, Color.WHITE, 300, Align.bottomLeft, true);
+        game.smallWhiteFont.draw(game.batch, glyphLayout, 200, 310*2);
         game.batch.end();
         //test
         for(int i=0; i< plusButton.length; i++) {
@@ -599,6 +601,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
         if(game.android) {
             game.adsController.isRewardedMoneyLoaded();
         }
+        game.checkSkinAchievments();
     }
 
     private void showNoAds(){
@@ -691,8 +694,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
             saves[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    if(game.android)
-                    game.gpgsController.unlockAchievement(game.achievement_novice_runner);
+
                 }
             });
 
@@ -972,6 +974,11 @@ public class MainMenuScreen implements Screen, InputProcessor {
                         Application.skinLocked[Application.gameSkin] = false;
                         game.openedSkins.add(Application.gameSkin);
                         priceClicked();
+
+                        game.skinsOpened +=1;
+
+                        game.preferences.putInteger("skinsOpened", game.skinsOpened);
+                        game.preferences.flush();
 
                         game.preferences.putInteger("currency", Currency.currency);
                         game.preferences.flush();
