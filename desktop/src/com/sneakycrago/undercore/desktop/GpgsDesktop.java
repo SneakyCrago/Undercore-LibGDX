@@ -33,6 +33,11 @@ public class GpgsDesktop implements GpgsController {
     }
 
     @Override
+    public void submitMoney(int maxMoney) {
+
+    }
+
+    @Override
     public void showAchievements() {
 
     }

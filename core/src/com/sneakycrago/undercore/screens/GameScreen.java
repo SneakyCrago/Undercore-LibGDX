@@ -615,6 +615,7 @@ public class GameScreen implements Screen, InputProcessor {
     }
     public void submitScore(){
         game.gpgsController.submitScore(Score.gameScore);
+        game.gpgsController.submitMoney(Currency.maxMoney);
     }
 
     private void createButtons(){

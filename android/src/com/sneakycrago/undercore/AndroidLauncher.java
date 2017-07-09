@@ -478,6 +478,16 @@ public class AndroidLauncher extends AndroidApplication implements AdsController
 	}
 
 	@Override
+	public void submitMoney(int maxMoney) {
+		// отправить игровые очки в конкретную таблицу рекордов с ID
+		if (isSignedIn()) {
+			Games.Leaderboards.submitScore(googleApiClient, game.leaderboard_rich_people, maxMoney);
+		} else {
+			connect();
+		}
+	}
+
+	@Override
 	public void showAchievements() {
 		if (isSignedIn()) {
 			// вызвать Activity с достижениями

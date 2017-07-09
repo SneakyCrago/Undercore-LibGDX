@@ -264,8 +264,11 @@ public class GameOver implements Screen {
         game.preferences.flush();
         game.preferences.putInteger("currency", Currency.currency);
         game.preferences.flush();
+
         game.preferences.putInteger("maxMoney", Currency.maxMoney);
         game.preferences.flush();
+
+        game.gpgsController.submitMoney(Currency.maxMoney);
 
         Application.reborn = false;
     }

@@ -21,7 +21,7 @@ public class Wall {
     public int SPEED = -90; //-90
 
     private final int TEXTURE_SIZE = 32;
-    private final int FREE_SPACE = 128;
+    private final int FREE_SPACE = 128 + 64;
     public final int BLOCK_SIZE = TEXTURE_SIZE*8 + FREE_SPACE *7;
 
     private int massive[];

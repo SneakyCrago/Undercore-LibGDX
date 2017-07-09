@@ -20,7 +20,7 @@ public class Currency {
     public static int maxMoney = 0;
 
     private static Random random = new Random();
-    private static float  X = 12f;
+    private static float  X = 25f; //old - 12f
     private static double chance;
     private static double fraction; //остаток от деления
     private static int randomNumber = 0;

@@ -104,6 +104,7 @@ public class Application extends Game {
 	public static boolean reborn = false; // Awarded Boolean
 
     public String leaderboard_Highscore = "CgkI28yY58YGEAIQAA";
+	public String leaderboard_rich_people = "CgkI28yY58YGEAIQEw";
 
 	public String achievement_novice_runner = "CgkI28yY58YGEAIQAQ"; // Score - 14
 	public String achievement_solid_runner ="CgkI28yY58YGEAIQCA"; // Score - 50
@@ -127,7 +128,7 @@ public class Application extends Game {
 
 	public String achievement_hell_1 = "CgkI28yY58YGEAIQBg"; // Unlock new Challenge
 
-	public boolean test = false;
+	public boolean test = true;
 
 	public boolean showRandom = false;
 
@@ -137,6 +138,7 @@ public class Application extends Game {
 		android = true;
 
 		test = false;
+		// for RELEASE: test = false android = true loadPrefs = true
 	}
 
 

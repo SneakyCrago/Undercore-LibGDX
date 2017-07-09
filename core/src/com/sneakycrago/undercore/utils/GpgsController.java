@@ -18,6 +18,8 @@ public interface GpgsController {
      */
     public void unlockAchievement(String achievementId);
     public void submitScore(int highScore);
+
+    public void submitMoney(int maxMoney);
     /** Показать Activity с достижениями */
     public void showAchievements();
     /** Показать Activity с таблицей рекордов */
