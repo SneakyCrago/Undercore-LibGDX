@@ -135,6 +135,8 @@ public class Application extends Game {
 		this.adsController = adsController;
         this.gpgsController = gpgsController;
 		android = true;
+
+		test = false;
 	}
 
 

@@ -176,11 +176,9 @@ public class GameScreen implements Screen, InputProcessor {
 
         deathSound = false;
 
+        // test
 
-        //makeSmallArrow(SPAWN);
-        //startZoneStart = false;
-
-        game.ambientSound.setVolume(Application.volume * 0.1f);
+        game.ambientSound.setVolume(Application.volume * 0.2f);
         game.ambientSound.play();
 
         time = 2.99f;
@@ -260,7 +258,9 @@ public class GameScreen implements Screen, InputProcessor {
             circle.drawCircles(game.batch);
         }
         if(laserZoneStart) {
-         laser.drawLaserGun(game.batch);
+            if(!startPlay && !startAfterDeath) {
+                laser.drawLaserGun(game.batch);
+            }
         }
 
         if(startAfterDeath || startPlay){
@@ -329,7 +329,7 @@ public class GameScreen implements Screen, InputProcessor {
                 game.startEN.draw(game.batch, glyphLayout, 0, 310 + glyphLayout.height / 2);
             } else if(game.ru) {
                 glyphLayout.setText(game.start40RU, "НАЖМИТЕ ЧТО БЫ НАЧАТЬ", Color.WHITE, 512 * 2, Align.center, true);
-                game.start40RU.draw(game.batch, glyphLayout, 0+ 40, 310 + glyphLayout.height / 2);
+                game.start40RU.draw(game.batch, glyphLayout, 0+ 60, 310 + glyphLayout.height / 2);
             }
         }
 
@@ -475,7 +475,7 @@ public class GameScreen implements Screen, InputProcessor {
         if (Application.reborn) {
             secondChance = true;
 
-            game.ambientSound.setVolume(Application.volume * 0.1f);
+            game.ambientSound.setVolume(Application.volume * 0.2f);
             game.ambientSound.play();
 
             nopeButton.setVisible(false);
@@ -486,7 +486,6 @@ public class GameScreen implements Screen, InputProcessor {
 
                 deathSound = false;
                 player.deathPlayed = false;
-            }
                 if (deathWall) {
                     wall.secondChance(SPAWN);
                     corridor.init(start_corridor);
@@ -510,6 +509,7 @@ public class GameScreen implements Screen, InputProcessor {
                     //makeSniper(SPAWN);
                     sniperZone.secondChance(SPAWN, game);
                 }
+            }
 
                 //Gdx.input.setInputProcessor(this);
 
@@ -1390,7 +1390,7 @@ public class GameScreen implements Screen, InputProcessor {
         }
 
         if(player.getPosition().y <= -64*2){
-            // android //TODO: uncomment when finish ad logic
+            // android
                 if(!secondChance && Application.loadedReborn  && Score.gameScore >= 14 ) {
                 //if(!secondChance) { // desktop
                     nopeButton.setVisible(true);
@@ -1441,7 +1441,7 @@ public class GameScreen implements Screen, InputProcessor {
         Application.playerAlive = false;
         player.deathAnimation();
         if(!deathSound) {
-            game.deathAllSound.play(Application.volume);
+            game.deathAllSound.play(Application.volume * 0.5f);
             deathSound = true;
         }
     }
@@ -1463,26 +1463,31 @@ public class GameScreen implements Screen, InputProcessor {
         if (bigArrowBlockStart) {
             //DRAW BIG ARROW LINE
             game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            if (!bigArrow.playEffect) {
-                bigArrow.drawArrowLine(game.shapeRenderer);
-            }
-            if (!bigArrow.playEffect2) {
-                bigArrow.drawArrow2Line(game.shapeRenderer);
+            if(!startAfterDeath && !startPlay) {
+                if (!bigArrow.playEffect) {
+                    bigArrow.drawArrowLine(game.shapeRenderer);
+                }
+                if (!bigArrow.playEffect2) {
+                    bigArrow.drawArrow2Line(game.shapeRenderer);
+                }
             }
             game.shapeRenderer.end();
 
             //DRAW BIG ARROW
             game.batch.begin();
             bigArrow.drawArrows(game.batch);
-            bigArrow.arrowEffect(delta);
-            if (bigArrow.secondStart) {
-                bigArrow.arrowEffect2(delta);
-            }
-            if (!bigArrow.playEffect) {
-                bigArrow.update(delta);
-            }
-            if (!bigArrow.playEffect2) {
-                bigArrow.update2(delta);
+
+            if(!startAfterDeath && !startPlay) {
+                bigArrow.arrowEffect(delta);
+                if (bigArrow.secondStart) {
+                    bigArrow.arrowEffect2(delta);
+                }
+                if (!bigArrow.playEffect) {
+                    bigArrow.update(delta);
+                }
+                if (!bigArrow.playEffect2) {
+                    bigArrow.update2(delta);
+                }
             }
             game.batch.end();
 

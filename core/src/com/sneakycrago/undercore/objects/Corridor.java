@@ -41,6 +41,7 @@ public class Corridor {
         topRightRects = new Rectangle[7];
         bottomRets = new Rectangle[15];
 
+
     }
     public void init(float START){
         x =(int) START;
@@ -49,6 +50,9 @@ public class Corridor {
         velocity.set(0,0);
 
         createRects(x);
+
+        halfScore = false;
+        secondHalfScore = false;
     }
 
     public void update(float delta){
