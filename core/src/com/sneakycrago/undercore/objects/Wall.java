@@ -21,8 +21,8 @@ public class Wall {
     public int SPEED = -90; //-90
 
     private final int TEXTURE_SIZE = 32;
-    private final int FREE_SPACE = 128 + 64;
-    public final int BLOCK_SIZE = TEXTURE_SIZE*8 + FREE_SPACE *7;
+    private int FREE_SPACE = 128 + 64; // start 192 after - 128
+    public int BLOCK_SIZE = TEXTURE_SIZE*8 + FREE_SPACE *7;
 
     private int massive[];
 
@@ -52,8 +52,11 @@ public class Wall {
         massiveRect2 = new Rectangle[8];
     }
 
-    public void init(float START){
+    public void init(float START, int FREE_SPACE){
         x =(int) START;
+
+        this.FREE_SPACE = FREE_SPACE;
+        BLOCK_SIZE = TEXTURE_SIZE*8 + FREE_SPACE *7;
 
         isScored = new boolean[8];
 
@@ -68,8 +71,11 @@ public class Wall {
 
         createRects(x);
     }
-    public void secondChance(float START){
+
+    public void secondChance(float START, int FREE_SPACE){
         x =(int) START;
+        this.FREE_SPACE = FREE_SPACE;
+        BLOCK_SIZE = TEXTURE_SIZE*8 + FREE_SPACE *7;
 
         posBlock.set(0, 11);
         velocity.set(0,0);

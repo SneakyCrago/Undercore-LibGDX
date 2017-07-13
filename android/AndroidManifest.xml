@@ -2,8 +2,8 @@
     <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     package="com.sneakycrago.undercore"
-    android:versionCode="12"
-    android:versionName="0.81a" >
+    android:versionCode="13"
+    android:versionName="0.81b" >
 
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19" />
 

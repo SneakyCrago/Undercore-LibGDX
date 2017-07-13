@@ -636,6 +636,7 @@ public class MainMenuScreen implements Screen, InputProcessor {
         game.batch.end();
     }
 
+
     private void showRewardedMoneyAd(){
         if(game.android) {
             game.adsController.showRewardedVideo(new Runnable() {

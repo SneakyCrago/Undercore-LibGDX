@@ -132,6 +132,8 @@ public class Application extends Game {
 
 	public boolean showRandom = false;
 
+	public boolean showMoneyTutorial;
+
 	public Application(AdsController adsController, GpgsController gpgsController){
 		this.adsController = adsController;
         this.gpgsController = gpgsController;
@@ -192,14 +194,14 @@ public class Application extends Game {
 			if(preferences.contains("skinLocked4")) skinLocked[4] = preferences.getBoolean("skinLocked4");
 
 			if(preferences.contains("skinsBought")) skinsBought = preferences.getInteger("skinsBought");
-
 			if(preferences.contains("gameSkin")) gameSkin = preferences.getInteger("gameSkin");
 
             if(preferences.contains("deathAmount")) deathAmount = preferences.getInteger("deathAmount");
-
 			if(preferences.contains("maxMoney")) Currency.maxMoney = preferences.getInteger("maxMoney");
-
             if(preferences.contains("skinsOpened")) skinsOpened = preferences.getInteger("skinsOpened");
+
+			if(preferences.contains("showMoneyTutorial")) showMoneyTutorial = preferences.getBoolean("showMoneyTutorial");
+
 		} else{ //RESET SAVES TO ZERO
 			Score.bestScore = 0;
 			Currency.currency = 0;
@@ -227,6 +229,10 @@ public class Application extends Game {
 
 			preferences.putInteger("maxMoney", Currency.maxMoney);
 			preferences.flush();
+
+			showMoneyTutorial = true;
+			preferences.putBoolean("showMoneyTutorial", showMoneyTutorial);
+			preferences.flush();
 		}
 		adTimer();
 
@@ -240,6 +246,9 @@ public class Application extends Game {
 
 
 		setScreen(loadingScreen);
+
+		checkAchievmentsOnStart();
+
 	}
 	public float AD_TIME = 300;
 	public void adTimer(){
@@ -599,5 +608,61 @@ public class Application extends Game {
 
 		if(skinsOpened == 4)
 			gpgsController.unlockAchievement(achievement_big_brooother);
+	}
+
+	public void checkAchievmentsOnStart(){
+
+		// Money
+		if(Currency.maxMoney >= 1) {
+			gpgsController.unlockAchievement(achievement_what_is_that_shiny_thing);
+		}
+		if(Currency.maxMoney >= 100) {
+			gpgsController.unlockAchievement(achievement_treasure);
+		}
+		if(Currency.maxMoney >= 200) {
+			gpgsController.unlockAchievement(achievement_nobleman);
+		}
+		if(Currency.maxMoney >= 500) {
+			gpgsController.unlockAchievement(achievement_your_first_capital);
+		}
+		if(Currency.maxMoney >= 1337) {
+			gpgsController.unlockAchievement(achievement_1337);
+		}
+		if(Currency.maxMoney >= 10000) {
+			gpgsController.unlockAchievement(achievement_scrooge_mcduck);
+		}
+		// Score
+		if(Score.bestScore >= 14) {
+			gpgsController.unlockAchievement(achievement_novice_runner);
+		}
+		if(Score.bestScore >= 50) {
+			gpgsController.unlockAchievement(achievement_solid_runner);
+		}
+		if(Score.bestScore >= 88) {
+			gpgsController.unlockAchievement(achievement_like_a_forest);
+		}
+		// Death
+		if(deathAmount >= 5)
+			gpgsController.unlockAchievement(achievement_dead_again);
+
+		if(deathAmount >= 20)
+			gpgsController.unlockAchievement(achievement_painful_start);
+
+		if(deathAmount >= 50)
+			gpgsController.unlockAchievement(achievement_mad_huh);
+
+		if(deathAmount >= 200)
+			gpgsController.unlockAchievement(achievement_dark_core);
+
+		//World Skins
+		if(skinsOpened >= 1)
+			gpgsController.unlockAchievement(achievement_open);
+
+		if(skinsOpened >= 3)
+			gpgsController.unlockAchievement(achievement_3x33);
+
+		if(skinsOpened >= 4)
+			gpgsController.unlockAchievement(achievement_big_brooother);
+
 	}
 }

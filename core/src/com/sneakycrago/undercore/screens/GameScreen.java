@@ -156,7 +156,7 @@ public class GameScreen implements Screen, InputProcessor {
         Application.playerAlive = true;
 
         startZoneStart = true;
-        wall.init(SPAWN);
+        wall.init(SPAWN, 160);
         corridor.init(start_corridor);
 
         laser = new Laser(game); //Lasers
@@ -215,6 +215,7 @@ public class GameScreen implements Screen, InputProcessor {
 
    int buttonX, buttonY;
 
+    int click;
 
     @Override
     public void render(float delta) {
@@ -309,6 +310,7 @@ public class GameScreen implements Screen, InputProcessor {
             game.font10.draw(game.batch, "Award(reborn):" + Application.reborn, 0, (288 - 24 - 12 * 5) * 2);
             game.font10.draw(game.batch, "secondChance:" + secondChance, 0, (288 - 24 - 12 * 6) * 2);
             game.font10.draw(game.batch, "afterDeath:" + startAfterDeath, 0, (288 - 24 - 12 * 7) * 2);
+            game.font10.draw(game.batch, "maxMoney:" + Currency.maxMoney, 0, (288 - 24 - 12 * 8) * 2);
         }
         glyphLayout.setText(game.borderFont, ""+ Score.getGameScore() , Color.WHITE,512*2, Align.center, true);
         game.borderFont.draw(game.batch, glyphLayout, 0, (11 + 288 - 4)*2);
@@ -359,7 +361,9 @@ public class GameScreen implements Screen, InputProcessor {
         }
 
         //COLLISION
-        collisionCheck(delta);
+        //if(click > 10) {
+            collisionCheck(delta);
+        //}
         //collisionDebug();
 
         //SECOND CHANCE
@@ -487,7 +491,7 @@ public class GameScreen implements Screen, InputProcessor {
                 deathSound = false;
                 player.deathPlayed = false;
                 if (deathWall) {
-                    wall.secondChance(SPAWN);
+                    wall.secondChance(SPAWN, 128);
                     corridor.init(start_corridor);
                 }
                 if (deathBigArrow) {
@@ -1108,12 +1112,14 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     private void makeStart(int lastZone){
-        wall.init(lastZone);
+        wall.init(lastZone, 128);
+        start_corridor = SPAWN + wall.getBLOCK_SIZE() + 256;
         corridor.init(lastZone +start_corridor - 512);
 
         startZoneStart = true;
         startOverlaped = false;
     }
+
     private void makeBigArrow(){
         bigArrowBlockStart = true;
         bigArrow.init();
@@ -1570,6 +1576,7 @@ public class GameScreen implements Screen, InputProcessor {
         if(startPlay) {
             startPlay = false;
         }
+        click +=1;
         return true;
     }
 
