@@ -106,6 +106,8 @@ public class GameScreen implements Screen, InputProcessor {
 
     private Currency currency;
 
+    private float GAME_SPEED = 1;
+
     public GameScreen(Application game) {
         this.game = game;
         this.camera = game.camera;
@@ -146,24 +148,26 @@ public class GameScreen implements Screen, InputProcessor {
         //Application.gameSkin = random.nextInt(5);
 
         //create objects
-        whiteSides = new WhiteSides();
+        whiteSides = new WhiteSides(game);
         player = new Player(96, 139, game);
 
-        wall = new Wall(); //START BLOCK
+        wall = new Wall(game.SPEED,game); //START BLOCK
         start_corridor = SPAWN + wall.getBLOCK_SIZE() + 256;
-        corridor = new Corridor();
+        corridor = new Corridor(game,game.SPEED);
 
         Application.playerAlive = true;
 
         startZoneStart = true;
         wall.init(SPAWN, 160);
-        corridor.init(start_corridor);
 
-        laser = new Laser(game); //Lasers
-        bigArrow = new BigArrow(game);
-        circle = new Circle(game);
-        smallArrowZone = new SmallArrowZone();
-        sniperZone = new SniperZone();
+        corridor.init(start_corridor, false);
+
+        laser = new Laser(game, game.SPEED); //Lasers
+        bigArrow = new BigArrow(game, game.SPEED * (-6));
+        circle = new Circle(game, game.SPEED);
+        smallArrowZone = new SmallArrowZone(game,game.SPEED *2);
+        sniperZone = new SniperZone(game.SPEED);
+
 
         amountOfBigArrows = random.nextInt(3) + 3;
 
@@ -265,6 +269,7 @@ public class GameScreen implements Screen, InputProcessor {
         }
 
         if(startAfterDeath || startPlay){
+            if(Application.playerSkin != 3)
             player.inMenuAnimation(game.batch,delta,game);
         }
 
@@ -341,18 +346,49 @@ public class GameScreen implements Screen, InputProcessor {
         if(snipersStart) {
             sniperZone.drawBullet(game.batch);
         }
-        player.drawPlayerAnimation(game.batch);
-        game.batch.end();
-
-        game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        player.drawPlayerCube(game.shapeRenderer); //draw PlayerCube
-        if(onLine) {
-            player.drawPlayerLine(game.shapeRenderer);
-            player.Jump = false;
+        if(Application.playerSkin != 3 ) {
+            if (!onLine) {
+                player.drawPlayerAnimation(game.batch);
+            } else if (Application.playerSkin == 1 ) {
+                player.drawPlayerAnimation(game.batch);
+            } else if(Application.playerSkin == 1  && !player.alive) {
+                player.drawPlayerAnimation(game.batch);
+            }
         }
 
-        game.shapeRenderer.end();
 
+        if(Application.playerSkin !=0) {
+            if(player.Jump) {
+                player.drawPlayerSprite(game.batch);
+            }
+            if(player.Line) {
+                player.drawPlayerSpriteLine(game.batch);
+                player.Jump = false;
+            }
+            if(!player.alive) {
+                player.drawPlayerSprite(game.batch);
+            }
+        }
+
+        game.batch.end();
+
+        if(Application.playerSkin == 0) {
+            game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            player.drawPlayerCube(game.shapeRenderer); //draw PlayerCube
+            if (onLine) {
+                player.drawPlayerLine(game.shapeRenderer);
+                player.Jump = false;
+            }
+            game.shapeRenderer.end();
+        }
+        if(Application.playerSkin == 2) {
+            game.shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            if (onLine) {
+                player.drawPlayerLine(game.shapeRenderer);
+                player.Jump = false;
+            }
+            game.shapeRenderer.end();
+        }
 
         zoneCreator();
 
@@ -362,7 +398,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         //COLLISION
         //if(click > 10) {
-            collisionCheck(delta);
+           collisionCheck(delta);
         //}
         //collisionDebug();
 
@@ -388,6 +424,8 @@ public class GameScreen implements Screen, InputProcessor {
         }
 
         checkScoreAchievements();
+
+
     }
     private int counterHelper;
     private boolean counterCheked =  false;
@@ -476,6 +514,7 @@ public class GameScreen implements Screen, InputProcessor {
     private int buttonHeight = 32;
 
     private void makeReborn(){
+        //Application.loadedReborn= true;
         if (Application.reborn) {
             secondChance = true;
 
@@ -488,11 +527,13 @@ public class GameScreen implements Screen, InputProcessor {
                 player.alive = true;
                 Application.playerAlive = true;
 
+                player.Jump = true;
+
                 deathSound = false;
                 player.deathPlayed = false;
                 if (deathWall) {
                     wall.secondChance(SPAWN, 128);
-                    corridor.init(start_corridor);
+                    corridor.init(start_corridor, true);
                 }
                 if (deathBigArrow) {
                     makeBigArrow();
@@ -674,7 +715,8 @@ public class GameScreen implements Screen, InputProcessor {
 
     public void update(float delta) {
         if(!startAfterDeath && !startPlay) {
-            player.update(delta);
+            player.update(delta, GAME_SPEED);
+            player.checkWhiteSides();
             if (startZoneStart) {
                 wall.update(delta);
                 corridor.update(delta);
@@ -1114,7 +1156,7 @@ public class GameScreen implements Screen, InputProcessor {
     private void makeStart(int lastZone){
         wall.init(lastZone, 128);
         start_corridor = SPAWN + wall.getBLOCK_SIZE() + 256;
-        corridor.init(lastZone +start_corridor - 512);
+        corridor.init(lastZone +start_corridor - 512, true);
 
         startZoneStart = true;
         startOverlaped = false;
@@ -1162,6 +1204,17 @@ public class GameScreen implements Screen, InputProcessor {
     public void collisionDebug(){
         game.shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         game.shapeRenderer.setColor(0f,0f,1f,1f);
+
+        // player circle
+        if(Application.playerSkin == 1) {
+            game.shapeRenderer.circle(player.getPlayerCircle().x, player.getPlayerCircle().y, player.getPlayerCircle().radius);
+        }
+        //player Circle Arrow
+        if(Application.playerSkin == 3) {
+            game.shapeRenderer.circle(player.getCircleArrowUp().x, player.getCircleArrowUp().y, player.getCircleArrowUp().radius);
+            game.shapeRenderer.circle(player.getCircleArrowDown().x, player.getCircleArrowDown().y, player.getCircleArrowDown().radius);
+            game.shapeRenderer.circle(player.getCircleArrowSmall().x, player.getCircleArrowSmall().y, player.getCircleArrowSmall().radius);
+        }
         //WALLS endZone
         game.shapeRenderer.rect(wall.getZoneRect().getX(),wall.getZoneRect().getY(), wall.getZoneRect().getWidth(),
                 wall.getZoneRect().getHeight());
@@ -1182,7 +1235,9 @@ public class GameScreen implements Screen, InputProcessor {
                corridor.getEndZone().getWidth(), corridor.getEndZone().getHeight());
 
         //POLYGONS
-        game.shapeRenderer.polygon(player.getPlayerPolygon().getTransformedVertices());
+        if(Application.playerSkin != 1 || Application.playerSkin != 3) {
+            game.shapeRenderer.polygon(player.getPlayerPolygon().getTransformedVertices());
+        }
         game.shapeRenderer.polygon(bigArrow.getArrowPolygon().getTransformedVertices());
         game.shapeRenderer.polygon(bigArrow.getArrowPolygon2().getTransformedVertices());
 
@@ -1271,29 +1326,92 @@ public class GameScreen implements Screen, InputProcessor {
         if(startZoneStart) {
             //WALL
             for (int i = 0; i < wall.getMassiveRect().length; i++) {
-                if (player.getPlayerRectangle().overlaps(wall.getMassiveRect()[i]) ||
-                        player.getPlayerRectangle().overlaps(wall.getMassiveRect2()[i]) && player.alive) {
-                    playerDeath();
-                    if(!secondChance) {
-                        deathWall = true;
+                if(Application.playerSkin != 1 && Application.playerSkin != 3) { //others
+                    if (player.getPlayerRectangle().overlaps(wall.getMassiveRect()[i]) ||
+                            player.getPlayerRectangle().overlaps(wall.getMassiveRect2()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathWall = true;
+                        }
+                    }
+                } else if(Application.playerSkin == 1) { //moon
+                    if (Intersector.overlaps(player.getPlayerCircle(), wall.getMassiveRect()[i]) ||
+                            Intersector.overlaps(player.getPlayerCircle(), wall.getMassiveRect2()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathWall = true;
+                        }
+                    }
+                } else if(Application.playerSkin == 3) { //arrow
+                    if (Intersector.overlaps(player.getCircleArrowDown(), wall.getMassiveRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowDown(), wall.getMassiveRect2()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(), wall.getMassiveRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(), wall.getMassiveRect2()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowSmall(), wall.getMassiveRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowSmall(), wall.getMassiveRect2()[i])&& player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathWall = true;
+                        }
                     }
                 }
             }
             //CORRIDOR
             for(int i=0; i< corridor.getTopLeftRects().length; i++) { //between corridor top
-                if (player.getPlayerRectangle().overlaps(corridor.getTopLeftRects()[i]) ||
-                        player.getPlayerRectangle().overlaps(corridor.getTopRightRects()[i]) && player.alive){
-                    playerDeath();
-                    if(!secondChance) {
-                        deathWall = true;
+                if(Application.playerSkin != 1 && Application.playerSkin != 3) {
+                    if (player.getPlayerRectangle().overlaps(corridor.getTopLeftRects()[i]) ||
+                            player.getPlayerRectangle().overlaps(corridor.getTopRightRects()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathWall = true;
+                        }
+                    }
+                } else if(Application.playerSkin == 1) {
+                    if (Intersector.overlaps(player.getPlayerCircle(), corridor.getTopLeftRects()[i]) ||
+                            Intersector.overlaps(player.getPlayerCircle(), corridor.getTopRightRects()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathWall = true;
+                        }
+                    }
+                } else if(Application.playerSkin == 3) {
+                    if (Intersector.overlaps(player.getCircleArrowDown(), corridor.getTopLeftRects()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowDown(), corridor.getTopRightRects()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(), corridor.getTopLeftRects()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(), corridor.getTopRightRects()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowSmall(), corridor.getTopLeftRects()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowSmall(), corridor.getTopRightRects()[i])&& player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathWall = true;
+                        }
                     }
                 }
             }
+
             for(int i=0; i < corridor.getBottomRets().length;i++) {
-                if(player.getPlayerRectangle().overlaps(corridor.getBottomRets()[i]) && player.alive) { // between corridor bottom
-                    playerDeath();
-                    if(!secondChance) {
-                        deathWall = true;
+                if(Application.playerSkin != 1 && Application.playerSkin != 3) {
+                    if (player.getPlayerRectangle().overlaps(corridor.getBottomRets()[i]) && player.alive) { // between corridor bottom
+                        playerDeath();
+                        if (!secondChance) {
+                            deathWall = true;
+                        }
+                    }
+                } else if(Application.playerSkin == 1) {
+                    if (Intersector.overlaps(player.getPlayerCircle(), corridor.getBottomRets()[i]) && player.alive) { // between corridor bottom
+                        playerDeath();
+                        if (!secondChance) {
+                            deathWall = true;
+                        }
+                    }
+                } else if(Application.playerSkin == 3) {
+                    if (Intersector.overlaps(player.getCircleArrowDown(), corridor.getBottomRets()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(), corridor.getBottomRets()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowSmall(), corridor.getBottomRets()[i])&& player.alive) { // between corridor bottom
+                        playerDeath();
+                        if (!secondChance) {
+                            deathWall = true;
+                        }
                     }
                 }
             }
@@ -1301,20 +1419,61 @@ public class GameScreen implements Screen, InputProcessor {
 
         //BIG ARROW check collision
         if(bigArrowBlockStart) {
-            if (player.getPlayerRectangle().overlaps(bigArrow.getLineRectangle()) && player.alive) { // between line
-                playerDeath();
-                if(!secondChance) {
-                    deathBigArrow = true;
+            if(Application.playerSkin != 1 && Application.playerSkin != 3) {
+                if (player.getPlayerRectangle().overlaps(bigArrow.getLineRectangle()) && player.alive) { // between line
+                    playerDeath();
+                    if (!secondChance) {
+                        deathBigArrow = true;
+                    }
+                    //System.out.println("Collision: BIG ARROW Line");
                 }
-                //System.out.println("Collision: BIG ARROW Line");
-            }
-            if (player.getPlayerRectangle().overlaps(bigArrow.getLine2Rectangle())&& player.alive) {
-                playerDeath();
-                if(!secondChance) {
-                    deathBigArrow = true;
+            } else if(Application.playerSkin == 1) {
+                if (Intersector.overlaps(player.getPlayerCircle(), bigArrow.getLineRectangle()) && player.alive) { // between line
+                    playerDeath();
+                    if (!secondChance) {
+                        deathBigArrow = true;
+                    }
+                    //System.out.println("Collision: BIG ARROW Line");
                 }
-                //System.out.println("Collision: BIG ARROW Line2");
+            } else if(Application.playerSkin == 3) {
+                if (Intersector.overlaps(player.getCircleArrowDown(), bigArrow.getLineRectangle()) ||
+                        Intersector.overlaps(player.getCircleArrowUp(), bigArrow.getLineRectangle()) ||
+                        Intersector.overlaps(player.getCircleArrowSmall(), bigArrow.getLineRectangle())&& player.alive) { // between line
+                    playerDeath();
+                    if (!secondChance) {
+                        deathBigArrow = true;
+                    }
+                }
             }
+
+            if(Application.playerSkin != 1 && Application.playerSkin != 3) {
+                if (player.getPlayerRectangle().overlaps(bigArrow.getLine2Rectangle()) && player.alive) {
+                    playerDeath();
+                    if (!secondChance) {
+                        deathBigArrow = true;
+                    }
+                    //System.out.println("Collision: BIG ARROW Line2");
+                }
+            } else if(Application.playerSkin == 1) {
+                if (Intersector.overlaps(player.getPlayerCircle(), bigArrow.getLine2Rectangle()) && player.alive) {
+                    playerDeath();
+                    if (!secondChance) {
+                        deathBigArrow = true;
+                    }
+                    //System.out.println("Collision: BIG ARROW Line2");
+                }
+            } else if(Application.playerSkin ==3) {
+                if (Intersector.overlaps(player.getCircleArrowDown(), bigArrow.getLine2Rectangle()) ||
+                        Intersector.overlaps(player.getCircleArrowUp(), bigArrow.getLine2Rectangle()) ||
+                        Intersector.overlaps(player.getCircleArrowSmall(), bigArrow.getLine2Rectangle())&& player.alive) {
+                    playerDeath();
+                    if (!secondChance) {
+                        deathBigArrow = true;
+                    }
+                    //System.out.println("Collision: BIG ARROW Line2");
+                }
+            }
+
             if (Intersector.overlapConvexPolygons(player.getPlayerPolygon(), bigArrow.getArrowPolygon())&& player.alive) {
                 playerDeath();
                 if(!secondChance) {
@@ -1330,75 +1489,193 @@ public class GameScreen implements Screen, InputProcessor {
                 //System.out.println("Collision: BIG ARROW Polygon2");
             }
         }
+
         //LaserCollision
         if(laserZoneStart) {
             for (int i = 0; i < laser.getTopWall().length; i++) {
-                if (player.getPlayerRectangle().overlaps(laser.getTopWall()[i]) ||
-                        player.getPlayerRectangle().overlaps(laser.getDownWall()[i]) && player.alive) {
-                    playerDeath();
-                    if(!secondChance) {
-                        deathLaser = true;
+                if(Application.playerSkin != 1 && Application.playerSkin !=3 ) {
+                    if (player.getPlayerRectangle().overlaps(laser.getTopWall()[i]) ||
+                            player.getPlayerRectangle().overlaps(laser.getDownWall()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathLaser = true;
+                        }
+                        //System.out.println("Collision: LASER WALL");
                     }
-                    //System.out.println("Collision: LASER WALL");
-                }
-                // проверяем оранжевый лазер, если на линии -> смерть
-                if (player.getPlayerRectangle().overlaps(laser.getOrangeLaserRect()[i]) && player.Line && player.alive) {
-                    playerDeath();
-                    if(!secondChance) {
-                        deathLaser = true;
+                    // проверяем оранжевый лазер, если на линии -> смерть
+                    if (player.getPlayerRectangle().overlaps(laser.getOrangeLaserRect()[i]) && player.Line && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathLaser = true;
+                        }
+                        //System.out.println("Collision: Orange LASER");
                     }
-                    //System.out.println("Collision: Orange LASER");
-                }
-                // проверяем голубой лазер, если состояние в прыжке -> смерть
-                if (player.getPlayerRectangle().overlaps(laser.getBlueLaserRect()[i]) && player.Jump && player.alive) {
-                    playerDeath();
-                    if(!secondChance) {
-                        deathLaser = true;
+                    // проверяем голубой лазер, если состояние в прыжке -> смерть
+                    if (player.getPlayerRectangle().overlaps(laser.getBlueLaserRect()[i]) && player.Jump && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathLaser = true;
+                        }
+                        //System.out.println("Collision: Blue LASER");
                     }
-                    //System.out.println("Collision: Blue LASER");
+                } else if(Application.playerSkin == 1){
+                    if (Intersector.overlaps(player.getPlayerCircle(), laser.getTopWall()[i]) ||
+                            Intersector.overlaps(player.getPlayerCircle(), laser.getDownWall()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathLaser = true;
+                        }
+                        //System.out.println("Collision: LASER WALL");
+                    }
+                    // проверяем оранжевый лазер, если на линии -> смерть
+                    if (Intersector.overlaps(player.getPlayerCircle(), laser.getOrangeLaserRect()[i]) && player.Line && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathLaser = true;
+                        }
+                        //System.out.println("Collision: Orange LASER");
+                    }
+                    // проверяем голубой лазер, если состояние в прыжке -> смерть
+                    if (Intersector.overlaps(player.getPlayerCircle(), laser.getBlueLaserRect()[i]) && player.Jump && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathLaser = true;
+                        }
+                        //System.out.println("Collision: Blue LASER");
+                    }
+                } else if(Application.playerSkin == 3){
+                    if (Intersector.overlaps(player.getCircleArrowDown(), laser.getTopWall()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowDown(), laser.getDownWall()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(), laser.getTopWall()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(), laser.getDownWall()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowSmall(), laser.getTopWall()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowSmall(), laser.getDownWall()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathLaser = true;
+                        }
+                        //System.out.println("Collision: LASER WALL");
+                    }
+                    // проверяем оранжевый лазер, если на линии -> смерть
+                    if (/*Intersector.overlaps(player.getCircleArrowDown(), laser.getOrangeLaserRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(), laser.getOrangeLaserRect()[i]) || */
+                            Intersector.overlaps(player.getCircleArrowSmall(), laser.getOrangeLaserRect()[i]) && player.Line && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathLaser = true;
+                        }
+                        //System.out.println("Collision: Orange LASER");
+                    }
+                    // проверяем голубой лазер, если состояние в прыжке -> смерть
+                    if (/*Intersector.overlaps(player.getCircleArrowDown(), laser.getBlueLaserRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(), laser.getBlueLaserRect()[i]) || */
+                            Intersector.overlaps(player.getCircleArrowSmall(), laser.getBlueLaserRect()[i]) && player.Jump && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathLaser = true;
+                        }
+                        //System.out.println("Collision: Blue LASER");
+                    }
                 }
             }
         }
         //Circles
         if(circlesStart) {
             for (int i = 0; i < circle.getMiddleRect().length; i++) {
-                if (player.getPlayerRectangle().overlaps(circle.getMiddleRect()[i]) && player.alive) {
-                    playerDeath();
-                    if(!secondChance) {
-                        deathCircle = true;
+                if (Application.playerSkin != 1 && Application.playerSkin != 3) {
+                    if (player.getPlayerRectangle().overlaps(circle.getMiddleRect()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathCircle = true;
+                        }
+                        //System.out.println("Collision: Middle CIRCLE");
                     }
-                    //System.out.println("Collision: Middle CIRCLE");
+                } else if(Application.playerSkin == 1) {
+                    if (Intersector.overlaps(player.getPlayerCircle(), circle.getMiddleRect()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathCircle = true;
+                        }
+                        //System.out.println("Collision: Middle CIRCLE");
+                    }
+                } else if(Application.playerSkin == 3) {
+                    if (Intersector.overlaps(player.getCircleArrowDown(), circle.getMiddleRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(), circle.getMiddleRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowSmall(), circle.getMiddleRect()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathCircle = true;
+                        }
+                        //System.out.println("Collision: Middle CIRCLE");
+                    }
                 }
             }
             for (int i = 0; i < circle.getTopRect().length; i++) {
-                if (player.getPlayerRectangle().overlaps(circle.getTopRect()[i]) ||
-                        player.getPlayerRectangle().overlaps(circle.getBotRect()[i]) && player.alive) {
-                    playerDeath();
-                    if(!secondChance) {
-                        deathCircle = true;
+                if(Application.playerSkin != 1 && Application.playerSkin != 3) {
+                    if (player.getPlayerRectangle().overlaps(circle.getTopRect()[i]) ||
+                            player.getPlayerRectangle().overlaps(circle.getBotRect()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathCircle = true;
+                        }
+                        //System.out.println("Collision: Botz or Top CIRCLE");
                     }
-                    //System.out.println("Collision: Botz or Top CIRCLE");
+                } else if(Application.playerSkin == 1){
+                    if (Intersector.overlaps(player.getPlayerCircle(),circle.getTopRect()[i]) ||
+                            Intersector.overlaps(player.getPlayerCircle(),circle.getBotRect()[i]) && player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathCircle = true;
+                        }
+                        //System.out.println("Collision: Botz or Top CIRCLE");
+                    }
+                } else if(Application.playerSkin == 3) {
+                    if (Intersector.overlaps(player.getCircleArrowDown(),circle.getTopRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowDown(),circle.getBotRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(),circle.getTopRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowUp(),circle.getBotRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowSmall(),circle.getTopRect()[i]) ||
+                            Intersector.overlaps(player.getCircleArrowSmall(),circle.getBotRect()[i])&& player.alive) {
+                        playerDeath();
+                        if (!secondChance) {
+                            deathCircle = true;
+                        }
+                        //System.out.println("Collision: Botz or Top CIRCLE");
+                    }
                 }
             }
         }
         //Sniper
         if(snipersStart) {
-            sniperZone.checkCollision(player.getPlayerRectangle(), game, player);
+            if(Application.playerSkin != 1 && Application.playerSkin  !=3 ) {
+                sniperZone.checkCollision(game, player);
+            } else if(Application.playerSkin == 1) {
+                sniperZone.checkCollisionCircle( game, player);
+            } else if(Application.playerSkin == 3) {
+                sniperZone.checkCollisonArrow(game, player);
+            }
             //if(!secondChance) {
             //    deathSnipers = true;
             //}
         }
         //SmallArrow
         if(smallArrowStart) {
-            smallArrowZone.checkCollision(player.getPlayerRectangle(), game, player);
+            if(Application.playerSkin != 1 && Application.playerSkin != 3) {
+                smallArrowZone.checkCollision(player.getPlayerRectangle(), game, player);
+            } else if(Application.playerSkin == 1) {
+                smallArrowZone.checkCollisionCircle(player.getPlayerCircle(), game, player);
+            } else if(Application.playerSkin ==3) {
+                smallArrowZone.checkCollisionArrow(game, player);
+            }
             //if(!secondChance) {
             //   deathSmallArow = true;
             //}
         }
 
+        // Death Logic
         if(player.getPosition().y <= -64*2){
             // android
-                if(!secondChance && Application.loadedReborn  && Score.gameScore >= 14 ) {
+                if(!secondChance && Application.loadedReborn  && Score.gameScore >= 11) {
                 //if(!secondChance) { // desktop
                     nopeButton.setVisible(true);
                     watchButton.setVisible(true);
@@ -1446,6 +1723,8 @@ public class GameScreen implements Screen, InputProcessor {
     private void playerDeath(){
         player.alive = false;
         Application.playerAlive = false;
+        onLine = false;
+        player.Line = false;
         player.deathAnimation();
         if(!deathSound) {
             game.deathAllSound.play(Application.volume * 0.5f);
@@ -1523,31 +1802,35 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        switch (keycode){
-            case Input.Keys.SHIFT_LEFT:
-                game.setScreen(new GameScreen(game));
-                break;
-            case Input.Keys.Z:
-                player.onClick(game);
-                break;
-            case Input.Keys.Q:
-                //collisionCheck(delta);
-                break;
-            case Input.Keys.X:
-                player.onLine(game);
-                onLine = true;
-                break;
+        if(player.alive && !startAfterDeath & !startPlay) {
+            switch (keycode) {
+                case Input.Keys.SHIFT_LEFT:
+                    game.setScreen(new GameScreen(game));
+                    break;
+                case Input.Keys.Z:
+                    player.onClick(game, GAME_SPEED);
+                    break;
+                case Input.Keys.Q:
+                    //collisionCheck(delta);
+                    break;
+                case Input.Keys.X:
+                    player.onLine(game);
+                    onLine = true;
+                    break;
+            }
         }
         return true;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        switch (keycode){
-            case Input.Keys.X:
-                player.onRelease();
-                onLine = false;
-                break;
+        if(player.alive && !startAfterDeath & !startPlay) {
+            switch (keycode) {
+                case Input.Keys.X:
+                    player.onRelease(GAME_SPEED);
+                    onLine = false;
+                    break;
+            }
         }
         return true;
     }
@@ -1560,7 +1843,7 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if(pointer == 0) {
-            player.onClick(game);
+            player.onClick(game,GAME_SPEED);
             //if(Application.playerAlive) {
             //    game.jumpSound.play(Application.volume);
             //}
@@ -1583,10 +1866,10 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if(pointer == 1){
-            player.onRelease();
+            player.onRelease(GAME_SPEED);
             onLine = false;
         } else if(pointer == 0){
-            player.onRelease();
+            player.onRelease(GAME_SPEED);
             onLine = false;
         }
         return true;

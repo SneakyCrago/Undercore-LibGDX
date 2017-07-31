@@ -5,10 +5,10 @@ package com.sneakycrago.undercore.utils;
  */
 
 public interface GpgsController {
-    public void connect();
-    public void disconnect();
+    void connect();
+     void disconnect();
     /** Вход */
-    public void signIn();
+    void signIn();
     /** Выход */
     /**
      * Разблокировать достижение
@@ -16,14 +16,15 @@ public interface GpgsController {
      * @param achievementId
      *            ID достижения. Берется из файла games-ids.xml
      */
-    public void unlockAchievement(String achievementId);
-    public void submitScore(int highScore);
+    void unlockAchievement(String achievementId);
+    void submitScore(int highScore);
+    void submitHardScore(int highScore);
 
-    public void submitMoney(int maxMoney);
+    void submitMoney(int maxMoney);
     /** Показать Activity с достижениями */
-    public void showAchievements();
+    void showAchievements();
     /** Показать Activity с таблицей рекордов */
-    public void showScores();
+     void showScores();
     /** Узнать статус входа пользователя */
-    public boolean isSignedIn();
+     boolean isSignedIn();
 }

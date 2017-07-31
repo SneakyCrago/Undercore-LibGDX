@@ -82,7 +82,11 @@ public class TutorialScreen implements Screen {
                     game.preferences.putBoolean("goTutorial", false);
                     game.preferences.flush();
                     //System.out.println(game.goTutorial + " prefs: " + game.preferences.getBoolean("goTutorial"));
-                    game.setScreen(game.gameScreen);
+                    if(game.normalMode) {
+                        game.setScreen(game.gameScreen);
+                    } else if(game.hardMode) {
+                        game.setScreen(game.x2GameModeScreen);
+                    }
                 }
             }
         });

@@ -4,8 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.*;
 import com.sneakycrago.undercore.Application;
 
 import java.util.Random;
@@ -34,11 +33,13 @@ public class SmallArrowZone {
 
     private Vector2 posBlock;
 
-    private final int SPEED = -90*2;
+    private float SPEED = -90*2;
 
+    Application game;
 
-
-    public SmallArrowZone() {
+    public SmallArrowZone(Application game, float speed) {
+        this.SPEED = speed;
+        this.game = game;
         posBlock = new Vector2(0, 11);
 
         random = new Random();
@@ -72,11 +73,11 @@ public class SmallArrowZone {
 
         for(int i =0; i < smallArrow.length; i++){
             if(massive[i] == 1){
-                smallArrow[i] = new SmallArrow(x + length[i],1);  // up Wave
+                smallArrow[i] = new SmallArrow(game,x + length[i],1, SPEED);  // up Wave
             } else if(massive[i] == 2){
-                smallArrow[i] = new SmallArrow(x + length[i],2);  // down Wave
+                smallArrow[i] = new SmallArrow(game,x + length[i],2, SPEED);  // down Wave
             } else if(massive[i] == 3){
-                smallArrow[i] = new SmallArrow(x + length[i],3);  // random Wave
+                smallArrow[i] = new SmallArrow(game,x + length[i],3, SPEED);  // random Wave
             }
         }
         startZone.set(posBlock.x, posBlock.y, 1, 288);
@@ -107,11 +108,11 @@ public class SmallArrowZone {
 
         for(int i =0; i < smallArrow.length; i++){
             if(massive[i] == 1){
-                smallArrow[i] = new SmallArrow(x + length[i],1);  // up Wave
+                smallArrow[i] = new SmallArrow(game,x + length[i],1, SPEED);  // up Wave
             } else if(massive[i] == 2){
-                smallArrow[i] = new SmallArrow(x + length[i],2);  // down Wave
+                smallArrow[i] = new SmallArrow(game,x + length[i],2, SPEED);  // down Wave
             } else if(massive[i] == 3){
-                smallArrow[i] = new SmallArrow(x + length[i],3);  // random Wave
+                smallArrow[i] = new SmallArrow(game,x + length[i],3, SPEED);  // random Wave
             }
         }
         startZone.set(posBlock.x, posBlock.y, 1, 288);
@@ -256,6 +257,111 @@ public class SmallArrowZone {
             if(randHelper[i] == 1) {
                 for (int k = 0; k < smallArrow[i].getRandomWave().length; k++) {
                     if (player.overlaps(smallArrow[i].getRandomWave()[k])) {
+                        pl.alive = false;
+                        Application.playerAlive = false;
+                        pl.deathAnimation();
+                        game.deathSmallArow = true;
+                        if(!deathSound) {
+                            game.deathAllSound.play(Application.volume);
+                            deathSound = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public void checkCollisionCircle(com.badlogic.gdx.math.Circle player, Application game, Player pl){
+        for(int i =0; i < massive.length; i++) {
+            if(downHelper[i] == 1) {
+                for (int k = 0; k < smallArrow[i].getDownWave().length; k++) {
+                    //if (player.overlaps(smallArrow[i].getDownWave()[k]) && Application.playerAlive) {
+                    if (Intersector.overlaps(player, smallArrow[i].getDownWave()[k]) && Application.playerAlive) {
+                        pl.alive = false;
+                        Application.playerAlive = false;
+                        pl.deathAnimation();
+                        game.deathSmallArow = true;
+                        if(!deathSound) {
+                            game.deathAllSound.play(Application.volume);
+                            deathSound = true;
+                        }
+                    }
+                }
+            }
+            if(upHelper[i] == 1) {
+                for (int k = 0; k < smallArrow[i].getUpWave().length; k++) {
+                    //if (player.overlaps(smallArrow[i].getUpWave()[k])) {
+                    if(Intersector.overlaps(player, smallArrow[i].getUpWave()[k])) {
+                        pl.alive = false;
+                        Application.playerAlive = false;
+                        pl.deathAnimation();
+                        game.deathSmallArow = true;
+                        if(!deathSound) {
+                            game.deathAllSound.play(Application.volume);
+                            deathSound = true;
+                        }
+                    }
+                }
+            }
+            if(randHelper[i] == 1) {
+                for (int k = 0; k < smallArrow[i].getRandomWave().length; k++) {
+                    //if (player.overlaps(smallArrow[i].getRandomWave()[k])) {
+                    if (Intersector.overlaps(player, smallArrow[i].getRandomWave()[k])) {
+                        pl.alive = false;
+                        Application.playerAlive = false;
+                        pl.deathAnimation();
+                        game.deathSmallArow = true;
+                        if(!deathSound) {
+                            game.deathAllSound.play(Application.volume);
+                            deathSound = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void checkCollisionArrow(Application game, Player pl){
+        for(int i =0; i < massive.length; i++) {
+            if(downHelper[i] == 1) {
+                for (int k = 0; k < smallArrow[i].getDownWave().length; k++) {
+                    //if (player.overlaps(smallArrow[i].getDownWave()[k]) && Application.playerAlive) {
+                    if (Intersector.overlaps(pl.getCircleArrowDown(), smallArrow[i].getDownWave()[k]) ||
+                            Intersector.overlaps(pl.getCircleArrowUp(), smallArrow[i].getDownWave()[k]) ||
+                            Intersector.overlaps(pl.getCircleArrowSmall(), smallArrow[i].getDownWave()[k])&& Application.playerAlive) {
+                        pl.alive = false;
+                        Application.playerAlive = false;
+                        pl.deathAnimation();
+                        game.deathSmallArow = true;
+                        if(!deathSound) {
+                            game.deathAllSound.play(Application.volume);
+                            deathSound = true;
+                        }
+                    }
+                }
+            }
+            if(upHelper[i] == 1) {
+                for (int k = 0; k < smallArrow[i].getUpWave().length; k++) {
+                    //if (player.overlaps(smallArrow[i].getUpWave()[k])) {
+                    if(Intersector.overlaps(pl.getCircleArrowDown(), smallArrow[i].getUpWave()[k]) ||
+                            Intersector.overlaps(pl.getCircleArrowUp(), smallArrow[i].getUpWave()[k]) ||
+                            Intersector.overlaps(pl.getCircleArrowSmall(), smallArrow[i].getUpWave()[k])) {
+                        pl.alive = false;
+                        Application.playerAlive = false;
+                        pl.deathAnimation();
+                        game.deathSmallArow = true;
+                        if(!deathSound) {
+                            game.deathAllSound.play(Application.volume);
+                            deathSound = true;
+                        }
+                    }
+                }
+            }
+            if(randHelper[i] == 1) {
+                for (int k = 0; k < smallArrow[i].getRandomWave().length; k++) {
+                    //if (player.overlaps(smallArrow[i].getRandomWave()[k])) {
+                    if (Intersector.overlaps(pl.getCircleArrowDown(), smallArrow[i].getRandomWave()[k]) ||
+                            Intersector.overlaps(pl.getCircleArrowUp(), smallArrow[i].getRandomWave()[k]) ||
+                            Intersector.overlaps(pl.getCircleArrowSmall(), smallArrow[i].getRandomWave()[k])) {
                         pl.alive = false;
                         Application.playerAlive = false;
                         pl.deathAnimation();

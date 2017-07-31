@@ -85,6 +85,10 @@ public class LoadingScreen implements Screen, InputProcessor {
             game.fullA1 = game.assetManager.get("textures/FullA1.atlas"); //buttons
             game.fullA2 = game.assetManager.get("textures/FullA2.atlas"); //objects
             game.fullA3 = game.assetManager.get("textures/FullA3.atlas");
+            // Player Skins
+            game.moonAtlas = game.assetManager.get("textures/player/moon.atlas");
+            game.dummyAtlas = game.assetManager.get("textures/player/dummy.atlas");
+            game.arrowAltas = game.assetManager.get("textures/player/arrow.atlas");
 
             game.circlesSkin = new TextureRegion[game.skinsAmount];
 
@@ -123,6 +127,13 @@ public class LoadingScreen implements Screen, InputProcessor {
 
             game.currencyTexture = game.fullA2.findRegion("Currency");
 
+            game.moonAnimTex = new Texture[Application.skinsAmount];
+            game.moonAnimTex[0] = new Texture(Gdx.files.internal("textures/player/moonAnim0.png"));
+            game.moonAnimTex[1] = new Texture(Gdx.files.internal("textures/player/moonAnim1.png"));
+            game.moonAnimTex[2] = new Texture(Gdx.files.internal("textures/player/moonAnim2.png"));
+            game.moonAnimTex[3] = new Texture(Gdx.files.internal("textures/player/moonAnim3.png"));
+            game.moonAnimTex[4] = new Texture(Gdx.files.internal("textures/player/moonAnim4.png"));
+
             game.skinPrewTex = new TextureRegion[game.skinsAmount];
 
             for(int i=0; i < game.skinPrewTex.length; i++){
@@ -130,6 +141,21 @@ public class LoadingScreen implements Screen, InputProcessor {
             }
             game.skinPrewRandomTex = game.assetManager.get("textures/skinPrewRandom.png");
             createMainMenuTexures();
+
+            // HardMode
+            game.hardModeBackground = game.assetManager.get("textures/hardMode/backgroundHard.png");
+            game.playerHardAnim = game.assetManager.get("textures/hardMode/playerAnimHard.png");
+            game.moonHardAnim = game.assetManager.get("textures/hardMode/moonAnimHard.png");
+            game.bigArrowHard = game.assetManager.get("textures/hardMode/big_arrowHard.png");
+            game.circleHard = game.assetManager.get("textures/hardMode/circleHard.png");
+            game.sniperHard = game.assetManager.get("textures/hardMode/sniperHard.png");
+
+            game.laserHard1 = game.assetManager.get("textures/hardMode/laserHard.png");
+            game.laserHard2 = game.assetManager.get("textures/hardMode/laserHard.png");
+
+            game.laserHard = new TextureRegion(game.laserHard1);
+            game.flipLaserHard = new TextureRegion(game.laserHard2);
+            game.flipLaserHard.flip(false, true);
 
             game.jumpSound = game.assetManager.get("sounds/jump.mp3"); // new
             game.lineSound = game.assetManager.get("sounds/line.mp3");
@@ -141,6 +167,16 @@ public class LoadingScreen implements Screen, InputProcessor {
 
             game.ambientSound.setLooping(true);
 
+            //survival
+            //game.bulletTV = new Texture("textures/survival/TV_bullet1.png");
+            //game.survivalExplosion = new Texture("textures/survival/explosion.png");
+            //game.survivalBook = new Texture[3];
+
+            //game.survivalBook[0] = new Texture("textures/survival/book1.png");
+            //game.survivalBook[1] = new Texture("textures/survival/book2.png");
+            //game.survivalBook[2] = new Texture("textures/survival/book3.png");
+
+
         }
 
         if(!screensCreated && texturesLoaded && progress >= game.assetManager.getProgress() - 0.001f) {
@@ -148,6 +184,8 @@ public class LoadingScreen implements Screen, InputProcessor {
             game.tutorialScreen = new TutorialScreen(game);
             game.gameScreen = new GameScreen(game);
             game.gameOver = new GameOver(game);
+            game.x2GameModeScreen = new X2GameMode(game);
+            game.survivalModeScreen = new SurvivalMode(game);
             screensCreated = true;
             //System.out.println("Screens created");
         }

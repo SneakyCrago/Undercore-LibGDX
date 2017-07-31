@@ -5,8 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
@@ -14,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.utils.Globals;
+import com.sneakycrago.undercore.utils.HardScore;
 import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
@@ -31,7 +30,7 @@ public class BigArrow {
     public Sprite arrow, arrow2;
 
 
-    public int SPEED = 90 * 6; // 90*6 x6 now
+    public float SPEED = 90 * 6; // 90*6 x6 now
     private int FREE_SPACE = 96;
 
     private Vector2 posArrow, posArrow2;
@@ -61,7 +60,11 @@ public class BigArrow {
     private float timer2 = TimeUtils.nanoTime();
     private float time2 = 0;
 
-    public BigArrow(Application game) {
+    Application game;
+
+    public BigArrow(Application game, float speed) {
+        this.SPEED = speed;
+        this.game = game;
         posArrow = new Vector2(-256,11);
         velocity = new Vector2();
 
@@ -136,22 +139,34 @@ public class BigArrow {
         isScored = false;
     }
     private void setSkin(Application game){
-        switch(Application.gameSkin) {
-            case 0: arrow = new Sprite(game.bigArrowSkin[0]);
-                arrow2 = new Sprite(game.bigArrowSkin[0]);
-                break;
-            case 1: arrow = new Sprite(game.bigArrowSkin[1]);
-                arrow2 = new Sprite(game.bigArrowSkin[1]);
-                break;
-            case 2: arrow = new Sprite(game.bigArrowSkin[2]);
-                arrow2 = new Sprite(game.bigArrowSkin[2]);
-                break;
-            case 3: arrow = new Sprite(game.bigArrowSkin[3]);
-                arrow2 = new Sprite(game.bigArrowSkin[3]);
-                break;
-            case 4: arrow = new Sprite(game.bigArrowSkin[4]);
-                arrow2 = new Sprite(game.bigArrowSkin[4]);
-                break;
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    arrow = new Sprite(game.bigArrowSkin[0]);
+                    arrow2 = new Sprite(game.bigArrowSkin[0]);
+                    break;
+                case 1:
+                    arrow = new Sprite(game.bigArrowSkin[1]);
+                    arrow2 = new Sprite(game.bigArrowSkin[1]);
+                    break;
+                case 2:
+                    arrow = new Sprite(game.bigArrowSkin[2]);
+                    arrow2 = new Sprite(game.bigArrowSkin[2]);
+                    break;
+                case 3:
+                    arrow = new Sprite(game.bigArrowSkin[3]);
+                    arrow2 = new Sprite(game.bigArrowSkin[3]);
+                    break;
+                case 4:
+                    arrow = new Sprite(game.bigArrowSkin[4]);
+                    arrow2 = new Sprite(game.bigArrowSkin[4]);
+                    break;
+            }
+        } else if(game.hardMode) {
+            if(game.gameSkinHard == 0) {
+                arrow = new Sprite(game.bigArrowHard);
+                arrow2 = new Sprite(game.bigArrowHard);
+            }
         }
     }
 
@@ -234,9 +249,16 @@ public class BigArrow {
 
     boolean isScored = false;
     public void checkScore() {
-        if(arrow2.getX() >= 512 && !isScored){
-            isScored = true;
-            Score.addGameScore(1);
+        if(game.normalMode) {
+            if (arrow2.getX() >= 512 && !isScored) {
+                isScored = true;
+                Score.addGameScore(1);
+            }
+        } else if(game.hardMode) {
+            if (arrow2.getX() >= 512 && !isScored) {
+                isScored = true;
+                HardScore.addGameScore(1);
+            }
         }
     }
 
@@ -298,17 +320,26 @@ public class BigArrow {
     }
 
     private void setColor(ShapeRenderer shapeRenderer){
-        switch(Application.gameSkin) {
-            case 0: shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, 1f);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Line1Color);
-                break;
-            case 2: shapeRenderer.setColor(Globals.BigArrow2Color);
-                break;
-            case 3: shapeRenderer.setColor(Globals.Line3Color);
-                break;
-            case 4: shapeRenderer.setColor(Globals.Line4Color);
-                break;
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    shapeRenderer.setColor(163 / 255f, 248 / 255f, 251 / 255f, 1f);
+                    break;
+                case 1:
+                    shapeRenderer.setColor(Globals.Line1Color);
+                    break;
+                case 2:
+                    shapeRenderer.setColor(Globals.BigArrow2Color);
+                    break;
+                case 3:
+                    shapeRenderer.setColor(Globals.Line3Color);
+                    break;
+                case 4:
+                    shapeRenderer.setColor(Globals.Line4Color);
+                    break;
+            }
+        } else if(game.hardMode) {
+            shapeRenderer.setColor(Color.WHITE);
         }
     }
 

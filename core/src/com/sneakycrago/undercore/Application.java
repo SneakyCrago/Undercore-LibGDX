@@ -21,11 +21,14 @@ import com.sneakycrago.undercore.screens.GameOver;
 import com.sneakycrago.undercore.screens.GameScreen;
 import com.sneakycrago.undercore.screens.LoadingScreen;
 import com.sneakycrago.undercore.screens.MainMenuScreen;
+import com.sneakycrago.undercore.screens.SurvivalMode;
 import com.sneakycrago.undercore.screens.TutorialScreen;
+import com.sneakycrago.undercore.screens.X2GameMode;
 import com.sneakycrago.undercore.utils.AdsController;
 import com.sneakycrago.undercore.utils.Currency;
 import com.sneakycrago.undercore.utils.Globals;
 import com.sneakycrago.undercore.utils.GpgsController;
+import com.sneakycrago.undercore.utils.HardScore;
 import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
@@ -42,17 +45,18 @@ public class Application extends Game {
 	public ShapeRenderer shapeRenderer;
 
 	public BitmapFont font, font30,font30white, font10, borderFont, smallWhiteFont, font40white,
-	death0, death1,death2,death3,death4, menu0Font,tutFont, menu1Font,menu2Font,menu3Font,menu4Font, menuBig,
+	death0, death1,death2,death3,death4, menu0Font,tutFont, smallWhiteGray,menu0FontGray,soonGrayFontRU,menu0border, menuBig,
 			menuScoreFont, bigNumbers, fontNope, startEN;
 
 	public BitmapFont menu0FontRu, menuBigRu, tutFontRu, tutFont2RU, settingsFontRU,
 			death0RU,death1RU,death2RU,death3RU,death4RU, fontRU, smallWhiteFontRU, borderFontRU, fontNopeRu,
-    startRU, start40RU;
+    startRU, start40RU, menu0FontGrayRu, menu0borderRu;
 
-	public Texture playerSkin0,playerSkin1,playerSkin2,playerSkin3,playerSkin4, skinPrewRandomTex;
-	public TextureRegion currencyTexture;
+	public Texture playerSkin0,playerSkin1,playerSkin2,playerSkin3,playerSkin4, skinPrewRandomTex,
+		playerHardAnim, moonHardAnim, bigArrowHard, circleHard, sniperHard, laserHard1,laserHard2;
+	public TextureRegion currencyTexture, laserHard,flipLaserHard;
 
-    public TextureAtlas fullA1, fullA2, fullA3;
+    public TextureAtlas fullA1, fullA2, fullA3, moonAtlas, dummyAtlas, arrowAltas;
 
     public TextureRegion[] circlesSkin, bigArrowSkin, laserSkin, flipLaserSkin, skinPrewTex;
 	public TextureRegion[] mplayTex,mplayPressedTex, mworldTex,mworldPressedTex,
@@ -61,11 +65,19 @@ public class Application extends Game {
 			playRoundTex, playRoundPressedTex;
     public Texture[] snipersSkin;
 
+	public Texture hardModeBackground;
+
+	public Texture bulletTV;
+	public Texture survivalExplosion;
+	public Texture[] survivalBook, moonAnimTex;
+
 	public GameScreen gameScreen;
 	public GameOver gameOver;
 	public LoadingScreen loadingScreen;
 	public MainMenuScreen mainMenuScreen;
 	public TutorialScreen tutorialScreen;
+	public X2GameMode x2GameModeScreen;
+	public SurvivalMode survivalModeScreen;
 
 	public Sound jumpSound, lineSound, deathAllSound;
 	public Music ambientSound;
@@ -77,7 +89,13 @@ public class Application extends Game {
 	public static Preferences preferences;
 	boolean loadPrefs = true; // загружать ли сохранения
 	public static int gameSkin = 0; // 0 - standard
+	public static int gameSkinHard; // 0-standart(white)
+    public static int playerSkin = 0; // 0 - standard, 1- moon 2-dummy 3- arrow
+	public static int playerSkinHard;  // 0 - standard 1- moon
 	public static boolean playerAlive;
+
+    public static boolean openMoon=false, openDummy=false, openArrow=false; //Dummy - 300 Arrow -100
+	public static int dummyPrice =300, arrowPrice =100;
 
 	public static int skinsAmount = 5;
 
@@ -106,6 +124,8 @@ public class Application extends Game {
     public String leaderboard_Highscore = "CgkI28yY58YGEAIQAA";
 	public String leaderboard_rich_people = "CgkI28yY58YGEAIQEw";
 
+	public String leaderboard_highscore_fast ="CgkI28yY58YGEAIQGw";
+
 	public String achievement_novice_runner = "CgkI28yY58YGEAIQAQ"; // Score - 14
 	public String achievement_solid_runner ="CgkI28yY58YGEAIQCA"; // Score - 50
 	public String achievement_like_a_forest ="CgkI28yY58YGEAIQBw"; // Score - 88
@@ -127,6 +147,14 @@ public class Application extends Game {
 	public String achievement_big_brooother ="CgkI28yY58YGEAIQBQ"; // Open all Skins
 
 	public String achievement_hell_1 = "CgkI28yY58YGEAIQBg"; // Unlock new Challenge
+	public String achievement_too_fast ="CgkI28yY58YGEAIQFA"; // HardMode умереть с 0 очков
+	public String achievement_not_bad_h1 = "CgkI28yY58YGEAIQFQ"; // Hard - 14
+	public String achievement_keep_going_h1 = "CgkI28yY58YGEAIQFg"; // Hard - 25
+	public String achievement_carry_on_h1 = "CgkI28yY58YGEAIQFw"; // Hard - 50
+	public String achievement_here_we_go_again = "CgkI28yY58YGEAIQGA"; // Hard - Pass second Start
+	public String achievement_face_the_wind_h1 = "CgkI28yY58YGEAIQGQ"; // Hard - 120
+	public String achievement_who_are_you_h1 = "CgkI28yY58YGEAIQGg"; // Hard - 200
+
 
 	public boolean test = true;
 
@@ -152,6 +180,11 @@ public class Application extends Game {
 
 	public static boolean loadedMoney, loadedReborn;
 
+    public final float SPEED = -90;
+	public boolean normalMode = true;
+	public boolean hardMode = false;
+	public boolean survivalMode = false;
+
 	@Override
 	public void create () {
 		camera = new OrthographicCamera();
@@ -164,6 +197,7 @@ public class Application extends Game {
 		assetManager = new AssetManager();
 
 		loadingScreen = new LoadingScreen(this);
+
 
 		getPrefs();
 
@@ -202,6 +236,20 @@ public class Application extends Game {
 
 			if(preferences.contains("showMoneyTutorial")) showMoneyTutorial = preferences.getBoolean("showMoneyTutorial");
 
+			if(preferences.contains("normalMode")) normalMode = preferences.getBoolean("normalMode");
+			if(preferences.contains("hardMode")) hardMode = preferences.getBoolean("hardMode");
+			if(preferences.contains("survivalMode")) survivalMode = preferences.getBoolean("survivalMode");
+
+            if(preferences.contains("bestHardScore")) HardScore.bestHardScore = preferences.getInteger("bestHardScore");
+
+			// Player Skins
+			if(preferences.contains("openMoon")) openMoon = preferences.getBoolean("openMoon");
+			if(preferences.contains("openDummy")) openDummy = preferences.getBoolean("openDummy");
+			if(preferences.contains("openArrow")) openArrow = preferences.getBoolean("openArrow");
+
+			if(preferences.contains("playerSkin")) playerSkin = preferences.getInteger("playerSkin");
+			if(preferences.contains("playerSkinHard")) playerSkinHard = preferences.getInteger("playerSkinHard");
+
 		} else{ //RESET SAVES TO ZERO
 			Score.bestScore = 0;
 			Currency.currency = 0;
@@ -233,6 +281,10 @@ public class Application extends Game {
 			showMoneyTutorial = true;
 			preferences.putBoolean("showMoneyTutorial", showMoneyTutorial);
 			preferences.flush();
+
+            HardScore.bestHardScore = 0;
+            preferences.putInteger("bestHardScore", HardScore.bestHardScore);
+            preferences.flush();
 		}
 		adTimer();
 
@@ -246,6 +298,7 @@ public class Application extends Game {
 
 
 		setScreen(loadingScreen);
+
 
 		checkAchievmentsOnStart();
 
@@ -284,21 +337,6 @@ public class Application extends Game {
 		batch.dispose();
 		shapeRenderer.dispose();
 
-		font.dispose();
-		font30.dispose();
-		font30white.dispose();
-		font10.dispose();
-		borderFont.dispose();
-		smallWhiteFont.dispose();
-		font40white.dispose();
-		death0.dispose();
-		death1.dispose();
-		death2.dispose();
-		death3.dispose();
-		death4.dispose();
-		menu0Font.dispose();
-
-		assetManager.dispose();
 
 		gameScreen.dispose();
 		gameOver.dispose();
@@ -373,6 +411,10 @@ public class Application extends Game {
 		//smallParams.borderWidth = borderSize;
 		smallWhiteFont = generator.generateFont(smallParams);
 
+		smallParams.color = Color.DARK_GRAY;
+		smallWhiteGray = generator.generateFont(smallParams);
+
+
 		FreeTypeFontGenerator.FreeTypeFontParameter paramsBorder = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
 		paramsBorder.size = 24*2;
@@ -398,6 +440,10 @@ public class Application extends Game {
 		//params.borderWidth = borderSize;
 		menu0Font = generator.generateFont(params);
 
+		params.color = Color.GRAY;
+		menu0FontGray = generator.generateFont(params);
+
+		params.color = Color.WHITE;
 		params.size = 60;
 		menuBig = generator.generateFont(params);
 
@@ -412,6 +458,10 @@ public class Application extends Game {
 
 		params.size = 24*2;
 
+		params.size = 20;
+		params.borderColor = Color.BLACK;
+		params.borderWidth = gameBorderSize;
+		menu0border = generator.generateFont(params);
 
 		params.size = 15*2;
 		params.borderColor = Color.BLACK;
@@ -436,6 +486,13 @@ public class Application extends Game {
 
 		menu0FontRu = generator.generateFont(paramsRu);
 
+		paramsRu.color = Color.DARK_GRAY;
+		menu0FontGrayRu = generator.generateFont(paramsRu);
+
+		paramsRu.size = 30;
+		soonGrayFontRU = generator.generateFont(paramsRu);
+
+		paramsRu.color = Color.WHITE;
 		paramsRu.size = 16;
 		settingsFontRU = generator.generateFont(paramsRu);
 
@@ -475,6 +532,12 @@ public class Application extends Game {
 
 		paramsRu.color = Globals.Text4Color;
 		death4RU = generator.generateFont(paramsRu);
+
+		paramsRu.size = 20;
+		paramsRu.color = Color.WHITE;
+		paramsRu.borderColor = Color.BLACK;
+		paramsRu.borderWidth = gameBorderSize;
+		menu0border = generator.generateFont(paramsRu);
 
 		paramsRu.size = 18*2;
 		paramsRu.color = Color.WHITE;
@@ -560,7 +623,19 @@ public class Application extends Game {
 
 		assetManager.load("textures/skinPrewRandom.png", Texture.class);
 
-		//Test
+        // Player Skins
+        assetManager.load("textures/player/moon.atlas", TextureAtlas.class);
+        assetManager.load("textures/player/dummy.atlas", TextureAtlas.class);
+		assetManager.load("textures/player/arrow.atlas", TextureAtlas.class);
+
+        // Hard Mode
+		assetManager.load("textures/hardMode/backgroundHard.png", Texture.class);
+		assetManager.load("textures/hardMode/playerAnimHard.png", Texture.class);
+		assetManager.load("textures/hardMode/moonAnimHard.png", Texture.class);
+        assetManager.load("textures/hardMode/big_arrowHard.png", Texture.class);
+        assetManager.load("textures/hardMode/circleHard.png", Texture.class);
+        assetManager.load("textures/hardMode/laserHard.png", Texture.class);
+        assetManager.load("textures/hardMode/sniperHard.png", Texture.class);
 	}
 
 	public void loadSounds(){
@@ -606,12 +681,11 @@ public class Application extends Game {
 		if(skinsOpened == 3)
 			gpgsController.unlockAchievement(achievement_3x33);
 
-		if(skinsOpened == 4)
+		if(skinsOpened == 4 && openDummy && openArrow && openMoon)
 			gpgsController.unlockAchievement(achievement_big_brooother);
 	}
 
 	public void checkAchievmentsOnStart(){
-
 		// Money
 		if(Currency.maxMoney >= 1) {
 			gpgsController.unlockAchievement(achievement_what_is_that_shiny_thing);
@@ -663,6 +737,25 @@ public class Application extends Game {
 
 		if(skinsOpened >= 4)
 			gpgsController.unlockAchievement(achievement_big_brooother);
+
+
+		gpgsController.unlockAchievement(achievement_hell_1);
+
+		// HardScore
+		if(HardScore.bestHardScore >= 14)
+			gpgsController.unlockAchievement(achievement_not_bad_h1);
+
+		if(HardScore.bestHardScore >= 25)
+			gpgsController.unlockAchievement(achievement_keep_going_h1);
+
+		if(HardScore.bestHardScore >= 50)
+			gpgsController.unlockAchievement(achievement_carry_on_h1);
+
+		if(HardScore.bestHardScore >= 120)
+			gpgsController.unlockAchievement(achievement_face_the_wind_h1);
+
+		if(HardScore.bestHardScore >= 200)
+			gpgsController.unlockAchievement(achievement_who_are_you_h1);
 
 	}
 }

@@ -5,17 +5,13 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -23,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.utils.Currency;
+import com.sneakycrago.undercore.utils.HardScore;
 import com.sneakycrago.undercore.utils.Score;
 import java.util.Random;
 
@@ -159,6 +156,7 @@ public class GameOver implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 newFrase = true;
                 best = Score.getBestScore();
+                //bestHard = Score.getBestScore();
                 //game.setScreen(new GameScreen(game));
                 if(game.showRandom) {
                     Application.gameSkin = game.openedSkins.get(game.randomizeSkins());
@@ -167,7 +165,13 @@ public class GameOver implements Screen {
                         game.setScreen(game.gameScreen);
                     }
                 }
-                game.setScreen(game.gameScreen);
+                if(game.normalMode) {
+                    game.setScreen(game.gameScreen);
+                } else if(game.hardMode) {
+                    game.setScreen(game.x2GameModeScreen);
+                } else if(game.survivalMode) {
+                    game.setScreen(game.survivalModeScreen);
+                }
                 game.gameOver.pause();
 
                 game.preferences.putInteger("gameSkin", Application.gameSkin);
@@ -180,6 +184,7 @@ public class GameOver implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 newFrase = true;
                 best = Score.getBestScore();
+                //bestHard = Score.getBestScore();
                 game.activePlay = true;
                 game.setScreen(game.mainMenuScreen);
                 game.mainMenuScreen.show();
@@ -194,6 +199,7 @@ public class GameOver implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 newFrase = true;
                 best = Score.getBestScore();
+                //bestHard = Score.getBestScore();
                 Gdx.app.exit();
                 game.preferences.putInteger("gameSkin", Application.gameSkin);
                 game.preferences.flush();
@@ -257,11 +263,19 @@ public class GameOver implements Screen {
         //Money & Score
         Currency.addMoneyToCurrency();
 
-        best = Score.getBestScore();
+        if(game.normalMode) {
+            best = Score.getBestScore();
+        } else if(game.hardMode) {
+            best = HardScore.getBestScore();
+        }
         Score.makeBestScore();
+        HardScore.makeBestScore();
         //Save
         game.preferences.putInteger("bestScore", Score.bestScore);
         game.preferences.flush();
+        game.preferences.putInteger("bestHardScore", HardScore.bestHardScore);
+        game.preferences.flush();
+
         game.preferences.putInteger("currency", Currency.currency);
         game.preferences.flush();
 
@@ -308,28 +322,55 @@ public class GameOver implements Screen {
 
         currency.setPosition(moneyX, 210);
 
-        if(Score.getGameScore() > best){
-            Score.makeBestScore();
-            if(game.en) {
-                glyphLayout.setText(game.font, "New record!", Color.WHITE, 512 * 2, Align.center, true);
-                game.font.draw(game.batch, glyphLayout, 0, (205 - 10) * 2);
-                glyphLayout.setText(game.smallWhiteFont, "Score: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
-                game.smallWhiteFont.draw(game.batch, glyphLayout, 0, (205 - 24 - 15) * 2);
-            } else if(game.ru){
-                glyphLayout.setText(game.fontRU, "Новый рекорд!", Color.WHITE, 512 * 2, Align.center, true);
-                game.fontRU.draw(game.batch, glyphLayout, 0, (205 - 10) * 2);
-                glyphLayout.setText(game.smallWhiteFontRU, "Счет: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
-                game.smallWhiteFontRU.draw(game.batch, glyphLayout, 0, (205 - 24 - 15) * 2);
+
+        if(game.normalMode) {
+            if (Score.getGameScore() > best) {
+                Score.makeBestScore();
+                if (game.en) {
+                    glyphLayout.setText(game.font, "New record!", Color.WHITE, 512 * 2, Align.center, true);
+                    game.font.draw(game.batch, glyphLayout, 0, (205 - 10) * 2);
+                    glyphLayout.setText(game.smallWhiteFont, "Score: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                    game.smallWhiteFont.draw(game.batch, glyphLayout, 0, (205 - 24 - 15) * 2);
+                } else if (game.ru) {
+                    glyphLayout.setText(game.fontRU, "Новый рекорд!", Color.WHITE, 512 * 2, Align.center, true);
+                    game.fontRU.draw(game.batch, glyphLayout, 0, (205 - 10) * 2);
+                    glyphLayout.setText(game.smallWhiteFontRU, "Счет: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                    game.smallWhiteFontRU.draw(game.batch, glyphLayout, 0, (205 - 24 - 15) * 2);
+                }
+            } else {
+                if (game.en) {
+                    glyphLayout.setText(game.font40white, "Score: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                    game.font40white.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
+                } else if (game.ru) {
+                    glyphLayout.setText(game.tutFontRu, "Счет: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                    game.tutFontRu.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
+                }
             }
-        } else {
-            if(game.en) {
-                glyphLayout.setText(game.font40white, "Score: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
-                game.font40white.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
-            } else if(game.ru){
-                glyphLayout.setText(game.tutFontRu, "Счет: " + Score.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
-                game.tutFontRu.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
+        } else if(game.hardMode) {
+            if (HardScore.getGameScore() > best) {
+                HardScore.makeBestScore();
+                if (game.en) {
+                    glyphLayout.setText(game.font, "New record!", Color.WHITE, 512 * 2, Align.center, true);
+                    game.font.draw(game.batch, glyphLayout, 0, (205 - 10) * 2);
+                    glyphLayout.setText(game.smallWhiteFont, "Score: " + HardScore.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                    game.smallWhiteFont.draw(game.batch, glyphLayout, 0, (205 - 24 - 15) * 2);
+                } else if (game.ru) {
+                    glyphLayout.setText(game.fontRU, "Новый рекорд!", Color.WHITE, 512 * 2, Align.center, true);
+                    game.fontRU.draw(game.batch, glyphLayout, 0, (205 - 10) * 2);
+                    glyphLayout.setText(game.smallWhiteFontRU, "Счет: " + HardScore.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                    game.smallWhiteFontRU.draw(game.batch, glyphLayout, 0, (205 - 24 - 15) * 2);
+                }
+            } else {
+                if (game.en) {
+                    glyphLayout.setText(game.font40white, "Score: " + HardScore.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                    game.font40white.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
+                } else if (game.ru) {
+                    glyphLayout.setText(game.tutFontRu, "Счет: " + HardScore.getGameScore(), Color.WHITE, 512 * 2, Align.center, true);
+                    game.tutFontRu.draw(game.batch, glyphLayout, 0, (205 - ((24 + 15) / 2) - 6) * 2);
+                }
             }
         }
+
 
         spriteCamera.update();
         game.batch.setProjectionMatrix(spriteCamera.combined);
@@ -338,8 +379,8 @@ public class GameOver implements Screen {
 
         game.batch.end();
 
-
-
+        if(game.hardMode && HardScore.getGameScore() == 0)
+            game.gpgsController.unlockAchievement(game.achievement_too_fast);
     }
 
     private void createNewFrase(){

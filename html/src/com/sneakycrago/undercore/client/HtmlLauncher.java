@@ -14,6 +14,6 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener createApplicationListener () {
-                return new Application();
+                return new Application(new AdsHtml(), new GpgsDesktop());
         }
 }

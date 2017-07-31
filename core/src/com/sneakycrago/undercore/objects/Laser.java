@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Pool;
 import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.utils.Globals;
+import com.sneakycrago.undercore.utils.HardScore;
 import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
@@ -24,9 +25,9 @@ import java.util.Random;
 
 public class Laser{
 
-    public int SPEED = -90; // -90
+    public float SPEED = -90; // -90
 
-    private final int FREE_SPACE = 64;
+    private int FREE_SPACE = 64;
 
     private Vector2 velocity;
     private Vector2 posBlock;
@@ -53,10 +54,20 @@ public class Laser{
 
     private boolean setSkin;
 
+    Application game;
+
     int x; // test Start
-    public Laser(Application game) {
+    public Laser(Application game, float SPEED) {
+        this.SPEED = SPEED;
+        this.game = game;
         posBlock = new Vector2(0, 11); // 0,11
         velocity = new Vector2();
+
+        if(game.normalMode) {
+            FREE_SPACE = 64;
+        } else if(game.hardMode) {
+            FREE_SPACE = 128;
+        }
 
         random = new Random();
 
@@ -122,32 +133,38 @@ public class Laser{
     }
 
     public void setSkin(Application game){
-        switch (Application.gameSkin) {
-            case 0:
-                laserTexture = game.laserSkin[0];
-                flipLaserTexture = game.flipLaserSkin[0];
-                //flipLaserTexture.flip(false, true);
-                break;
-            case 1:
-                laserTexture = game.laserSkin[1];
-                flipLaserTexture = game.flipLaserSkin[1];
-                //flipLaserTexture.flip(false, true);
-                break;
-            case 2:
-                laserTexture = game.laserSkin[2];
-                flipLaserTexture = game.flipLaserSkin[2];
-                //flipLaserTexture.flip(false, true);
-                break;
-            case 3:
-                laserTexture = game.laserSkin[3];
-                flipLaserTexture = game.flipLaserSkin[3];
-                //flipLaserTexture.flip(false, true);
-                break;
-            case 4:
-                laserTexture = game.laserSkin[4];
-                flipLaserTexture = game.flipLaserSkin[4];
-                //flipLaserTexture.flip(false, true);
-                break;
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    laserTexture = game.laserSkin[0];
+                    flipLaserTexture = game.flipLaserSkin[0];
+                    //flipLaserTexture.flip(false, true);
+                    break;
+                case 1:
+                    laserTexture = game.laserSkin[1];
+                    flipLaserTexture = game.flipLaserSkin[1];
+                    //flipLaserTexture.flip(false, true);
+                    break;
+                case 2:
+                    laserTexture = game.laserSkin[2];
+                    flipLaserTexture = game.flipLaserSkin[2];
+                    //flipLaserTexture.flip(false, true);
+                    break;
+                case 3:
+                    laserTexture = game.laserSkin[3];
+                    flipLaserTexture = game.flipLaserSkin[3];
+                    //flipLaserTexture.flip(false, true);
+                    break;
+                case 4:
+                    laserTexture = game.laserSkin[4];
+                    flipLaserTexture = game.flipLaserSkin[4];
+                    //flipLaserTexture.flip(false, true);
+                    break;
+            }
+        } else if(game.hardMode) {
+            laserTexture = game.laserHard;
+            flipLaserTexture = game.flipLaserHard;
+            //flipLaserTexture.flip(false, true);
         }
 
     }
@@ -185,10 +202,19 @@ public class Laser{
     //SCORE
     private boolean isScored[];
     public void checkScore() {
-        for(int i = 0; i < TopWall.length; i++) {
-            if(TopWall[i].getX() +16 <= 96+16 && !isScored[i]){
-                isScored[i] = true;
-                Score.addGameScore(1);
+        if(game.normalMode) {
+            for (int i = 0; i < TopWall.length; i++) {
+                if (TopWall[i].getX() + 16 <= 96 + 16 && !isScored[i]) {
+                    isScored[i] = true;
+                    Score.addGameScore(1);
+                }
+            }
+        } else if(game.hardMode) {
+            for (int i = 0; i < TopWall.length; i++) {
+                if (TopWall[i].getX() + 16 <= 96 + 16 && !isScored[i]) {
+                    isScored[i] = true;
+                    HardScore.addGameScore(1);
+                }
             }
         }
     }
@@ -259,59 +285,95 @@ public class Laser{
     }
 
     private void switchSides(ShapeRenderer shapeRenderer){
-        switch (Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Globals.SidesColor);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Sides1Color);
-                break;
-            case 2: shapeRenderer.setColor(Globals.Sides2Color);
-                break;
-            case 3: shapeRenderer.setColor(Globals.Sides3Color);
-                break;
-            case 4: shapeRenderer.setColor(Globals.Sides4Color);
-                break;
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    shapeRenderer.setColor(Globals.SidesColor);
+                    break;
+                case 1:
+                    shapeRenderer.setColor(Globals.Sides1Color);
+                    break;
+                case 2:
+                    shapeRenderer.setColor(Globals.Sides2Color);
+                    break;
+                case 3:
+                    shapeRenderer.setColor(Globals.Sides3Color);
+                    break;
+                case 4:
+                    shapeRenderer.setColor(Globals.Sides4Color);
+                    break;
+            }
+        } else if(game.hardMode) {
+            shapeRenderer.setColor(Color.WHITE);
         }
     }
     private void switchInner(ShapeRenderer shapeRenderer){
-        switch (Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Color.BLACK);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Inner1Color);
-                break;
-            case 2: shapeRenderer.setColor(Globals.Inner2Color);
-                break;
-            case 3: shapeRenderer.setColor(Globals.Inner3Color);
-                break;
-            case 4: shapeRenderer.setColor(Globals.Inner4Color);
-                break;
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    shapeRenderer.setColor(Color.BLACK);
+                    break;
+                case 1:
+                    shapeRenderer.setColor(Globals.Inner1Color);
+                    break;
+                case 2:
+                    shapeRenderer.setColor(Globals.Inner2Color);
+                    break;
+                case 3:
+                    shapeRenderer.setColor(Globals.Inner3Color);
+                    break;
+                case 4:
+                    shapeRenderer.setColor(Globals.Inner4Color);
+                    break;
+            }
+        } else if(game.hardMode) {
+            shapeRenderer.setColor(Color.BLACK);
         }
     }
     private void switchJumpColor(ShapeRenderer shapeRenderer){
-        switch (Application.gameSkin){
-            case 0: shapeRenderer.setColor(Globals.OrangeColor);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Sides1Color);
-                break;
-            case 2: shapeRenderer.setColor(Globals.Player2Color);
-                break;
-            case 3: shapeRenderer.setColor(Globals.Player3Color);
-                break;
-            case 4: shapeRenderer.setColor(Globals.Player4Color);
-                break;
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    shapeRenderer.setColor(Globals.OrangeColor);
+                    break;
+                case 1:
+                    shapeRenderer.setColor(Globals.Sides1Color);
+                    break;
+                case 2:
+                    shapeRenderer.setColor(Globals.Player2Color);
+                    break;
+                case 3:
+                    shapeRenderer.setColor(Globals.Player3Color);
+                    break;
+                case 4:
+                    shapeRenderer.setColor(Globals.Player4Color);
+                    break;
+            }
+        } else if(game.hardMode) {
+            shapeRenderer.setColor(Color.WHITE);
         }
     }
     private void switchOnLineColor(ShapeRenderer shapeRenderer){
-        switch (Application.gameSkin) {
-            case 0:  shapeRenderer.setColor(Globals.LightBlueColor);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Line1Color);
-                break;
-            case 2: shapeRenderer.setColor(Globals.Line2Color);
-                break;
-            case 3: shapeRenderer.setColor(Globals.Line3Color);
-                break;
-            case 4: shapeRenderer.setColor(Globals.Line4Color);
-                break;
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    shapeRenderer.setColor(Globals.LightBlueColor);
+                    break;
+                case 1:
+                    shapeRenderer.setColor(Globals.Line1Color);
+                    break;
+                case 2:
+                    shapeRenderer.setColor(Globals.Line2Color);
+                    break;
+                case 3:
+                    shapeRenderer.setColor(Globals.Line3Color);
+                    break;
+                case 4:
+                    shapeRenderer.setColor(Globals.Line4Color);
+                    break;
+            }
+        } else if(game.hardMode) {
+            shapeRenderer.setColor(Globals.Gray);
         }
     }
 

@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.utils.Globals;
+import com.sneakycrago.undercore.utils.HardScore;
 import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
@@ -18,7 +19,7 @@ import java.util.Random;
 
 public class Circle {
 
-    public int SPEED = -90;
+    public float SPEED = -90;
     private int FREE_SPACE = 64;
     private int SPRITE_SIZE = 90;
     public int BLOCK_SIZE;
@@ -52,7 +53,11 @@ public class Circle {
 
     private int x;
 
-    public Circle(Application game) {
+    Application game;
+
+    public Circle(Application game, float SPEED) {
+        this.SPEED = SPEED;
+        this.game = game;
 
         posCircle = new Vector2(0,11);
         velocity = new Vector2();
@@ -110,16 +115,31 @@ public class Circle {
     private boolean isScoredTop[];
     private boolean isScoredMid[];
     public void checkScore() {
-        for(int i = 0; i < isScoredTop.length; i++) {
-            if(circleTop[i].getX() +SPRITE_SIZE/2 <= 96 +16 && !isScoredTop[i]){
-                isScoredTop[i] = true;
-                Score.addGameScore(1);
+        if(game.normalMode) {
+            for (int i = 0; i < isScoredTop.length; i++) {
+                if (circleTop[i].getX() + SPRITE_SIZE / 2 <= 96 + 16 && !isScoredTop[i]) {
+                    isScoredTop[i] = true;
+                    Score.addGameScore(1);
+                }
             }
-        }
-        for(int i = 0; i < isScoredMid.length; i++) {
-            if (circleMiddle[i].getX() +SPRITE_SIZE/2 <= 96+16 && !isScoredMid[i]) {
-                isScoredMid[i] = true;
-                Score.addGameScore(1);
+            for (int i = 0; i < isScoredMid.length; i++) {
+                if (circleMiddle[i].getX() + SPRITE_SIZE / 2 <= 96 + 16 && !isScoredMid[i]) {
+                    isScoredMid[i] = true;
+                    Score.addGameScore(1);
+                }
+            }
+        } else if(game.hardMode) {
+            for (int i = 0; i < isScoredTop.length; i++) {
+                if (circleTop[i].getX() + SPRITE_SIZE / 2 <= 96 + 16 && !isScoredTop[i]) {
+                    isScoredTop[i] = true;
+                    HardScore.addGameScore(1);
+                }
+            }
+            for (int i = 0; i < isScoredMid.length; i++) {
+                if (circleMiddle[i].getX() + SPRITE_SIZE / 2 <= 96 + 16 && !isScoredMid[i]) {
+                    isScoredMid[i] = true;
+                    HardScore.addGameScore(1);
+                }
             }
         }
     }
@@ -165,22 +185,32 @@ public class Circle {
 
     private void createBlock(){
         for(int i=0; i < circleTop.length; i++) {
-            switch (Application.gameSkin){
-                case 0: circleTop[i] = new Sprite(skins[0]);
-                    circleBot[i] = new Sprite(skins[0]);
-                    break;
-                case 1: circleTop[i] = new Sprite(skins[1]);
-                    circleBot[i] = new Sprite(skins[1]);
-                    break;
-                case 2: circleTop[i] = new Sprite(skins[2]);
-                    circleBot[i] = new Sprite(skins[2]);
-                    break;
-                case 3: circleTop[i] = new Sprite(skins[3]);
-                    circleBot[i] = new Sprite(skins[3]);
-                    break;
-                case 4: circleTop[i] = new Sprite(skins[4]);
-                    circleBot[i] = new Sprite(skins[4]);
-                    break;
+            if(game.normalMode) {
+                switch (Application.gameSkin) {
+                    case 0:
+                        circleTop[i] = new Sprite(skins[0]);
+                        circleBot[i] = new Sprite(skins[0]);
+                        break;
+                    case 1:
+                        circleTop[i] = new Sprite(skins[1]);
+                        circleBot[i] = new Sprite(skins[1]);
+                        break;
+                    case 2:
+                        circleTop[i] = new Sprite(skins[2]);
+                        circleBot[i] = new Sprite(skins[2]);
+                        break;
+                    case 3:
+                        circleTop[i] = new Sprite(skins[3]);
+                        circleBot[i] = new Sprite(skins[3]);
+                        break;
+                    case 4:
+                        circleTop[i] = new Sprite(skins[4]);
+                        circleBot[i] = new Sprite(skins[4]);
+                        break;
+                }
+            } else if(game.hardMode) {
+                circleTop[i] = new Sprite(game.circleHard);
+                circleBot[i] = new Sprite(game.circleHard);
             }
             circleTop[i].setSize(SPRITE_SIZE,SPRITE_SIZE);
             circleBot[i].setSize(SPRITE_SIZE,SPRITE_SIZE);
@@ -189,18 +219,26 @@ public class Circle {
             circleBot[i].setPosition(posCircle.x + x + i*(SPRITE_SIZE *2)+ i*(FREE_SPACE*2), botHeight);
         }
         for(int i=0; i < circleMiddle.length; i++) {
-
-            switch (Application.gameSkin){
-                case 0: circleMiddle[i] = new Sprite(skins[0]);
-                    break;
-                case 1: circleMiddle[i] = new Sprite(skins[1]);
-                    break;
-                case 2: circleMiddle[i] = new Sprite(skins[2]);
-                    break;
-                case 3: circleMiddle[i] = new Sprite(skins[3]);
-                    break;
-                case 4: circleMiddle[i] = new Sprite(skins[4]);
-                    break;
+            if(game.normalMode) {
+                switch (Application.gameSkin) {
+                    case 0:
+                        circleMiddle[i] = new Sprite(skins[0]);
+                        break;
+                    case 1:
+                        circleMiddle[i] = new Sprite(skins[1]);
+                        break;
+                    case 2:
+                        circleMiddle[i] = new Sprite(skins[2]);
+                        break;
+                    case 3:
+                        circleMiddle[i] = new Sprite(skins[3]);
+                        break;
+                    case 4:
+                        circleMiddle[i] = new Sprite(skins[4]);
+                        break;
+                }
+            } else if(game.hardMode) {
+                circleMiddle[i] = new Sprite(game.circleHard);
             }
             circleMiddle[i].setSize(SPRITE_SIZE,SPRITE_SIZE);
 

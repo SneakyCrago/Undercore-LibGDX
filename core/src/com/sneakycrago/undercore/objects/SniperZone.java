@@ -4,9 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.*;
 import com.sneakycrago.undercore.Application;
 
 import java.util.Random;
@@ -37,8 +35,12 @@ public class SniperZone {
 
     //private Texture texture;
 
+    private float SPEED;
 
-    public SniperZone() {
+
+    public SniperZone(float SPEED) {
+        this.SPEED = SPEED;
+
         random = new Random();
 
         posBlock = new Vector2(0,11);
@@ -79,10 +81,14 @@ public class SniperZone {
                 }
                 secondAmount += 1;
             }
-            if(Application.gameSkin == 2) {
-                sniper[i] = new Sniper(game.snipersSkin[1]);
-            } else {
-                sniper[i] = new Sniper(game.snipersSkin[0]);
+            if(game.normalMode) {
+                if (Application.gameSkin == 2) {
+                    sniper[i] = new Sniper(game,game.snipersSkin[1], SPEED);
+                } else {
+                    sniper[i] = new Sniper(game,game.snipersSkin[0], SPEED);
+                }
+            } else if(game.hardMode) {
+                sniper[i] = new Sniper(game,game.sniperHard, SPEED);
             }
             sniper[i].init(x + SPACE * i, 8 + randomHeight * 32 + randomHeight * 8);
 
@@ -91,10 +97,14 @@ public class SniperZone {
         sniper2 = new Sniper[secondAmount];
         if(secondAmount != 0) {
             for (int i = 0; i < secondAmount; i++) {
-                if(Application.gameSkin == 2) {
-                    sniper2[i] = new Sniper(game.snipersSkin[1]);
-                } else {
-                    sniper2[i] = new Sniper(game.snipersSkin[0]);
+                if(game.normalMode) {
+                    if (Application.gameSkin == 2) {
+                        sniper2[i] = new Sniper(game,game.snipersSkin[1], SPEED);
+                    } else {
+                        sniper2[i] = new Sniper(game,game.snipersSkin[0], SPEED);
+                    }
+                } else if(game.hardMode){
+                    sniper2[i] = new Sniper(game,game.sniperHard, SPEED);
                 }
                 sniper2[i].init(x + SPACE * i, 8 + randomHeight2 * 32 + randomHeight2 * 8);
             }
@@ -123,10 +133,14 @@ public class SniperZone {
                 }
                 secondAmount += 1;
             }
-            if(Application.gameSkin == 2) {
-                sniper[i] = new Sniper(game.snipersSkin[1]);
-            } else {
-                sniper[i] = new Sniper(game.snipersSkin[0]);
+            if(game.normalMode) {
+                if (Application.gameSkin == 2) {
+                    sniper[i] = new Sniper(game,game.snipersSkin[1], SPEED);
+                } else {
+                    sniper[i] = new Sniper(game,game.snipersSkin[0], SPEED);
+                }
+            } else if(game.hardMode) {
+                sniper[i] = new Sniper(game,game.sniperHard, SPEED);
             }
             sniper[i].init(x + SPACE * i, 8 + randomHeight * 32 + randomHeight * 8);
 
@@ -135,10 +149,14 @@ public class SniperZone {
         sniper2 = new Sniper[secondAmount];
         if(secondAmount != 0) {
             for (int i = 0; i < secondAmount; i++) {
-                if(Application.gameSkin == 2) {
-                    sniper2[i] = new Sniper(game.snipersSkin[1]);
-                } else {
-                    sniper2[i] = new Sniper(game.snipersSkin[0]);
+                if(game.normalMode) {
+                    if (Application.gameSkin == 2) {
+                        sniper2[i] = new Sniper(game,game.snipersSkin[1], SPEED);
+                    } else {
+                        sniper2[i] = new Sniper(game,game.snipersSkin[0], SPEED);
+                    }
+                } else if(game.hardMode) {
+                    sniper2[i] = new Sniper(game,game.sniperHard, SPEED);
                 }
                 sniper2[i].init(x + SPACE * i, 8 + randomHeight2 * 32 + randomHeight2 * 8);
             }
@@ -234,10 +252,10 @@ public class SniperZone {
         shapeRenderer.rect(endZone.getX(),endZone.getY(),endZone.getWidth(),endZone.getHeight());
         shapeRenderer.end();
     }
-    public void checkCollision(Rectangle player, Application game, Player pl) {
+    public void checkCollision( Application game, Player pl) {
 
         for (int i = 0; i < amountOfWave; i++) {
-            if (player.overlaps(sniper[i].getStationRect()) && pl.alive) {
+            if (pl.getPlayerRectangle().overlaps(sniper[i].getStationRect()) && pl.alive) {
                 pl.alive = false;
                 Application.playerAlive = false;
                 pl.deathAnimation();
@@ -248,7 +266,7 @@ public class SniperZone {
                 }
                 //System.out.println("Collision: SNIPERS");
             }
-            if(Intersector.overlaps(sniper[i].getCircle(), player) && pl.alive){
+            if(Intersector.overlaps(sniper[i].getCircle(), pl.getPlayerRectangle()) && pl.alive){
                 pl.alive = false;
                 Application.playerAlive = false;
                 pl.deathAnimation();
@@ -263,7 +281,7 @@ public class SniperZone {
 
         if (secondAmount != 0) {
             for (int i = 0; i < secondAmount; i++) {
-                if (player.overlaps(sniper2[i].getStationRect()) && pl.alive) {
+                if (pl.getPlayerRectangle().overlaps(sniper2[i].getStationRect()) && pl.alive) {
                     pl.alive = false;
                     Application.playerAlive = false;
                     pl.deathAnimation();
@@ -274,7 +292,128 @@ public class SniperZone {
                         deathSound = true;
                     }
                 }
-                if(Intersector.overlaps(sniper2[i].getCircle(), player) && pl.alive){
+                if(Intersector.overlaps(sniper2[i].getCircle(), pl.getPlayerRectangle()) && pl.alive){
+                    pl.alive = false;
+                    Application.playerAlive = false;
+                    pl.deathAnimation();
+                    game.deathSnipers = true;
+                    //System.out.println("Collision: SNIPERS");
+                    if(!deathSound) {
+                        game.deathAllSound.play(Application.volume);
+                        deathSound = true;
+                    }
+                }
+            }
+        }
+    }
+
+    public void checkCollisionCircle(Application game, Player pl) {
+
+        for (int i = 0; i < amountOfWave; i++) {
+            //if (player.overlaps(sniper[i].getStationRect()) && pl.alive) {
+            if(Intersector.overlaps(pl.getPlayerCircle(), sniper[i].getStationRect()) && pl.alive) {
+                pl.alive = false;
+                Application.playerAlive = false;
+                pl.deathAnimation();
+                game.deathSnipers = true;
+                if(!deathSound) {
+                    game.deathAllSound.play(Application.volume);
+                    deathSound = true;
+                }
+                //System.out.println("Collision: SNIPERS");
+            }
+            if(Intersector.overlaps(sniper[i].getCircle(), pl.getPlayerCircle()) && pl.alive){
+                pl.alive = false;
+                Application.playerAlive = false;
+                pl.deathAnimation();
+                game.deathSnipers = true;
+                //System.out.println("Collision: SNIPERS");
+                if(!deathSound) {
+                    game.deathAllSound.play(Application.volume);
+                    deathSound = true;
+                }
+            }
+        }
+
+        if (secondAmount != 0) {
+            for (int i = 0; i < secondAmount; i++) {
+                //if (player.overlaps(sniper2[i].getStationRect()) && pl.alive) {
+                if(Intersector.overlaps(pl.getPlayerCircle(),sniper2[i].getStationRect()) && pl.alive) {
+                    pl.alive = false;
+                    Application.playerAlive = false;
+                    pl.deathAnimation();
+                    game.deathSnipers = true;
+                    //System.out.println("Collision: SNIPERS");
+                    if(!deathSound) {
+                        game.deathAllSound.play(Application.volume);
+                        deathSound = true;
+                    }
+                }
+                if(Intersector.overlaps(sniper2[i].getCircle(), pl.getPlayerCircle()) && pl.alive){
+                    pl.alive = false;
+                    Application.playerAlive = false;
+                    pl.deathAnimation();
+                    game.deathSnipers = true;
+                    //System.out.println("Collision: SNIPERS");
+                    if(!deathSound) {
+                        game.deathAllSound.play(Application.volume);
+                        deathSound = true;
+                    }
+                }
+            }
+        }
+    }
+
+    public void checkCollisonArrow(Application game, Player pl){
+        for (int i = 0; i < amountOfWave; i++) {
+            //if (player.overlaps(sniper[i].getStationRect()) && pl.alive) {
+            if(Intersector.overlaps(pl.getCircleArrowDown(), sniper[i].getStationRect()) ||
+                    Intersector.overlaps(pl.getCircleArrowUp(), sniper[i].getStationRect()) ||
+                    Intersector.overlaps(pl.getCircleArrowSmall(), sniper[i].getStationRect())&& pl.alive) {
+                pl.alive = false;
+                Application.playerAlive = false;
+                pl.deathAnimation();
+                game.deathSnipers = true;
+                if(!deathSound) {
+                    game.deathAllSound.play(Application.volume);
+                    deathSound = true;
+                }
+                //System.out.println("Collision: SNIPERS");
+            }
+            if(Intersector.overlaps(pl.getCircleArrowDown(),sniper[i].getCircle()) ||
+                    Intersector.overlaps(pl.getCircleArrowUp(),sniper[i].getCircle()) ||
+                    Intersector.overlaps(pl.getCircleArrowSmall(),sniper[i].getCircle()) && pl.alive){
+                pl.alive = false;
+                Application.playerAlive = false;
+                pl.deathAnimation();
+                game.deathSnipers = true;
+                //System.out.println("Collision: SNIPERS");
+                if(!deathSound) {
+                    game.deathAllSound.play(Application.volume);
+                    deathSound = true;
+                }
+            }
+        }
+
+        if (secondAmount != 0) {
+            for (int i = 0; i < secondAmount; i++) {
+                //if (player.overlaps(sniper2[i].getStationRect()) && pl.alive) {
+                if(Intersector.overlaps(pl.getCircleArrowDown(),sniper2[i].getStationRect()) ||
+                        Intersector.overlaps(pl.getCircleArrowSmall(),sniper2[i].getStationRect()) ||
+                        Intersector.overlaps(pl.getCircleArrowUp(),sniper2[i].getStationRect())&& pl.alive) {
+                    pl.alive = false;
+                    Application.playerAlive = false;
+                    pl.deathAnimation();
+                    game.deathSnipers = true;
+                    //System.out.println("Collision: SNIPERS");
+                    if(!deathSound) {
+                        game.deathAllSound.play(Application.volume);
+                        deathSound = true;
+                    }
+                }
+                if(Intersector.overlaps(pl.getCircleArrowDown(),sniper2[i].getCircle()) ||
+                        Intersector.overlaps(pl.getCircleArrowUp(),sniper2[i].getCircle()) ||
+                        Intersector.overlaps(pl.getCircleArrowSmall(),sniper2[i].getCircle())&& pl.alive){
                     pl.alive = false;
                     Application.playerAlive = false;
                     pl.deathAnimation();

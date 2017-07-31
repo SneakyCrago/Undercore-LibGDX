@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Circle;
 import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.utils.Globals;
+import com.sneakycrago.undercore.utils.HardScore;
 import com.sneakycrago.undercore.utils.Score;
 
 /**
@@ -18,7 +19,7 @@ import com.sneakycrago.undercore.utils.Score;
 
 public class Sniper {
 
-    private final int SPEED = -90; // -90
+    private float SPEED = -90; // -90
 
     private int x;
     private int y;
@@ -45,7 +46,11 @@ public class Sniper {
 
     private Circle circle;
 
-    public Sniper(Texture skin){
+    Application game;
+
+    public Sniper(Application game, Texture skin, float SPEED){
+        this.SPEED = SPEED;
+        this.game =game;
         //texture = skin;
         posBlock = new Vector2(0,11);
         velocity = new Vector2();
@@ -104,9 +109,16 @@ public class Sniper {
     private boolean isScored = false;
 
     public void checkScore() {
-        if(stationRect.getX() <= 96+16 && !isScored) {
+        if(game.normalMode) {
+            if (stationRect.getX() <= 96 + 16 && !isScored) {
                 isScored = true;
                 Score.addGameScore(1);
+            }
+        } else if(game.hardMode) {
+            if (stationRect.getX() <= 96 + 16 && !isScored) {
+                isScored = true;
+                HardScore.addGameScore(1);
+            }
         }
     }
 
@@ -135,32 +147,50 @@ public class Sniper {
     }
 
     private void switchInner(ShapeRenderer shapeRenderer){
-        switch(Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Color.BLACK);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Inner1Color);
-                break;
-            case 2: shapeRenderer.setColor(Globals.Inner2Color);
-                break;
-            case 3: shapeRenderer.setColor(Globals.Inner3Color);
-                break;
-            case 4: shapeRenderer.setColor(Globals.Inner4Color);
-                break;
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    shapeRenderer.setColor(Color.BLACK);
+                    break;
+                case 1:
+                    shapeRenderer.setColor(Globals.Inner1Color);
+                    break;
+                case 2:
+                    shapeRenderer.setColor(Globals.Inner2Color);
+                    break;
+                case 3:
+                    shapeRenderer.setColor(Globals.Inner3Color);
+                    break;
+                case 4:
+                    shapeRenderer.setColor(Globals.Inner4Color);
+                    break;
+            }
+        } else if(game.hardMode) {
+            shapeRenderer.setColor(Color.BLACK);
         }
     }
 
     private void switchSides(ShapeRenderer shapeRenderer){
-        switch(Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Globals.SidesColor);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Sides1Color);
-                break;
-            case 2: shapeRenderer.setColor(Globals.Sides2Color);
-                break;
-            case 3: shapeRenderer.setColor(Globals.Sides3Color);
-                break;
-            case 4: shapeRenderer.setColor(Globals.Sides4Color);
-                break;
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    shapeRenderer.setColor(Globals.SidesColor);
+                    break;
+                case 1:
+                    shapeRenderer.setColor(Globals.Sides1Color);
+                    break;
+                case 2:
+                    shapeRenderer.setColor(Globals.Sides2Color);
+                    break;
+                case 3:
+                    shapeRenderer.setColor(Globals.Sides3Color);
+                    break;
+                case 4:
+                    shapeRenderer.setColor(Globals.Sides4Color);
+                    break;
+            }
+        } else if(game.hardMode) {
+            shapeRenderer.setColor(Color.WHITE);
         }
     }
 

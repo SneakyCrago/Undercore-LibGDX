@@ -5,11 +5,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.sneakycrago.undercore.Application;
-import com.sneakycrago.undercore.screens.GameScreen;
 import com.sneakycrago.undercore.utils.Globals;
+import com.sneakycrago.undercore.utils.HardScore;
 import com.sneakycrago.undercore.utils.Score;
 
-import java.awt.Desktop;
 import java.util.Random;
 
 /**
@@ -18,7 +17,7 @@ import java.util.Random;
 
 public class Wall {
 
-    public int SPEED = -90; //-90
+    public float SPEED = -90; //-90
 
     private final int TEXTURE_SIZE = 32;
     private int FREE_SPACE = 128 + 64; // start 192 after - 128
@@ -41,7 +40,11 @@ public class Wall {
 
     int x;
 
-    public Wall(){
+    private Application game;
+
+    public Wall(float speed, Application game){
+        this.SPEED = speed;
+        this.game = game;
 
         random = new Random();
 
@@ -133,7 +136,11 @@ public class Wall {
         for (int i = 0; i < massiveRect.length; i++){
             if(massiveRect[i].getX() <= 96+16 && !isScored[i]) {
                 isScored[i] = true;
-                Score.addGameScore(1);
+                if(game.normalMode) {
+                    Score.addGameScore(1);
+                } else if(game.hardMode) {
+                    HardScore.addGameScore(1);
+                }
             }
         }
     }
@@ -223,9 +230,7 @@ public class Wall {
                 drawWallPos5(shapeRenderer,x + TEXTURE_SIZE * init + init * FREE_SPACE);
 
             }
-
         }
-
     }
     // positions drawing constructor
     public void drawWallPos1(ShapeRenderer shapeRenderer, float x) {
@@ -330,30 +335,48 @@ public class Wall {
     }
 
     private void switchInner(ShapeRenderer shapeRenderer){
-        switch (Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Color.BLACK);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Inner1Color);
-                break;
-            case 2: shapeRenderer.setColor(Globals.Inner2Color);
-                break;
-            case 3: shapeRenderer.setColor(Globals.Inner3Color);
-                break;
-            case 4: shapeRenderer.setColor(Globals.Inner4Color);
-                break;
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    shapeRenderer.setColor(Color.BLACK);
+                    break;
+                case 1:
+                    shapeRenderer.setColor(Globals.Inner1Color);
+                    break;
+                case 2:
+                    shapeRenderer.setColor(Globals.Inner2Color);
+                    break;
+                case 3:
+                    shapeRenderer.setColor(Globals.Inner3Color);
+                    break;
+                case 4:
+                    shapeRenderer.setColor(Globals.Inner4Color);
+                    break;
+            }
+        } else if(game.hardMode) {
+            shapeRenderer.setColor(Color.BLACK);
         }
     }
     private void switchSides(ShapeRenderer shapeRenderer){
-        switch (Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Globals.SidesColor);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Sides1Color);
-                break;
-            case 2: shapeRenderer.setColor(Globals.Sides2Color);
-                break;
-            case 3: shapeRenderer.setColor(Globals.Sides3Color);
-                break;
-            case 4: shapeRenderer.setColor(Globals.Sides4Color);
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    shapeRenderer.setColor(Globals.SidesColor);
+                    break;
+                case 1:
+                    shapeRenderer.setColor(Globals.Sides1Color);
+                    break;
+                case 2:
+                    shapeRenderer.setColor(Globals.Sides2Color);
+                    break;
+                case 3:
+                    shapeRenderer.setColor(Globals.Sides3Color);
+                    break;
+                case 4:
+                    shapeRenderer.setColor(Globals.Sides4Color);
+            }
+        } else if(game.hardMode) {
+            shapeRenderer.setColor(Color.WHITE);
         }
     }
 

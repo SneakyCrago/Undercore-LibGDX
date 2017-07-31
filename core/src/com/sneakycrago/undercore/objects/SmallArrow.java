@@ -1,11 +1,13 @@
 package com.sneakycrago.undercore.objects;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.sneakycrago.undercore.Application;
 import com.sneakycrago.undercore.utils.Globals;
+import com.sneakycrago.undercore.utils.HardScore;
 import com.sneakycrago.undercore.utils.Score;
 
 import java.util.Random;
@@ -17,7 +19,7 @@ import java.util.Random;
 
 public class SmallArrow {
 
-    private final int SPEED = -90*2; //-90*2;
+    private float SPEED = -90*2; //-90*2;
 
     private Vector2 posBlock;
     private Vector2 velocity;
@@ -32,7 +34,11 @@ public class SmallArrow {
 
     private Rectangle upWave[], downWave[], randomWave[];
 
-    public SmallArrow(float START, int WAVE) {
+    Application game;
+
+    public SmallArrow(Application game,float START, int WAVE, float speed) {
+        this.SPEED = speed;
+        this.game = game;
         x =(int) START;
         wave = WAVE;
         posBlock = new Vector2(0,11);
@@ -102,36 +108,64 @@ public class SmallArrow {
     private boolean isScored = false;
 
     public void checkScore() {
-        if(wave == 1) {
-            if (upWave[amountOfArrows -1].getX() <= 96 + 16 && !isScored) {
-                isScored = true;
-                Score.addGameScore(1);
+        if(game.normalMode) {
+            if (wave == 1) {
+                if (upWave[amountOfArrows - 1].getX() <= 96 + 16 && !isScored) {
+                    isScored = true;
+                    Score.addGameScore(1);
+                }
+            } else if (wave == 2) {
+                if (downWave[amountOfArrows - 1].getX() <= 96 + 16 && !isScored) {
+                    isScored = true;
+                    Score.addGameScore(1);
+                }
+            } else if (wave == 3) {
+                if (randomWave[0].getX() <= 96 + 16 && !isScored) {
+                    isScored = true;
+                    Score.addGameScore(1);
+                }
             }
-        } else if(wave == 2){
-            if (downWave[amountOfArrows -1].getX() <= 96 + 16 && !isScored) {
-                isScored = true;
-                Score.addGameScore(1);
-            }
-        } else if(wave == 3){
-            if (randomWave[0].getX() <= 96 + 16 && !isScored) {
-                isScored = true;
-                Score.addGameScore(1);
+        } else if(game.hardMode) {
+            if (wave == 1) {
+                if (upWave[amountOfArrows - 1].getX() <= 96 + 16 && !isScored) {
+                    isScored = true;
+                    HardScore.addGameScore(1);
+                }
+            } else if (wave == 2) {
+                if (downWave[amountOfArrows - 1].getX() <= 96 + 16 && !isScored) {
+                    isScored = true;
+                    HardScore.addGameScore(1);
+                }
+            } else if (wave == 3) {
+                if (randomWave[0].getX() <= 96 + 16 && !isScored) {
+                    isScored = true;
+                    HardScore.addGameScore(1);
+                }
             }
         }
     }
 
     public void drawArrow(ShapeRenderer shapeRenderer) {
-        switch (Application.gameSkin) {
-            case 0: shapeRenderer.setColor(Globals.SidesColor);
-                break;
-            case 1: shapeRenderer.setColor(Globals.Sides1Color);
-                break;
-            case 2: shapeRenderer.setColor(Globals.Sides2Color);
-                break;
-            case 3: shapeRenderer.setColor(Globals.Sides3Color);
-                break;
-            case 4: shapeRenderer.setColor(Globals.Sides4Color);
-                break;
+        if(game.normalMode) {
+            switch (Application.gameSkin) {
+                case 0:
+                    shapeRenderer.setColor(Globals.SidesColor);
+                    break;
+                case 1:
+                    shapeRenderer.setColor(Globals.Sides1Color);
+                    break;
+                case 2:
+                    shapeRenderer.setColor(Globals.Sides2Color);
+                    break;
+                case 3:
+                    shapeRenderer.setColor(Globals.Sides3Color);
+                    break;
+                case 4:
+                    shapeRenderer.setColor(Globals.Sides4Color);
+                    break;
+            }
+        } else if(game.hardMode) {
+            shapeRenderer.setColor(Color.WHITE);
         }
         if(wave ==1) {
             for (int i = 0; i < amountOfArrows; i++) {

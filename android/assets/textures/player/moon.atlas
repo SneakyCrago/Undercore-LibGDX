@@ -1,0 +1,90 @@
+
+moon.png
+size: 512,512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+moon0
+  rotate: false
+  xy: 0, 268
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+moon0line
+  rotate: false
+  xy: 256, 268
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+moon1
+  rotate: false
+  xy: 0, 136
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+moon1line
+  rotate: false
+  xy: 384, 268
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+moon2
+  rotate: false
+  xy: 128, 268
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+moon2line
+  rotate: false
+  xy: 128, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+moon3
+  rotate: false
+  xy: 0, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+moon3line
+  rotate: false
+  xy: 256, 136
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+moon4
+  rotate: false
+  xy: 128, 136
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+moon4line
+  rotate: false
+  xy: 384, 136
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+moonLine_hard
+  rotate: false
+  xy: 256, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+moon_hard
+  rotate: false
+  xy: 384, 4
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1

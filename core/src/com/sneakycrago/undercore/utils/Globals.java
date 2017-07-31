@@ -63,5 +63,8 @@ public class Globals {
     public static  final Color Text3Color = new Color(255/255f, 255/255f, 255/255f, 1f);
     public static  final Color Text4Color = new Color(252/255f, 165/255f, 177/255f, 1f);
 
+    public static  final Color MenuButtonsBackground = new Color(10/255f, 13/255f, 14/255f, 1f);
+
+    public static final Color Gray = new Color(187/255f, 187/255f, 187/255f, 1f);
 }
 
